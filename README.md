@@ -1,13 +1,15 @@
-# SP2025: Group &lt;Group Number&gt; &lt;Project Name&gt;
-
-Name your repository using the following format:  
-**SP2025_Group_&lt;Group Number&gt;**  
-(Example: SP2025_Group_9)
+# SP2025: Group 9 - Gamified Environment App
 
 ## Team Members
-- **&lt;Member Name&gt;**: &lt;Email Address&gt; ; &lt;Github ID&gt;
-- **&lt;Member Name&gt;**: &lt;Email Address&gt; ; &lt;Github ID&gt;
-- **&lt;Member Name&gt;**: &lt;Email Address&gt; ; &lt;Github ID&gt;
+- **Sydney Seder**
+  - **Email:** sseder@wustl.edu
+  - **Github ID:** sswustl
+- **Olivia Guess**
+  - **Email:** guess.o@wustl.edu
+  - **Github ID:** OGuess10
+- **Mijung**
+  - **Email:** j.mijung@wustl.edu
+  - **Github ID:** mijung2024
 
 ## TA
 &lt;Name of your group's TA&gt;

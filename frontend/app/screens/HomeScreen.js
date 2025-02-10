@@ -2,16 +2,17 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 export default function HomeScreen() {
-  const [test, setTest] = useState("");
+  const [user, setUser] = useState([]);
   useEffect(() => {
-    fetch('http://127.0.0.1:5000/')
+    fetch('http://127.0.0.1:5000/get_user?user_id=0')
     .then(response => response.json())
-    .then(data => setTest(data.message));
+    .then(data => setUser(data));
   }, []);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to the Home Page</Text>
-      <Text>{test}</Text>
+      <Text>Username: {user.user_name}</Text>
+      <Text>Points: {user.points}</Text>
     </View>
   );
 }

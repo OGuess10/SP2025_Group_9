@@ -4,7 +4,6 @@ import { View, Text, Button, Image, StyleSheet } from "react-native";
 export default function IntroScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Image source={{ uri: "https://via.placeholder.com/150" }} style={styles.logo} />
       <Text style={styles.appName}>Group 9 App</Text>
       <Button title="Login" onPress={() => navigation.navigate("Login")} />
       <Button title="Sign Up" onPress={() => navigation.navigate("SignUp")} />

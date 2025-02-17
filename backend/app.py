@@ -38,8 +38,9 @@ def get_user():
         return jsonify({"error": "Missing required parameters"}), 400
     if user_id=='0':
         user_name = "TestUser"
-        points = 100
-        return jsonify({"user_name": user_name, "points": points}), 200
+        points = 500
+        icon = "koala"
+        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
     else:
         return jsonify({"error": "Could not find matching user"}), 400
 

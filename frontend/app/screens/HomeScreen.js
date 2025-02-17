@@ -26,7 +26,7 @@ const HomeScreen = ({route, navigation}) => {
       </View>
       <View style={tw`flex w-5/6 h-3/4 justify-center`}>
         <View style={tw`flex flex-row items-center justify-between my-2`}>
-          <Text style={[tw`text-3xl`, {fontFamily: "Nunito_700Bold"}]}>Your Tree</Text>
+          <Text style={[tw`text-2xl`, {fontFamily: "Nunito_700Bold"}]}>Your Tree</Text>
           <Text style={[tw`text-lg`, {fontFamily: "Nunito_400Regular"}]}>Points: {user.points}</Text>
         </View>
         <View style={tw`rounded-lg bg-white shadow-lg items-center h-5/6`}>

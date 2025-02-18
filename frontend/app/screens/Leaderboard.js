@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, ActivityIndicator, Dimensions } from 'react-native';
+import { SafeAreaView, View, Text, ActivityIndicator, Dimensions, FlatList } from 'react-native';
 import tw from "../../components/tailwind";
 import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
@@ -79,20 +79,63 @@ const Chart = () => {
     );
 };
 
+const FriendsList = ({ userId }) => {
+    const [friends, setFriends] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchFriends = async () => {
+            try {
+                // Step 1: Get the list of friend IDs
+                const response = await fetch(`http://127.0.0.1:5000/get_friends?user_id=${userId}`);
+                const friendIds = await response.json();
+                
+                // Add current user to the leaderboard also
+                friendIds.friend_ids.push(userId);
+
+                // Step 2: Fetch user details for each friend ID
+                const friendDataPromises = friendIds.friend_ids.map(async (friendId) => {
+                    const userResponse = await fetch(`http://127.0.0.1:5000/get_user?user_id=${friendId}`);
+                    return await userResponse.json();
+                });
+
+                // Step 3: Wait for all friend details to be fetched
+                const friendsData = await Promise.all(friendDataPromises);
+                const sortedFriends = friendsData.sort((a, b) => (b.points || 0) - (a.points || 0));
+
+                setFriends(sortedFriends);
+            } catch (error) {
+                console.error("Error fetching friends:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFriends();
+    }, [userId]);
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#32a852" />;
+    }
+
+    return (
+        <View style={tw`flex bg-white`}>
+            <FlatList
+                style={tw`px-4`}
+                data={friends}
+                keyExtractor={(item, index) => (item?.user_id ? item.user_id.toString() : `friend-${index}`)}
+                renderItem={({ item }) => (
+                    <View style={tw`border-b border-gray-300 flex flex-row py-4 justify-around items-center`}>
+                        <Text style={[tw`text-lg`,{ fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
+                        <Text style={[tw`text-sm`,{fontFamily:"Nunito_400Regular"}]}>{item.points}</Text>
+                    </View>
+                )}
+            />
+        </View>
+    );
+};
+
 const Leaderboard = ({route, navigation}) => {
-    // const [friendActivity, setFriendActivity] = useState(null);
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //     try {
-    //         const response = await fetch('http://127.0.0.1:5000/get_friends?user_id=0');
-    //         const data = await response.json();
-    //         setActivity(data); // Set the fetched data to state
-    //     } catch (error) {
-    //         console.error("Error fetching user data:", error);
-    //     }
-    //     };
-    //     fetchData();
-    // }, []);
 
     const {user} = route.params;
     const imageMap = {
@@ -123,6 +166,7 @@ const Leaderboard = ({route, navigation}) => {
                 <View style={tw`flex-1`}>
                     <Text style={[tw`text-2xl my-2`, { fontFamily: "Nunito_700Bold" }]}>Leaderboard</Text>
                     <View style={tw`flex-1 bg-white shadow-lg`}>
+                        <FriendsList userId={0}/>
                     </View>
                 </View>
             </View>

@@ -4,6 +4,7 @@ import tw from "../../components/tailwind";
 import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
 import { LineChart } from "react-native-chart-kit";
+import { format, parseISO } from "date-fns";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -37,11 +38,26 @@ const Chart = () => {
           </View>
         );
     }
+
+    const monthlyData = {};
+    activity.forEach(({date, value}) => {
+        const monthKey = format(parseISO(date), "yyyy-MM"); // Group by "YYYY-MM"
+        if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = { total: 0, count: 0 };
+        }
+        monthlyData[monthKey].total += value;
+        monthlyData[monthKey].count += 1;
+    });
+    const formattedLabels = Object.keys(monthlyData).map((monthKey) => ({
+        date: format(parseISO(monthKey + "-01"), "MMM yyyy"), // Convert to "Jan 2025" format
+        value: Math.round(monthlyData[monthKey].total / monthlyData[monthKey].count), // Average value
+    }));
+
     return (
         <View style={tw`flex-1 p-4 items-center bg-white w-full h-full`}>
             <LineChart
                 data={{
-                    labels: activity.map(item => item.date),  // Dates as labels
+                    labels: formattedLabels.map(item => item.date),  // Dates as labels
                     datasets: [{ data: activity.map(item => item.value) }] // Values as data
                 }}
                 width={screenWidth * 5/6} 

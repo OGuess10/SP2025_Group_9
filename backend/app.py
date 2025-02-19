@@ -41,6 +41,31 @@ def get_user():
         points = 500
         icon = "koala"
         return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
+    elif user_id=='1':
+        user_name = "Friend 1"
+        points = 200
+        icon = "koala"
+        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
+    elif user_id=='2':
+        user_name = "Friend 2"
+        points = 219
+        icon = "kangaroo"
+        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
+    elif user_id=='3':
+        user_name = "Friend 3"
+        points = 783
+        icon = "sloth"
+        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
+    elif user_id=='4':
+        user_name = "Friend 4"
+        points = 537
+        icon = "koala"
+        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
+    elif user_id=='5':
+        user_name = "Friend 5"
+        points = 1029
+        icon = "kangaroo"
+        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
     else:
         return jsonify({"error": "Could not find matching user"}), 400
 
@@ -54,9 +79,9 @@ def get_activity():
         data = {
             "2025-01-01": 10,
             "2025-01-05": 15,
-            "2025-01-10": 17,
-            "2025-01-15": 70,
-            "2025-01-20": 100
+            "2025-02-10": 17,
+            "2025-03-15": 70,
+            "2025-03-20": 100
         }
         return jsonify({"data": data}), 200
     else:

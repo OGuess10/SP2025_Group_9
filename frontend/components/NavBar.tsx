@@ -27,6 +27,7 @@ const NavBar: React.FC = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={tw`bg-white m-2 p-2 rounded-lg`}
+        onPress={() => navigation.navigate("Leaderboard", { user })}
       >
         <MaterialIcons name="show-chart" size={32} color="black" />
       </TouchableOpacity>

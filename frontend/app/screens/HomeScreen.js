@@ -20,16 +20,18 @@ const HomeScreen = ({route, navigation}) => {
 
   return (
     user ? 
-    <SafeAreaView style={tw`flex items-center justify-center bg-white w-full h-full`}>
+    <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
       <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
         <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]}/>
       </View>
-      <View style={tw`flex flex-row items-center justify-between my-2 w-5/6`}>
-        <Text style={[tw`text-3xl`, {fontFamily: "Nunito_700Bold"}]}>Your Tree</Text>
-        <Text style={[tw`text-lg`, {fontFamily: "Nunito_400Regular"}]}>Points: {user.points}</Text>
-      </View>
-      <View style={tw`rounded-lg bg-white shadow-lg w-5/6 items-center`}>
-        <GrowingTree seed={12345} points={user.points} style={tw`w-full h-full`}/>
+      <View style={tw`flex w-5/6 h-3/4 justify-center`}>
+        <View style={tw`flex flex-row items-center justify-between my-2`}>
+          <Text style={[tw`text-2xl`, {fontFamily: "Nunito_700Bold"}]}>Your Tree</Text>
+          <Text style={[tw`text-lg`, {fontFamily: "Nunito_400Regular"}]}>Points: {user.points}</Text>
+        </View>
+        <View style={tw`rounded-lg bg-white shadow-lg items-center h-5/6`}>
+          <GrowingTree seed={12345} points={user.points}/>
+        </View>
       </View>
       <NavBar user={user}/>
     </SafeAreaView>

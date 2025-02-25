@@ -10,6 +10,7 @@ import SignUpScreen from "./screens/SignUpScreen";
 import LoadingScreen from "./screens/LoadingScreen";
 import HomeScreen from "./screens/HomeScreen";
 import Leaderboard from "./screens/Leaderboard";
+import Activity from "./screens/Activity";
 
 
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
@@ -55,6 +56,7 @@ export default function App() {
       <Stack.Screen name="Loading" component={LoadingScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Leaderboard" component={Leaderboard} />
+        <Stack.Screen name="Activity" component={Activity} />
     </Stack.Navigator>
   );
 }

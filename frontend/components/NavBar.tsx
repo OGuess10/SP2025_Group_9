@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import tw from "tailwind-react-native-classnames";
 import { MaterialCommunityIcons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const pastelGreen = "#A5D6A7"; 
 const pastelGreenLight = "#E8F5E9"; 
@@ -12,6 +13,7 @@ export type RootStackParamList = {
   Home: { user: any };
   NavBar: undefined;
   Leaderboard: { user: any };
+  Activity: { user: any};
 };
 
 
@@ -75,11 +77,12 @@ const NavBar: React.FC = () => {
 
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <TouchableOpacity
-          style={tw`p-2 rounded-lg`}
+          style={tw`p-2 rounded-lg`, activePage === "Activity" && {backgroundColor: pastelGreenLight}]}
+          onPress={() => navigation.navigate("Activity", { user })}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >
-          <FontAwesome name="camera" size={28} color="black" />
+          <AntDesign name="pluscircleo" size={24} color={activePage === "Activity" ? "#2E7D32" : "black"} />
         </TouchableOpacity>
       </Animated.View>
 

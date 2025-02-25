@@ -13,6 +13,7 @@ export type RootStackParamList = {
   Home: { user: any };
   NavBar: undefined;
   Leaderboard: { user: any };
+  Friends: { user: any };
   Activity: { user: any};
 };
 
@@ -89,11 +90,12 @@ const NavBar: React.FC = () => {
 
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <TouchableOpacity
-          style={tw`p-2 rounded-lg`}
+          style={tw`p-2 rounded-lg`, activePage === "Friends" && {backgroundColor: pastelGreenLight}]}
+          onPress={() => navigation.navigate("Friends", { user })}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >
-          <MaterialIcons name="people" size={28} color="black" />
+          <MaterialIcons name="people" size={28} color={activePage === "Friends" ? "#2E7D32" : "black"} />
         </TouchableOpacity>
       </Animated.View>
 

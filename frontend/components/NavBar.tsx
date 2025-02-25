@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import tw from "tailwind-react-native-classnames";
 import { MaterialCommunityIcons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 export type RootStackParamList = {
   Home: { user: any };
@@ -33,8 +34,9 @@ const NavBar: React.FC = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={tw`bg-white m-2 p-2 rounded-lg`}
+        onPress={() => navigation.navigate("Activity", { user })}
       >
-        <FontAwesome name="camera" size={32} color="black" />
+        <AntDesign name="pluscircleo" size={24} color="black" />
       </TouchableOpacity>
       <TouchableOpacity
         style={tw`bg-white m-2 p-2 rounded-lg`}

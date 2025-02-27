@@ -7,11 +7,21 @@ const Loading = () => {
       <Image source={{ uri: "https://i.pinimg.com/originals/18/42/81/184281f0fe87517a950beb8112c308dd.gif" }} style={styles.loadingGif} />
     </View>
   );
+<<<<<<< Updated upstream
 };
 
 const GoHome = ({navigation, userData}) => {
   useEffect(() => {
     navigation.navigate('Home', {user: userData});
+=======
+<<<<<<< Updated upstream
+=======
+};
+
+const GoHome = ({ navigation, userData }) => {
+  useEffect(() => {
+    navigation.navigate('Home', { user: userData });
+>>>>>>> Stashed changes
   }, []);
   return;
 };
@@ -36,11 +46,20 @@ export default function LoadingScreen({ navigation, route }) {
   }, []);
 
   if (!user) {
+<<<<<<< Updated upstream
     return <Loading/>
   }
   else {
     return <GoHome navigation={navigation} userData={user}/>
   }
+=======
+    return <Loading />
+  }
+  else {
+    return <GoHome navigation={navigation} userData={user} />
+  }
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 }
 
 const styles = StyleSheet.create({

@@ -1,7 +1,14 @@
+<<<<<<< Updated upstream
 import React, { useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet, StatusBar, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
+=======
+import React from "react";
+import { View, Text, Button, Image, StyleSheet } from "react-native";
+import { supabase } from "../../supabaseClient";
+
+>>>>>>> Stashed changes
 
 export default function IntroScreen({ navigation }) {
   let [fontsLoaded] = useFonts({

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import React, { useState, useRef } from "react";
 import { SafeAreaView, View, Text, TouchableOpacity, Animated } from "react-native";
 import GrowingTree from "../../components/GrowingTree";
@@ -91,6 +92,67 @@ const HomeScreen = ({ route, navigation }) => {
     </SafeAreaView>
   ) : (
     <View></View>
+=======
+<<<<<<< Updated upstream
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet } from "react-native";
+=======
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Touchable } from 'react-native';
+import GrowingTree from '../../components/GrowingTree';
+import tw from "../../components/tailwind";
+import { Image } from 'expo-image';
+import NavBar from '../../components/NavBar';
+
+const HomeScreen = ({ route, navigation }) => {
+  const [points, setPoints] = useState(0);
+  const addPoints = () => setPoints(prev => Math.min(prev + 100, 1000));
+  const subPoints = () => setPoints(prev => Math.max(prev - 100, 0));
+
+  const { user } = route.params;
+  const imageMap = {
+    "kanagroo": require("../../assets/user_icons/kangaroo.png"),
+    "koala": require("../../assets/user_icons/koala.png"),
+    "sloth": require("../../assets/user_icons/sloth.png"),
+    "default": require("../../assets/user_icons/sloth.png")
+  };
+>>>>>>> Stashed changes
+
+export default function HomeScreen() {
+  const [user, setUser] = useState([]);
+  useEffect(() => {
+    fetch('http://127.0.0.1:5000/get_user?user_id=0')
+    .then(response => response.json())
+    .then(data => setUser(data));
+  }, []);
+  return (
+<<<<<<< Updated upstream
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to the Home Page</Text>
+      <Text>Username: {user.user_name}</Text>
+      <Text>Points: {user.points}</Text>
+    </View>
+=======
+    user ?
+      <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
+        <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
+          <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]} />
+        </View>
+        <View style={tw`flex w-5/6 h-3/4 justify-center`}>
+          <View style={tw`flex flex-row items-center justify-between my-2`}>
+            <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>Your Tree</Text>
+            <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Points: {user.points}</Text>
+          </View>
+          <View style={tw`rounded-lg bg-white shadow-lg items-center h-5/6`}>
+            <GrowingTree seed={12345} points={user.points} />
+          </View>
+        </View>
+        <NavBar user={user} />
+      </SafeAreaView>
+      :
+      <View></View>
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   );
 };
 

@@ -1,0 +1,39 @@
+/venv/
+/__pycache__/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# virtualenv/pip
+.venv/
+env/
+.env
+venv/
+ENV/
+*.egg-info/
+*.whl
+build/
+dist/
+
+# Flask specific
+instance/
+
+# Unit test / coverage reports
+htmlcov/
+.pytest_cache/
+.coverage
+
+# Translations
+*.mo
+
+# Editor-specific files
+.idea/
+*.swp
+*.swo
+*.log
+
+# OS or system files
+.DS_Store

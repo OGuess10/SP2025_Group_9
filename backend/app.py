@@ -30,39 +30,38 @@ def verify_supabase_jwt(token):
         return None  #
 
 
-<<<<<<< Updated upstream
 # example: /get_user?user_id=0
 @app.route("/get_user")
 def get_user():
-    user_id = request.args.get('user_id', '')
-    if (not user_id):
+    user_id = request.args.get("user_id", "")
+    if not user_id:
         return jsonify({"error": "Missing required parameters"}), 400
-    if user_id=='0':
+    if user_id == "0":
         user_name = "TestUser"
         points = 500
         icon = "koala"
         return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='1':
+    elif user_id == "1":
         user_name = "Friend 1"
         points = 200
         icon = "koala"
         return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='2':
+    elif user_id == "2":
         user_name = "Friend 2"
         points = 219
         icon = "kangaroo"
         return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='3':
+    elif user_id == "3":
         user_name = "Friend 3"
         points = 783
         icon = "sloth"
         return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='4':
+    elif user_id == "4":
         user_name = "Friend 4"
         points = 537
         icon = "koala"
         return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='5':
+    elif user_id == "5":
         user_name = "Friend 5"
         points = 1029
         icon = "kangaroo"
@@ -70,29 +69,32 @@ def get_user():
     else:
         return jsonify({"error": "Could not find matching user"}), 400
 
+
 # example: /get_activity?user_id=0
 @app.route("/get_activity")
 def get_activity():
-    user_id = request.args.get('user_id', '')
-    if (not user_id):
+    user_id = request.args.get("user_id", "")
+    if not user_id:
         return jsonify({"error": "Missing required parameters"}), 400
-    if user_id=='0':
+    if user_id == "0":
         data = {
             "2025-01-01": 10,
             "2025-01-05": 15,
             "2025-02-10": 17,
             "2025-03-15": 70,
-            "2025-03-20": 100
+            "2025-03-20": 100,
         }
         return jsonify({"data": data}), 200
     else:
         return jsonify({"error": "Could not find matching user"}), 400
-    
+
+
 # example: /get_friends?user_id=0
 @app.route("/get_friends")
 def get_friends():
-    user_id = request.args.get('user_id', '')
-=======
+    user_id = request.args.get("user_id", "")
+
+
 def verify_token(token):
     try:
         # Decoding the JWT using the Supabase secret
@@ -132,7 +134,6 @@ def get_current_user():
 @app.route("/protected", methods=["GET"])
 def protected_route():
     user_id = get_current_user()
->>>>>>> Stashed changes
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 

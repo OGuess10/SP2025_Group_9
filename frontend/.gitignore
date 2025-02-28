@@ -10,7 +10,11 @@ yarn.lock # include if you are using yarn - don't use both npm and yarn
 dist/
 web-build/
 expo-env.d.ts
+<<<<<<< Updated upstream
 ios/
+=======
+.env
+>>>>>>> Stashed changes
 
 # Native
 *.orig.*
@@ -19,7 +23,7 @@ ios/
 *.p12
 *.key
 *.mobileprovision
-
+.ios
 # Metro
 .metro-health-check*
 
@@ -42,6 +46,7 @@ yarn-error.*
 # Example files
 app-example
 
+<<<<<<< Updated upstream
 # Xcode
 build/
 *.pbxuser
@@ -229,13 +234,144 @@ fix_*.patch
 
 # Android memory profiler files
 *.hprof
+=======
+# Expo
+.expo
+__generated__
+web-build
+bare-apps
+
+# macOS
+.DS_Store
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Ruby
+.direnv
+
+# Env
+.envrc.local
+
+# Emacs
+*~
+
+# Vim
+.*.swp
+.*.swo
+.*.swn
+.*.swm
+
+# VS Code
+.vscode/launch.json
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.xccheckout
+*.xcscmblueprint
+xcuserdata
+
+# IDEA / Android Studio
+*.iml
+.gradle
+.idea
+
+# Eclipse
+.project
+.settings
+
+# VSCode
+.history/
+/vscode/launch.json
+
+# Android
+*.apk
+*.hprof
+ReactAndroid-temp.aar
+
+# Tools
+jarjar-rules.txt
+
+# Dynamic Macros
+.kernel-ngrok-url
+
+# Template files
+/apps/bare-expo/android/app/google-services.json
+/apps/bare-expo/ios/BareExpo/GoogleService-Info.plist
+
+# Template projects
+templates/**/android/**/generated/*
+templates/**/android/app/build
+templates/**/Pods/**
+templates/**/Podfile.lock
+templates/**/yarn.lock
+
+# Codemod
+.codemod.bookmark
+
+# Fastlane
+/*.cer
+/fastlane/report.xml
+/fastlane/Preview.html
+/fastlane/Deployment
+/fastlane/test_output
+/Preview.html
+/gc_keys.json
+/fastlane/gc_keys.json
+
+# CI
+/android/logcat.txt
+
+# Shell apps
+android-shell-app
+shellAppBase-*
+shellAppIntermediates
+shellAppWorkspaces
+/artifacts/*
+
+# Expo Client builds
+/client-builds
+
+# Expo web env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+apps/bare-expo/deploy-url.txt
+>>>>>>> Stashed changes
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
 
+<<<<<<< Updated upstream
 # Jest Integration
 /packages/react-native-fantom/build/
 /packages/react-native-fantom/tester/build/
 
 # [Experimental] Generated TS type definitions
 /packages/**/types_generated/
+=======
+# Expo Doc merging
+docs/pages/versions/*/react-native/ADDED_*.md
+docs/pages/versions/*/react-native/REMOVED_*.md
+docs/pages/versions/*/react-native/*.diff
+
+# Expo Go
+/apps/expo-go/src/dist
+
+# Prebuilds
+/packages/**/*.xcframework
+/packages/**/*.spec.json
+/packages/**/Info-generated.plist
+!crsqlite.xcframework
+
+# iOS
+**/ios/.xcode.env.local
+>>>>>>> Stashed changes

@@ -15,18 +15,20 @@ export const verifyOtp = async (email, otp) => {
     const { data, error } = await supabase.auth.verifyOtp({
         email,
         token: otp,
-        type: 'email',  // Ensure you use the email type
+        type: 'email',
     });
 
     if (error) {
+        console.error("Error verifying OTP:", error.message);
         return { success: false, message: error.message };
     }
 
-    const session = data.session;
-    const token = session?.access_token;
+    console.log("OTP verification data:", data);
 
-    if (token) {
-        // Send the token to your Flask backend for profile creation
+    const session = data.session;
+
+    if (session) {
+        const token = session?.access_token;
         const response = await fetch('http://localhost:8081/protected', {
             method: 'GET',
             headers: {

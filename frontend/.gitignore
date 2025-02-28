@@ -10,11 +10,8 @@ yarn.lock # include if you are using yarn - don't use both npm and yarn
 dist/
 web-build/
 expo-env.d.ts
-<<<<<<< Updated upstream
 ios/
-=======
 .env
->>>>>>> Stashed changes
 
 # Native
 *.orig.*

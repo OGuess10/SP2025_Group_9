@@ -6,15 +6,15 @@ import tw from "tailwind-react-native-classnames";
 import { MaterialCommunityIcons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-const pastelGreen = "#A5D6A7"; 
-const pastelGreenLight = "#E8F5E9"; 
+const pastelGreen = "#A5D6A7";
+const pastelGreenLight = "#E8F5E9";
 
 export type RootStackParamList = {
   Home: { user: any };
   NavBar: undefined;
   Leaderboard: { user: any };
   Friends: { user: any };
-  Activity: { user: any};
+  Activity: { user: any };
 };
 
 
@@ -54,7 +54,7 @@ const NavBar: React.FC = () => {
     <View style={tw`flex flex-row items-center justify-between w-5/6 bg-white shadow-lg rounded-full px-5 py-3 my-4`}>
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <TouchableOpacity
-          style={[tw`p-2 rounded-lg`, activePage === "Home" && {backgroundColor: pastelGreenLight}, ]}
+          style={[tw`p-2 rounded-lg`, activePage === "Home" && { backgroundColor: pastelGreenLight },]}
           onPress={() => navigation.navigate("Home", { user })}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
@@ -66,7 +66,7 @@ const NavBar: React.FC = () => {
 
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <TouchableOpacity
-          style={[tw`p-2 rounded-lg`, activePage === "Leaderboard" && {backgroundColor: pastelGreenLight}]}
+          style={[tw`p-2 rounded-lg`, activePage === "Leaderboard" && { backgroundColor: pastelGreenLight }]}
           onPress={() => navigation.navigate("Leaderboard", { user })}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
@@ -78,7 +78,7 @@ const NavBar: React.FC = () => {
 
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <TouchableOpacity
-          style={tw`p-2 rounded-lg`, activePage === "Activity" && {backgroundColor: pastelGreenLight}]}
+          style={[tw`p-2 rounded-lg`, activePage === "Activity" && { backgroundColor: pastelGreenLight }]}
           onPress={() => navigation.navigate("Activity", { user })}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
@@ -90,7 +90,7 @@ const NavBar: React.FC = () => {
 
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <TouchableOpacity
-          style={tw`p-2 rounded-lg`, activePage === "Friends" && {backgroundColor: pastelGreenLight}]}
+          style={[tw`p-2 rounded-lg`, activePage === "Friends" && { backgroundColor: pastelGreenLight }]}
           onPress={() => navigation.navigate("Friends", { user })}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}

@@ -1,14 +1,8 @@
-<<<<<<< Updated upstream
 import React, { useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet, StatusBar, Animated } from "react-native";
+import { View, Text, Button, TouchableOpacity, Image, StyleSheet, StatusBar, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
-=======
-import React from "react";
-import { View, Text, Button, Image, StyleSheet } from "react-native";
 import { supabase } from "../../supabaseClient";
-
->>>>>>> Stashed changes
 
 export default function IntroScreen({ navigation }) {
   let [fontsLoaded] = useFonts({
@@ -71,12 +65,11 @@ export default function IntroScreen({ navigation }) {
             onPressIn={() => handlePressIn(loginScaleAnim)}
             onPressOut={() => handlePressOut(loginScaleAnim)}
           >
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.buttonText}>Sign In</Text>
           </TouchableOpacity>
         </Animated.View>
 
-        {/* Sign Up Button */}
-        <Animated.View style={{ transform: [{ scale: signUpScaleAnim }] }}>
+{/*         <Animated.View style={{ transform: [{ scale: signUpScaleAnim }] }}>
           <TouchableOpacity
             style={[styles.button, styles.signUpButton]}
             onPress={() => navigation.navigate("SignUp")}
@@ -86,7 +79,8 @@ export default function IntroScreen({ navigation }) {
           >
             <Text style={[styles.buttonText, styles.signUpText]}>Sign Up</Text>
           </TouchableOpacity>
-        </Animated.View>
+        </Animated.View> */}
+        
       </Animated.View>
     </LinearGradient>
   );
@@ -107,7 +101,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     marginBottom: 20,
-    tintColor: "#4CAF50", 
+    tintColor: "#4CAF50",
   },
   appName: {
     fontSize: 28,
@@ -121,7 +115,7 @@ const styles = StyleSheet.create({
     width: 220,
     paddingVertical: 12,
     borderRadius: 30,
-    backgroundColor: "#A5D6A7", 
+    backgroundColor: "#A5D6A7",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 15,
@@ -129,7 +123,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 6,
-    elevation: 2, 
+    elevation: 2,
   },
   signUpButton: {
     backgroundColor: "transparent",

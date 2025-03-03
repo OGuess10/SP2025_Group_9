@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { SafeAreaView, View, Text, TouchableOpacity, Animated } from "react-native";
 import GrowingTree from "../../components/GrowingTree";
 import { Image } from "expo-image";
@@ -7,8 +7,8 @@ import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
 
 
-const pastelGreen = "#A5D6A7"; 
-const pastelGreenLight = "#E8F5E9"; 
+const pastelGreen = "#A5D6A7";
+const pastelGreenLight = "#E8F5E9";
 
 
 const HomeScreen = ({ route, navigation }) => {
@@ -47,7 +47,7 @@ const HomeScreen = ({ route, navigation }) => {
 
   return user ? (
     <SafeAreaView style={[tw`flex items-center w-full h-full`, { backgroundColor: "#FFFFFF" }]}>
-      <StatusBar barStyle="light-content" />  
+      <StatusBar barStyle="light-content" />
 
       {/* Profile Picture*/}
       <View style={[tw`mt-6 mb-4 rounded-full p-3 shadow-md`, { backgroundColor: pastelGreenLight }]}>

@@ -1,175 +1,49 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
+from flask_cors import CORS
+import os
+from dotenv import load_dotenv
+import jwt
+import requests
+import random
+from datetime import datetime, timedelta
+
+
+load_dotenv()
 
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:8081"])
+app.secret_key = os.getenv("SECRET_KEY")
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
 
-@app.route("/")
-def test():
-    return jsonify({"message": "Test test test"})
 
-# example: /add_user?user_id=0&user_name=TestUser
-@app.route("/add_user")
-def add_user():
-    data = request.get_json()
-    user_id = data.get("user_id")
-    user_name = data.get("user_name")
-    points = 0
-    if not user_id or not user_name:
-        return jsonify({"error": "Missing required parameters"}), 400
-    else:
-        return jsonify({"user_name": user_name, "points": points}), 200
+def verify_supabase_jwt(token):
+    """Verify JWT from Supabase."""
+    try:
+        decoded_token = jwt.decode(
+            token, os.getenv("SUPABASE_JWT_SECRET"), algorithms=["HS256"]
+        )
+        print("Decoded token:", decoded_token)
+        return decoded_token
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
 
-# Params: user_id
-@app.route("/remove_user")
-def remove_user():
-    user_id = request.args.get('user_id', '')
-    if (not user_id):
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id=='0':
-        # remove user from db
-        return jsonify({"message": "User succesfully removed"}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
 
-# example: /get_user?user_id=0
-@app.route("/get_user")
-def get_user():
-    user_id = request.args.get('user_id', '')
-    if (not user_id):
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id=='0':
-        user_name = "TestUser"
-        points = 500
-        icon = "koala"
-        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='1':
-        user_name = "Friend 1"
-        points = 200
-        icon = "koala"
-        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='2':
-        user_name = "Friend 2"
-        points = 219
-        icon = "kangaroo"
-        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='3':
-        user_name = "Friend 3"
-        points = 783
-        icon = "sloth"
-        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='4':
-        user_name = "Friend 4"
-        points = 537
-        icon = "koala"
-        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    elif user_id=='5':
-        user_name = "Friend 5"
-        points = 1029
-        icon = "kangaroo"
-        return jsonify({"user_name": user_name, "points": points, "icon": icon}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
+@app.route("/protected", methods=["GET"])
+def protected_route():
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Unauthorized"}), 401
 
-# example: /get_activity?user_id=0
-@app.route("/get_activity")
-def get_activity():
-    user_id = request.args.get('user_id', '')
-    if (not user_id):
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id=='0':
-        data = {
-            "2025-01-01": 10,
-            "2025-01-05": 15,
-            "2025-02-10": 17,
-            "2025-03-15": 70,
-            "2025-03-20": 100
-        }
-        return jsonify({"data": data}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
-    
-# example: /get_friends?user_id=0
-@app.route("/get_friends")
-def get_friends():
-    user_id = request.args.get('user_id', '')
-    if not user_id:
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id == '0':
-        data = [1, 2, 3, 4, 5]
-        return jsonify({"friend_ids": data}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
+    token = auth_header.split(" ")[1]
+    decoded_token = verify_supabase_jwt(token)
+    if not decoded_token:
+        return jsonify({"error": "Invalid or expired token"}), 401
 
-# Params: user_id, friend_id
-@app.route("/add_friend")
-def add_friend():
-    data = request.get_json()
-    user_id = data.get("user_id")
-    friend_id = data.get("friend_id")
-    if not user_id or not friend_id:
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id == '0':
-        # add friend_id to list of user friends
-        return jsonify({"message": "Friend added succesfully"}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
+    user_id = decoded_token.get("sub")  # This is the user ID
+    return jsonify({"message": "Welcome!", "user_id": user_id})
 
-# Params: user_id, friend_id
-@app.route("/remove_friend")
-def remove_friend():
-    data = request.get_json()
-    user_id = data.get("user_id")
-    friend_id = data.get("friend_id")
-    if not user_id or not friend_id:
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id == '0':
-        # remove friend_id from list of user friends
-        return jsonify({"message": "Friend removed succesfully"}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
-    
-# Params: user_id, activity
-@app.route("/add_activity")
-def add_activity():
-    data = request.get_json()
-    user_id = data.get("user_id")
-    activity = data.get("activity")
-    if not user_id or not activity:
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id == '0':
-        # add activity
-        return jsonify({"message": "Activity added succesfully"}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
 
-# Params: user_id
-@app.route("/get_activities")
-def get_activities():
-    user_id = request.args.get('user_id', '')
-    if not user_id:
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id == '0':
-        data = {
-            "recycled": ["2025-01-10", "picture.png"],
-            "recycled": ["2025-01-15", "picture.png"],
-            "litter_cleanup": ["2025-01-30", ""]
-        }
-        return jsonify({"data": data}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
-
-# Params: name
-@app.route("/search")
-def search():
-    name = request.args.get('user_id', '')
-    if not name:
-        return jsonify({"error": "Missing required paramaters"}), 400
-    # search for name in db
-    data = {
-        "user1": [1, "user1", 50],
-        "user2": [2, "user2", 75],
-        "user3": [3, "user3", 20]
-    }
-    return jsonify({"data": data}), 200
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

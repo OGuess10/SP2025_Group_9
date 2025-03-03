@@ -8,15 +8,44 @@ import {
   Dimensions,
 } from "react-native";
 import LottieView from "lottie-react-native";
+import { sendOtp, verifyOtp } from "../auth/Auth_Api";
 
 const { width, height } = Dimensions.get("window");
-
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    navigation.navigate("Loading");
+
+  const handleSendOtp = async () => {
+    setLoading(true);
+    try {
+      await sendOtp(email);  // Trigger Supabase to send the OTP
+      setOtpSent(true);
+      Alert.alert("OTP Sent", "Check your email for the OTP.");
+    } catch (error) {
+      setLoading(false);
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setLoading(true);
+    try {
+      const result = await verifyOtp(email, otp);
+      setLoading(false);
+
+      if (result.success) {
+        Alert.alert("Login Successful", result.message);
+        navigation.replace("Home"); // Navigate to Home screen
+      } else {
+        Alert.alert("Error", result.message);
+      }
+    } catch (error) {
+      setLoading(false);
+      Alert.alert("Error", error.message);
+    }
   };
 
   return (
@@ -38,19 +67,24 @@ export default function LoginScreen({ navigation }) {
           onChangeText={setEmail}
           style={styles.input}
         />
-        <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.input}
-        />
-        <Button title="Login" onPress={handleLogin} />
+        {!otpSent ? (
+          <Button title="Send OTP" onPress={handleSendOtp} disabled={loading || !email} />
+        ) : (
+          <>
+            <TextInput
+              placeholder="Enter OTP"
+              value={otp}
+              onChangeText={setOtp}
+              style={styles.input}
+              keyboardType="numeric"
+            />
+            <Button title="Verify OTP" onPress={handleVerifyOtp} disabled={!otp} />
+          </>
+        )}
       </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -82,4 +116,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 5,
   },
+  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 20 },
+  input: { width: 250, padding: 10, marginBottom: 10, borderWidth: 1, borderColor: "#ccc", borderRadius: 5 },
 });

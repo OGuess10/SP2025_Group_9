@@ -7,7 +7,6 @@ import { LineChart } from "react-native-chart-kit";
 import { format, parseISO } from "date-fns";
 
 const screenWidth = Dimensions.get("window").width;
-const screenHeight = Dimensions.get("window").height;
 
 
 const Chart = () => {
@@ -15,32 +14,32 @@ const Chart = () => {
     const [activityLoading, setActivityLoading] = useState(true);
     useEffect(() => {
         const fetchData = async () => {
-        try {
-            const response = await fetch('http://127.0.0.1:5000/get_activity?user_id=0');
-            const data = await response.json();
-            const formattedData = Object.keys(data.data).map((date) => ({
-                date,
-                value: data.data[date],
-            }));
-            setActivity(formattedData);
-            setActivityLoading(false);
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-        }
+            try {
+                const response = await fetch('http://127.0.0.1:5000/get_activity?user_id=0');
+                const data = await response.json();
+                const formattedData = Object.keys(data.data).map((date) => ({
+                    date,
+                    value: data.data[date],
+                }));
+                setActivity(formattedData);
+                setActivityLoading(false);
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
         };
         fetchData();
     }, []);
 
     if (activityLoading) {
         return (
-          <View style={tw`flex-1 justify-center items-center`}>
-            <ActivityIndicator size="large" color="#ADD8E6" />
-          </View>
+            <View style={tw`flex-1 justify-center items-center`}>
+                <ActivityIndicator size="large" color="#ADD8E6" />
+            </View>
         );
     }
 
     const monthlyData = {};
-    activity.forEach(({date, value}) => {
+    activity.forEach(({ date, value }) => {
         const monthKey = format(parseISO(date), "yyyy-MM"); // Group by "YYYY-MM"
         if (!monthlyData[monthKey]) {
             monthlyData[monthKey] = { total: 0, count: 0 };
@@ -60,7 +59,7 @@ const Chart = () => {
                     labels: formattedLabels.map(item => item.date),  // Dates as labels
                     datasets: [{ data: activity.map(item => item.value) }] // Values as data
                 }}
-                width={screenWidth * 5/6} 
+                width={screenWidth * 5 / 6}
                 height={screenHeight * 0.25}
                 yAxisLabel=""
                 chartConfig={{
@@ -89,7 +88,6 @@ const FriendsList = ({ userId }) => {
                 // Step 1: Get the list of friend IDs
                 const response = await fetch(`http://127.0.0.1:5000/get_friends?user_id=${userId}`);
                 const friendIds = await response.json();
-                
                 // Add current user to the leaderboard also
                 friendIds.friend_ids.push(userId);
 
@@ -126,18 +124,18 @@ const FriendsList = ({ userId }) => {
                 keyExtractor={(item, index) => (item?.user_id ? item.user_id.toString() : `friend-${index}`)}
                 renderItem={({ item }) => (
                     <View style={tw`border-b border-gray-300 flex flex-row py-4 justify-around items-center`}>
-                        <Text style={[tw`text-lg`,{ fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
-                        <Text style={[tw`text-sm`,{fontFamily:"Nunito_400Regular"}]}>{item.points}</Text>
-                    </View>
+                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
+                        <Text style={[tw`text-sm`, { fontFamily: "Nunito_400Regular" }]}>{item.points}</Text>
+                    </View >
                 )}
             />
-        </View>
+        </View >
     );
 };
 
-const Leaderboard = ({route, navigation}) => {
+const Leaderboard = ({ route, navigation }) => {
 
-    const {user} = route.params;
+    const { user } = route.params;
     const imageMap = {
         "kanagroo": require("../../assets/user_icons/kangaroo.png"),
         "koala": require("../../assets/user_icons/koala.png"),
@@ -146,34 +144,34 @@ const Leaderboard = ({route, navigation}) => {
     };
 
     return (
-        user ? 
-        <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
-            <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
-                <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]}/>
-            </View>
-            <View style={tw`flex w-5/6 h-3/4 justify-center`}>
+        user ?
+            <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
+                <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
+                    <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]} />
+                </View>
+                <View style={tw`flex w-5/6 h-3/4 justify-center`}>
 
-                <View style={tw`flex-1 mb-4`}>
-                    <View style={tw`flex flex-row items-center justify-between my-2`}>
-                    <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>Your Activity</Text>
-                    <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Points: {user.points}</Text>
+                    <View style={tw`flex-1 mb-4`}>
+                        <View style={tw`flex flex-row items-center justify-between my-2`}>
+                            <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>Your Activity</Text>
+                            <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Points: {user.points}</Text>
+                        </View>
+                        <View style={tw`flex-1 rounded-lg bg-white shadow-lg items-center`}>
+                            <Chart></Chart>
+                        </View>
                     </View>
-                    <View style={tw`flex-1 rounded-lg bg-white shadow-lg items-center`}>
-                        <Chart></Chart>
+
+                    <View style={tw`flex-1`}>
+                        <Text style={[tw`text-2xl my-2`, { fontFamily: "Nunito_700Bold" }]}>Leaderboard</Text>
+                        <View style={tw`flex-1 bg-white shadow-lg`}>
+                            <FriendsList userId={0} />
+                        </View>
                     </View>
                 </View>
-
-                <View style={tw`flex-1`}>
-                    <Text style={[tw`text-2xl my-2`, { fontFamily: "Nunito_700Bold" }]}>Leaderboard</Text>
-                    <View style={tw`flex-1 bg-white shadow-lg`}>
-                        <FriendsList userId={0}/>
-                    </View>
-                </View>
-            </View>
-        <NavBar user={user}/>
-        </SafeAreaView>
-        :
-        <View></View>
+                <NavBar user={user} />
+            </SafeAreaView>
+            :
+            <View></View>
     );
 };
 

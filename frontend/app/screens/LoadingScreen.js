@@ -9,11 +9,11 @@ const Loading = () => {
   );
 };
 
-const GoHome = ({navigation, userData}) => {
+const GoHome = ({ navigation, userData }) => {
   useEffect(() => {
-    navigation.navigate('Home', {user: userData});
+    navigation.navigate('Home', { user: userData });
   }, []);
-  return;
+  return null;
 };
 
 export default function LoadingScreen({ navigation, route }) {
@@ -36,10 +36,10 @@ export default function LoadingScreen({ navigation, route }) {
   }, []);
 
   if (!user) {
-    return <Loading/>
+    return <Loading />
   }
   else {
-    return <GoHome navigation={navigation} userData={user}/>
+    return <GoHome navigation={navigation} userData={user} />
   }
 }
 

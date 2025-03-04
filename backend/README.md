@@ -6,13 +6,17 @@
       pip install -r requirements.txt
    ```
 
-2. Run server
-
-   ```bash
-      python3 app.py
+3. Set up database:
+   ```mkdir -p db
+      touch db/database.db
    ```
+4. SMTP setup (emai sender)
+   Ask Mijung for GMAIL_PW 
 
-## Activate Virtual environment
+2. Run server
+   ```flask run
+   ```
+## Activate Virtual environment (if necessary)
     
    ```python3 -m venv venv
       source venv/bin/activate

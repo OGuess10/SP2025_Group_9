@@ -5,7 +5,10 @@
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
+*.
+
+#DATABSE
+database.db
 
 # virtualenv/pip
 .venv/

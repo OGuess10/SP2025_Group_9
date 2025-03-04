@@ -24,7 +24,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "a_secret_key_here")
 
 # Database setup
 app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "sqlite:////Users/mijung/Code/SP2025_Group_9/backend/database.db"
+    "sqlite:///database.db"
 )
 
 

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { View, TouchableOpacity, Animated } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useRef } from "react";
+import { View, Text, TouchableOpacity, Animated, Alert } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import tw from "tailwind-react-native-classnames";
 import { MaterialCommunityIcons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { useAuth } from "../app/auth/AuthContext";
 
 const pastelGreen = "#A5D6A7";
 const pastelGreenLight = "#E8F5E9";
@@ -19,6 +20,7 @@ type RootStackParamList = {
 const NavBar: React.FC<{ user: any }> = ({ user }) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [scaleAnim] = useState(new Animated.Value(1));
+  const { logout } = useAuth();
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -35,6 +37,19 @@ const NavBar: React.FC<{ user: any }> = ({ user }) => {
     }).start();
   };
 
+  const handleLogout = () => {
+    Alert.alert("Logout", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
+      { 
+        text: "Logout", 
+        onPress: async () => {
+          await logout();
+          navigation.navigate("Intro"); 
+        }
+      }
+    ]);
+  };
+  
   const buttons = [
     { name: "Home", icon: <MaterialCommunityIcons name="tree" size={28} />, route: "Home" },
     { name: "Leaderboard", icon: <MaterialIcons name="show-chart" size={28} />, route: "Leaderboard" },
@@ -62,7 +77,11 @@ const NavBar: React.FC<{ user: any }> = ({ user }) => {
       })}
 
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <TouchableOpacity style={tw`p-2 rounded-lg`}>
+        <TouchableOpacity style={tw`p-2 rounded-lg`}
+          onPress={handleLogout}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+        >
           <FontAwesome name="bars" size={28} color="black" />
         </TouchableOpacity>
       </Animated.View>

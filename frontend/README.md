@@ -30,6 +30,8 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
    ```bash
     npm install
+    npm install @react-native-async-storage/async-storage
+
    ```
 
 2. Start the app

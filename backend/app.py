@@ -213,16 +213,21 @@ def update_points():
     user_id = data.get("user_id")
     points = data.get("points")
 
+    print(f"Received data: user_id={user_id}, points={points}")
+
     if not user_id or points is None:
         return jsonify({"error": "Missing user_id or points parameter"}), 400
 
     user = User.query.get(user_id)
 
     if user:
+        print(f"Updating user {user_id} points from {user.points} to {points}")
         user.points = points
         db.session.commit()
+        print(f"Updated user {user_id} points to {points}")
         return jsonify({"success": True}), 200
     else:
+        print(f"User {user_id} not found")
         return jsonify({"error": "User not found"}), 404
 
 

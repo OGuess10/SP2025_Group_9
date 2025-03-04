@@ -42,7 +42,7 @@ db = SQLAlchemy(app)
 mail = Mail(app)
 
 
-# User model
+# Database setup
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = Column(String(100), nullable=False)
@@ -51,13 +51,25 @@ class User(db.Model):
     user_name = Column(String(50))
     points = Column(Integer, default=0)
     icon = Column(String(50))
-    plant_number = Column(String(50))
 
 
-with app.app_context():
-    db.create_all()
+class Friendship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
+    friend_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
+    status = db.Column(db.String(20))  # Pending, Accepted, ...
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-# Initialize Database
+
+class Action(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
+    action_type = db.Column(db.String(50))
+    points_earned = db.Column(db.Integer, default=0)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    user = db.relationship("User", backref=db.backref("actions"))
+
+
 with app.app_context():
     db.create_all()
 
@@ -77,19 +89,17 @@ def send_otp():
     otp = generate_otp()
     expiry = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
 
-    user = User.query.filter_by(email=email).first()  # This line
+    user = User.query.filter_by(
+        email=email
+    ).first()  # This to check if user already exists
     if user:
         user.otp = otp
         user.otp_expiry = expiry
         db.session.commit()
-    else:
-        new_user = User(email=email, otp=otp, otp_expiry=expiry)
-        db.session.add(new_user)
-        db.session.commit()
 
     try:
         msg = Message(
-            subject="Your OTP Code",
+            subject="Welcome! Here is your OTP Code",
             recipients=[email],
             body=f"Your OTP code is: {otp}. It will expire in 10 minutes.",
         )
@@ -113,9 +123,20 @@ def verify_otp():
 
     user = User.query.filter_by(email=email).first()
 
+    if not user:
+        # initialize the user with default values
+        user = User(
+            email=email,
+            otp=otp,
+            otp_expiry=datetime.datetime.utcnow() + datetime.timedelta(minutes=10),
+            user_name="",
+            points=0,
+        )
+        db.session.add(user)
+        db.session.commit()
+
     if (
-        user
-        and user.otp == otp
+        user.otp == otp
         and user.otp_expiry
         and datetime.datetime.utcnow() < user.otp_expiry
     ):
@@ -148,7 +169,6 @@ def get_user():
                     "user_name": user.user_name,
                     "points": user.points,
                     "icon": user.icon,
-                    "plant_number": user.plant_number,
                 }
             ), 200
         else:

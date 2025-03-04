@@ -32,7 +32,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_USERNAME"] = "ecootp1@gmail.com"
-app.config["MAIL_PASSWORD"] = "wjhovynavpwnxgkz"
+app.config["MAIL_PASSWORD"] = os.getenv("GMAIL_PW")
 app.config["MAIL_DEFAULT_SENDER"] = "ecootp1@gmail.com"
 
 app.config["MAIL_USE_TLS"] = True

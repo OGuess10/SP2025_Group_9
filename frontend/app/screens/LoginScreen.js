@@ -60,7 +60,9 @@ export default function LoginScreen({ navigation }) {
       const data = await response.json();
       if (response.ok) {
         alert('Login successful');
-        // Handle successful login, e.g., navigate to another screen
+        navigation.replace("Home",{user: data.user_id})
+
+        // successful login
       } else {
         alert(data.error || 'Invalid or expired OTP');
       }

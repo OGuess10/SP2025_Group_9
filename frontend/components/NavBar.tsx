@@ -1,17 +1,10 @@
 import React, { useState, useRef } from "react";
 import { View, Text, TouchableOpacity, Animated, Alert } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useState, useRef } from "react";
-import { View, Text, TouchableOpacity, Animated, Alert } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import tw from "tailwind-react-native-classnames";
 import { MaterialCommunityIcons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAuth } from "../app/auth/AuthContext";
-import AntDesign from '@expo/vector-icons/AntDesign';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../app/auth/AuthContext";
 
 const pastelGreen = "#A5D6A7";

@@ -22,7 +22,6 @@ const NavBar: React.FC<{ user: any }> = ({ user }) => {
   const [scaleAnim] = useState(new Animated.Value(1));
   const { logout } = useAuth();
 
-
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
       toValue: 0.9,
@@ -51,7 +50,6 @@ const NavBar: React.FC<{ user: any }> = ({ user }) => {
     ]);
   };
   
-
   const buttons = [
     { name: "Home", icon: <MaterialCommunityIcons name="tree" size={28} />, route: "Home" },
     { name: "Leaderboard", icon: <MaterialIcons name="show-chart" size={28} />, route: "Leaderboard" },

@@ -45,12 +45,12 @@ mail = Mail(app)
 # Database setup
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = Column(String(100), nullable=False)
-    otp = Column(String(6), nullable=False)
-    otp_expiry = Column(DateTime, nullable=False)
-    user_name = Column(String(50))
-    points = Column(Integer, default=0)
-    icon = Column(String(50))
+    email = db.Column(db.String(100), nullable=False)
+    otp = db.Column(db.String(6), nullable=False)
+    otp_expiry = db.Column(db.DateTime, nullable=False)
+    user_name = db.Column(db.String(50))
+    points = db.Column(db.Integer, default=0)
+    icon = db.Column(db.String(50))
 
 
 class Friendship(db.Model):
@@ -186,10 +186,49 @@ def get_user():
         return jsonify({"error": "User not found"}), 404
 
 
+@app.route("/get_all_users", methods=["GET"])
+def get_all_users():
+    users = User.query.all()
+    users_data = [
+        {
+            "user_id": user.user_id,
+            "user_name": user.user_name,
+            "points": user.points,
+            "icon": user.icon,
+        }
+        for user in users
+    ]
+    return jsonify(users_data), 200
+
+
 @app.route("/logout", methods=["POST"])
 def logout():
     session.pop("user_id", None)  # Remove the session data
     return jsonify({"message": "Logged out"}), 200
+
+
+@app.route("/update_points", methods=["POST"])
+def update_points():
+    data = request.json
+    user_id = data.get("user_id")
+    points = data.get("points")
+
+    print(f"Received data: user_id={user_id}, points={points}")
+
+    if not user_id or points is None:
+        return jsonify({"error": "Missing user_id or points parameter"}), 400
+
+    user = User.query.get(user_id)
+
+    if user:
+        print(f"Updating user {user_id} points from {user.points} to {points}")
+        user.points = points
+        db.session.commit()
+        print(f"Updated user {user_id} points to {points}")
+        return jsonify({"success": True}), 200
+    else:
+        print(f"User {user_id} not found")
+        return jsonify({"error": "User not found"}), 404
 
 
 if __name__ == "__main__":

@@ -1,5 +1,8 @@
 import { supabase } from '../../supabaseClient';
 
+const BACKEND_URL = "http://127.0.0.1:5000";
+
+
 export const sendOtp = async (email) => {
     const { error } = await supabase.auth.signInWithOtp({ email });
 
@@ -29,7 +32,7 @@ export const verifyOtp = async (email, otp) => {
 
     if (session) {
         const token = session?.access_token;
-        const response = await fetch('http://localhost:8081/protected', {
+        const response = await fetch(`${BACKEND_URL}/protected`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token}`,

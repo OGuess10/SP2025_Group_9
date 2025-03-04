@@ -1,64 +1,80 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
-import LottieView from "lottie-react-native";
-import { sendOtp, verifyOtp } from "../auth/Auth_Api";
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Dimensions } from 'react-native';
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
+const BACKEND_URL = "http://127.0.0.1:5000";  // Replace with your Flask server IP
+
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
+  // Handle send OTP
   const handleSendOtp = async () => {
+    if (!email) {
+      alert('Email is required');
+      return;
+    }
+
     setLoading(true);
     try {
-      await sendOtp(email);  // Trigger Supabase to send the OTP
-      setOtpSent(true);
-      Alert.alert("OTP Sent", "Check your email for the OTP.");
+      const response = await fetch(`${BACKEND_URL}/send-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setOtpSent(true);  // OTP sent, show OTP input
+        alert('OTP sent successfully!');
+      } else {
+        alert(data.error || 'Failed to send OTP');
+      }
     } catch (error) {
+      console.error('Error sending OTP:', error);
+      alert('Something went wrong, please try again');
+    } finally {
       setLoading(false);
-      Alert.alert("Error", error.message);
     }
   };
 
+  // Handle verify OTP
   const handleVerifyOtp = async () => {
+    if (!otp || !email) {
+      alert('Please enter both email and OTP');
+      return;
+    }
+
     setLoading(true);
     try {
-      const result = await verifyOtp(email, otp);
-      setLoading(false);
-
-      if (result.success) {
-        Alert.alert("Login Successful", result.message);
-        navigation.replace("Home"); // Navigate to Home screen
+      const response = await fetch(`${BACKEND_URL}/verify_otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, otp }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('Login successful');
+        // Handle successful login, e.g., navigate to another screen
       } else {
-        Alert.alert("Error", result.message);
+        alert(data.error || 'Invalid or expired OTP');
       }
     } catch (error) {
+      console.error('Error verifying OTP:', error);
+      alert('Something went wrong, please try again');
+    } finally {
       setLoading(false);
-      Alert.alert("Error", error.message);
     }
   };
 
   return (
     <View style={styles.mainContainer}>
-      {/* Lottie Animation pinned to the very top */}
-      <LottieView
-        source={require("../../assets/lottie/login-background.json")}
-        autoPlay
-        loop
-        style={styles.lottie}
-      />
-
-      {/* Login Form placed below the animation */}
+      {/* Login Form */}
       <View style={styles.formContainer}>
         <Text style={styles.title}>Login</Text>
         <TextInput
@@ -68,7 +84,7 @@ export default function LoginScreen({ navigation }) {
           style={styles.input}
         />
         {!otpSent ? (
-          <Button title="Send OTP" onPress={handleSendOtp} disabled={loading || !email} />
+          <Button title="Send OTP" onPress={handleSendOtp} disabled={!email || loading} />
         ) : (
           <>
             <TextInput
@@ -78,7 +94,7 @@ export default function LoginScreen({ navigation }) {
               style={styles.input}
               keyboardType="numeric"
             />
-            <Button title="Verify OTP" onPress={handleVerifyOtp} disabled={!otp} />
+            <Button title="Verify OTP" onPress={handleVerifyOtp} disabled={!otp || loading} />
           </>
         )}
       </View>
@@ -117,6 +133,4 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 20 },
-  input: { width: 250, padding: 10, marginBottom: 10, borderWidth: 1, borderColor: "#ccc", borderRadius: 5 },
 });

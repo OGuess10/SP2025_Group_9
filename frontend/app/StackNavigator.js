@@ -44,21 +44,6 @@ const StackNavigator = () => {
     prepare();
   }, [fontsLoaded]);
 
-  // useEffect(() => {
-  //   const checkAuthentication = async () => {
-  //     try {
-  //       const token = await AsyncStorage.getItem("userID");
-  //       setIsAuthenticated(!!token); // If token exists, user is authenticated
-  //       setUserID(token);
-  //     } catch (error) {
-  //       console.error("Error checking authentication:", error);
-  //       setIsAuthenticated(false);
-  //     }
-  //   };
-
-  //   checkAuthentication();
-  // }, []);
-
   if (isAuthenticated === null || !fontsLoaded) {
     return <ActivityIndicator size="large" color="#1B5E20" />; // Show loading spinner
   }

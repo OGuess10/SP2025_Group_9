@@ -1,9 +1,15 @@
 import React, { useState, useRef } from "react";
 import { View, Text, TouchableOpacity, Animated, Alert } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import React, { useState, useRef } from "react";
+import { View, Text, TouchableOpacity, Animated, Alert } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import tw from "tailwind-react-native-classnames";
 import { MaterialCommunityIcons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "../app/auth/AuthContext";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../app/auth/AuthContext";
@@ -18,18 +24,9 @@ type RootStackParamList = {
   Activity: { user: any };
 };
 
-
-const NavBar: React.FC = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, "NavBar">>();
-  const route = useRoute();
-
-
-  // Type-safe way to access `user` param
-  const user = (route.params as { user?: any })?.user || null;
-
-
-  const scaleAnim = new Animated.Value(1);
-
+const NavBar: React.FC<{ user: any }> = ({ user }) => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const [scaleAnim] = useState(new Animated.Value(1));
   const { logout } = useAuth();
 
 
@@ -54,7 +51,7 @@ const NavBar: React.FC = () => {
       { 
         text: "Logout", 
         onPress: async () => {
-          await logout(); // Calls useAuth logout instead of AsyncStorage directly
+          await logout();
           navigation.navigate("Intro"); 
         }
       }
@@ -89,11 +86,10 @@ const NavBar: React.FC = () => {
       })}
 
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <TouchableOpacity
-        style={tw`p-2 rounded-lg`}
-        onPress={handleLogout}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
+        <TouchableOpacity style={tw`p-2 rounded-lg`}
+          onPress={handleLogout}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
         >
           <FontAwesome name="bars" size={28} color="black" />
         </TouchableOpacity>

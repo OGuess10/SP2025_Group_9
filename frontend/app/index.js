@@ -54,10 +54,28 @@ export default function App() {
           cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
         }}
       />
-      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+        }}
+      />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
-      <Stack.Screen name="Loading" component={LoadingScreen} />
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen
+        name="Loading"
+        component={LoadingScreen}
+        options={{
+          cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+        }}
+      />
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+        }}
+      />
       <Stack.Screen name="Leaderboard" component={Leaderboard} />
       <Stack.Screen name="Friends" component={Friends} />
       <Stack.Screen name="Activity" component={Activity} />

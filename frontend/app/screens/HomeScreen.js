@@ -6,7 +6,6 @@ import NavBar from "../../components/NavBar";
 import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
 
-
 const BACKEND_URL = "http://127.0.0.1:5000";  // Replace with your Flask server IP
 
 const pastelGreen = "#A5D6A7";
@@ -79,7 +78,7 @@ const HomeScreen = ({ route, navigation }) => {
 
       {/* Points Display & Title */}
       <Text style={[tw`text-3xl mt-2`, { fontFamily: "Nunito_700Bold", color: "#2E7D32" }]}>
-        Your Tree
+        My Tree
       </Text>
       <Text style={[tw`text-lg mb-4`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>
         Points: {points}
@@ -109,7 +108,9 @@ const HomeScreen = ({ route, navigation }) => {
 
 
       {/* Navigation Bar */}
+      
       <NavBar user={user} />
+      
     </SafeAreaView>
   ) : (
     <View></View>

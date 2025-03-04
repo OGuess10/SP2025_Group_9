@@ -209,26 +209,27 @@ def logout():
 
 @app.route("/update_points", methods=["POST"])
 def update_points():
-    data = request.json
-    user_id = data.get("user_id")
-    points = data.get("points")
+    try:
+        # Get user_id and points from the JSON body
+        data = request.json
+        user_id = data.get("user_id")
+        points = data.get("points")
 
-    print(f"Received data: user_id={user_id}, points={points}")
+        if not user_id or points is None:
+            return jsonify({"error": "Missing user_id or points parameter"}), 400
 
-    if not user_id or points is None:
-        return jsonify({"error": "Missing user_id or points parameter"}), 400
+        # Execute the raw SQL query
+        sql_query = "UPDATE user SET points = ? WHERE user_id = ?"
+        db.session.execute(sql_query, (points, user_id))
 
-    user = User.query.get(user_id)
-
-    if user:
-        print(f"Updating user {user_id} points from {user.points} to {points}")
-        user.points = points
+        # Commit the changes to the database
         db.session.commit()
-        print(f"Updated user {user_id} points to {points}")
-        return jsonify({"success": True}), 200
-    else:
-        print(f"User {user_id} not found")
-        return jsonify({"error": "User not found"}), 404
+
+        return jsonify(
+            {"success": True, "user_id": user_id, "updated_points": points}
+        ), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

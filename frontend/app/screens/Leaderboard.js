@@ -24,7 +24,7 @@ const Chart = () => {
                 setActivity(formattedData);
                 setActivityLoading(false);
             } catch (error) {
-                console.error("Error fetching user data:", error);
+
             }
         };
         fetchData();
@@ -103,7 +103,7 @@ const FriendsList = ({ userId }) => {
 
                 setFriends(sortedFriends);
             } catch (error) {
-                console.error("Error fetching friends:", error);
+
             } finally {
                 setLoading(false);
             }

@@ -23,7 +23,7 @@ const FriendsList = ({ userId }) => {
                 // Step 1: Get the list of friend IDs
                 const response = await fetch(`http://127.0.0.1:5000/get_friends?user_id=${userId}`);
                 const friendIds = await response.json();
-                
+
                 // Add current user to the leaderboard also
                 friendIds.friend_ids.push(userId);
 
@@ -39,11 +39,11 @@ const FriendsList = ({ userId }) => {
 
                 setFriends(sortedFriends);
             } catch (error) {
-                console.error("Error fetching friends:", error);
+
             } finally {
                 setLoading(false);
             }
-        };
+        }
 
         fetchFriends();
     }, [userId]);
@@ -61,72 +61,72 @@ const FriendsList = ({ userId }) => {
                 renderItem={({ item }) => (
                     <View style={tw`border-b border-gray-300 flex flex-row py-4 items-center`}>
                         <TouchableOpacity style={tw`flex w-full flex-row items-center justify-between`}
-                        onPress={() => setSelectedFriend(item)}>
-                        <View style={tw`flex flex-row items-center mx-2`}>
-                        <View style={tw`rounded-full p-2 bg-white shadow-lg mr-4`}>
-                            <Image style={tw`w-8 h-8`} source={imageMap[item.icon] || imageMap["default"]}/>
-                        </View>
-                        <Text style={[tw`text-lg`,{ fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
-                        </View>
-                        <Text style={[tw`text-sm mx-2`,{fontFamily:"Nunito_400Regular"}]}>{item.points}</Text>
+                            onPress={() => setSelectedFriend(item)}>
+                            <View style={tw`flex flex-row items-center mx-2`}>
+                                <View style={tw`rounded-full p-2 bg-white shadow-lg mr-4`}>
+                                    <Image style={tw`w-8 h-8`} source={imageMap[item.icon] || imageMap["default"]} />
+                                </View>
+                                <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
+                            </View>
+                            <Text style={[tw`text-sm mx-2`, { fontFamily: "Nunito_400Regular" }]}>{item.points}</Text>
                         </TouchableOpacity>
                     </View>
                 )}
             />
             <Modal
-            visible={!!selectedFriend}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setSelectedFriend(null)}
+                visible={!!selectedFriend}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setSelectedFriend(null)}
             >
-            <View style={tw`flex-1 justify-center items-center bg-black/50`}>
-            <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-                <TouchableOpacity
-                style={tw`absolute top-4 left-4 p-2`}
-                onPress={() => setSelectedFriend(null)}
-                >
-                <FontAwesome5 name="times" size={24} color="black" />
-                </TouchableOpacity>
+                <View style={tw`flex-1 justify-center items-center bg-black/50`}>
+                    <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
+                        <TouchableOpacity
+                            style={tw`absolute top-4 left-4 p-2`}
+                            onPress={() => setSelectedFriend(null)}
+                        >
+                            <FontAwesome5 name="times" size={24} color="black" />
+                        </TouchableOpacity>
 
-                {selectedFriend && (
-                <>
-                    <View style={tw`rounded-full p-2 bg-white shadow-lg items-center`}>
-                        <Image style={tw`w-12 h-12`} source={imageMap[selectedFriend.icon] || imageMap["default"]}/>
+                        {selectedFriend && (
+                            <>
+                                <View style={tw`rounded-full p-2 bg-white shadow-lg items-center`}>
+                                    <Image style={tw`w-12 h-12`} source={imageMap[selectedFriend.icon] || imageMap["default"]} />
+                                </View>
+                                <Text style={[tw`text-2xl mt-6 font-bold`, { fontFamily: "Nunito_700Bold" }]}>
+                                    {selectedFriend.user_name}
+                                </Text>
+                            </>
+                        )}
                     </View>
-                    <Text style={[tw`text-2xl mt-6 font-bold`, { fontFamily: "Nunito_700Bold" }]}>
-                    {selectedFriend.user_name}
-                    </Text>
-                </>
-                )}
-            </View>
-            </View>
-        </Modal>
-     </View>
+                </View>
+            </Modal>
+        </View>
     );
 };
 
-const Friends = ({route, navigation}) => {
+const Friends = ({ route, navigation }) => {
 
-    const {user} = route.params;
+    const { user } = route.params;
 
     return (
-        user ? 
-        <SafeAreaView style={tw`flex items-center justify-start bg-white w-full h-full`}>
-            <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
-                <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]}/>
-            </View>
-            <View style={tw`flex w-5/6 h-3/4 justify-center`}>
-                <View style={tw`mb-4 my-2`}>
-                    <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>Friends</Text>
+        user ?
+            <SafeAreaView style={tw`flex items-center justify-start bg-white w-full h-full`}>
+                <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
+                    <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]} />
                 </View>
-                <View style={tw`bg-white shadow-lg flex-1 h-5/6`}>
-                    <FriendsList userId={0}/>
+                <View style={tw`flex w-5/6 h-3/4 justify-center`}>
+                    <View style={tw`mb-4 my-2`}>
+                        <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>Friends</Text>
+                    </View>
+                    <View style={tw`bg-white shadow-lg flex-1 h-5/6`}>
+                        <FriendsList userId={0} />
+                    </View>
                 </View>
-            </View>
-        <NavBar user={user}/>
-        </SafeAreaView>
-        :
-        <View></View>
+                <NavBar user={user} />
+            </SafeAreaView>
+            :
+            <View></View>
     );
 };
 

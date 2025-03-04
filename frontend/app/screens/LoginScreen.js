@@ -60,7 +60,8 @@ export default function LoginScreen({ navigation }) {
       const data = await response.json();
       if (response.ok) {
         alert('Login successful');
-        navigation.replace("Home",{user: data.user_id})
+        navigation.replace("Home", { user_id: data.user.user_id });
+
 
         // successful login
       } else {

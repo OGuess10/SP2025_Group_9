@@ -165,22 +165,25 @@ def verify_otp():
 
 @app.route("/get_user", methods=["GET"])
 def get_user():
-    user_id = session.get("user_id")
-    if user_id:
-        user = User.query.get(user_id)
-        if user:
-            return jsonify(
-                {
-                    "user_id": user.user_id,
-                    "user_name": user.user_name,
-                    "points": user.points,
-                    "icon": user.icon,
-                }
-            ), 200
-        else:
-            return jsonify({"error": "User not found"}), 404
+    user_id = request.args.get("user_id", "")
+
+    if not user_id:
+        return jsonify({"error": "Missing user_id parameter"}), 400
+
+    user = User.query.get(user_id)
+
+    if user:
+        return jsonify(
+            {
+                "user_id": user.user_id,
+                "user_name": user.user_name,
+                "email": user.email,
+                "points": user.points,
+                "icon": user.icon,
+            }
+        ), 200
     else:
-        return jsonify({"error": "User not logged in"}), 401
+        return jsonify({"error": "User not found"}), 404
 
 
 @app.route("/logout", methods=["POST"])

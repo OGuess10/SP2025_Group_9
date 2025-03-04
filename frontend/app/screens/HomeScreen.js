@@ -7,13 +7,16 @@ import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
 
 
+const BACKEND_URL = "http://127.0.0.1:5000";  // Replace with your Flask server IP
+
 const pastelGreen = "#A5D6A7";
 const pastelGreenLight = "#E8F5E9";
 
 
 const HomeScreen = ({ route, navigation }) => {
-  const { user } = route.params;
-  const [points, setPoints] = useState(user?.points || 0);
+  const { user_id } = route.params;
+  const [user, setUser] = useState(null);
+  const [points, setPoints] = useState(0);
 
 
   // Button animation
@@ -36,6 +39,25 @@ const HomeScreen = ({ route, navigation }) => {
     }).start();
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/get_user?user_id=${user_id}`); 
+        const data = await response.json();
+        if (response.ok) {
+          setUser(data);          
+          setPoints(data.points);
+        } else {
+          Alert.alert("Error", "Unable to fetch user data.");
+        }
+      } catch (error) {
+        Alert.alert("Error", "Unable to fetch user data.");
+      }
+    };
+  
+    fetchUserData();
+  }, [user_id]); 
+  
 
   const imageMap = {
     kangaroo: require("../../assets/user_icons/kangaroo.png"),

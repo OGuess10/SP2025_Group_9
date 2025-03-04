@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Dimensions } from 'react-native';
+import { useAuth } from "../auth/AuthContext";
 
 const { width, height } = Dimensions.get('window');
 const BACKEND_URL = "http://127.0.0.1:5000";  // Replace with your Flask server IP
@@ -9,6 +10,7 @@ export default function LoginScreen({ navigation }) {
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   // Handle send OTP
   const handleSendOtp = async () => {
@@ -59,6 +61,9 @@ export default function LoginScreen({ navigation }) {
       });
       const data = await response.json();
       if (response.ok) {
+        // Store user ID to async so users don't have to login everytime
+        await login(data.user.user_id.toString());
+
         alert('Login successful');
         navigation.replace("Home", { user_id: data.user.user_id });
 

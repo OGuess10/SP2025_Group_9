@@ -1,10 +1,12 @@
-import React from "react";
-import { View, TouchableOpacity, Animated } from "react-native";
+import React, { useState, useRef } from "react";
+import { View, Text, TouchableOpacity, Animated, Alert } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import tw from "tailwind-react-native-classnames";
 import { MaterialCommunityIcons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "../app/auth/AuthContext";
 
 const pastelGreen = "#A5D6A7";
 const pastelGreenLight = "#E8F5E9";
@@ -29,6 +31,8 @@ const NavBar: React.FC = () => {
 
   const scaleAnim = new Animated.Value(1);
 
+  const { logout } = useAuth();
+
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -45,6 +49,36 @@ const NavBar: React.FC = () => {
       useNativeDriver: true,
     }).start();
   };
+
+  // const handleLogout = async () => {
+  //   Alert.alert("Logout", "Are you sure you want to log out?", [
+  //     { text: "Cancel", style: "cancel" },
+  //     { 
+  //       text: "Logout", 
+  //       onPress: async () => {
+  //         try {
+  //           await AsyncStorage.removeItem("userId");
+  //           navigation.navigate("Intro"); // Redirect to Intro screen
+  //         } catch (error) {
+  //           console.error("Error logging out:", error);
+  //         }
+  //       }
+  //     }
+  //   ]);
+  // };
+  const handleLogout = () => {
+    Alert.alert("Logout", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
+      { 
+        text: "Logout", 
+        onPress: async () => {
+          await logout(); // Calls useAuth logout instead of AsyncStorage directly
+          navigation.navigate("Intro"); 
+        }
+      }
+    ]);
+  };
+  
 
 
   const activePage = route.name;
@@ -103,6 +137,7 @@ const NavBar: React.FC = () => {
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <TouchableOpacity
           style={tw`p-2 rounded-lg`}
+          onPress={handleLogout}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >

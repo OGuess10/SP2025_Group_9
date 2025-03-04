@@ -10,6 +10,7 @@
    ```mkdir -p db
       touch db/database.db
    ```
+   Recommend downloading SQL editor or viewer extension on VS code
 4. SMTP setup (emai sender)
    Ask Mijung for GMAIL_PW 
 

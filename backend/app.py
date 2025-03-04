@@ -114,47 +114,53 @@ def send_otp():
 
 @app.route("/verify_otp", methods=["POST"])
 def verify_otp():
-    data = request.json
-    email = data.get("email")
-    otp = data.get("otp")
+    try:
+        data = request.json
+        email = data.get("email")
+        otp = data.get("otp")
 
-    if not email or not otp:
-        return jsonify({"error": "Email and OTP are required"}), 400
+        if not email or not otp:
+            return jsonify({"error": "Email and OTP are required"}), 400
 
-    user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
-    if not user:
-        # initialize the user with default values
-        user = User(
-            email=email,
-            otp=otp,
-            otp_expiry=datetime.datetime.utcnow() + datetime.timedelta(minutes=10),
-            user_name="",
-            points=0,
-        )
-        db.session.add(user)
-        db.session.commit()
+        if not user:
+            # initialize the user with default values
+            user = User(
+                email=email,
+                otp=otp,
+                otp_expiry=datetime.datetime.utcnow() + datetime.timedelta(minutes=10),
+                user_name="",
+                points=0,
+            )
+            db.session.add(user)
+            db.session.commit()
 
-    if (
-        user.otp == otp
-        and user.otp_expiry
-        and datetime.datetime.utcnow() < user.otp_expiry
-    ):
-        session["user_id"] = user.user_id  # Store user ID in the session
+        if (
+            user.otp == otp
+            and user.otp_expiry
+            and datetime.datetime.utcnow() < user.otp_expiry
+        ):
+            session["user_id"] = user.user_id  # Store user ID in the session
+            return jsonify(
+                {
+                    "message": "Login successful",
+                    "user": {
+                        "user_id": user.user_id,
+                        "user_name": user.user_name,
+                        "points": user.points,
+                        "icon": user.icon,
+                    },
+                }
+            ), 200
+        else:
+            return jsonify({"error": "Invalid or expired OTP"}), 400
+    except Exception as e:
+        # Log the error and return a generic error response
+        print(f"Error: {str(e)}")
         return jsonify(
-            {
-                "message": "Login successful",
-                "user": {
-                    "user_id": user.user_id,
-                    "user_name": user.user_name,
-                    "points": user.points,
-                    "icon": user.icon,
-                    "plant_number": user.plant_number,
-                },
-            }
-        ), 200
-    else:
-        return jsonify({"error": "Invalid or expired OTP"}), 400
+            {"error": "An unexpected error occurred. Please try again later."}
+        ), 500
 
 
 @app.route("/get_user", methods=["GET"])

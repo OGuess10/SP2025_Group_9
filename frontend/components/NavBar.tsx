@@ -45,7 +45,7 @@ const NavBar: React.FC<{ user: any }> = ({ user }) => {
   return (
     <View style={tw`flex flex-row items-center justify-between w-5/6 bg-white shadow-lg rounded-full px-5 py-3 my-4`}>
       {buttons.map(({ name, icon, route }) => {
-        const isActive = route === route.name;
+        const isActive = route === name;
 
         return (
           <Animated.View key={name} style={{ transform: [{ scale: scaleAnim }] }}>

@@ -218,11 +218,13 @@ def update_points():
         if not user_id or points is None:
             return jsonify({"error": "Missing user_id or points parameter"}), 400
 
-        # Execute the raw SQL query
-        sql_query = "UPDATE user SET points = ? WHERE user_id = ?"
-        db.session.execute(sql_query, (points, user_id))
+        # Find the user by user_id
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
 
-        # Commit the changes to the database
+        # Update the user's points
+        user.points = points
         db.session.commit()
 
         return jsonify(

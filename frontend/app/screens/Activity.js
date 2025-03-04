@@ -31,7 +31,7 @@ const ActivityList = ({ user, setUserPoints }) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    user_id: user.user_id,  // Make sure this is passed correctly
+                    user_id: user.user_id,  // Ensure user_id is correctly passed
                     points: newPoints
                 }),
             });
@@ -51,6 +51,8 @@ const ActivityList = ({ user, setUserPoints }) => {
             console.error('Error updating points:', error);
             Alert.alert('Error', 'Failed to update points');
         }
+
+
     };
 
     return (

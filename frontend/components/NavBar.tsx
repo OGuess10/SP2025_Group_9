@@ -44,7 +44,7 @@ const NavBar: React.FC<{ user: any }> = ({ user }) => {
         text: "Logout", 
         onPress: async () => {
           await logout();
-          navigation.navigate("Intro"); 
+          navigation.navigate("Splash"); 
         }
       }
     ]);

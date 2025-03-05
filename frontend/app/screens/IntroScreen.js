@@ -54,7 +54,7 @@ export default function IntroScreen({ navigation }) {
         <Image source={require("../assets/logo.png")} style={styles.logo} />*/}
 
         {/* App Name */}
-        <Text style={styles.appName}>Eco-Something</Text>
+        <Text style={styles.appName}>EcoHolic</Text>
 
         {/* Login Button */}
         <Animated.View style={{ transform: [{ scale: loginScaleAnim }] }}>

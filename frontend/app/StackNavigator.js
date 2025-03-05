@@ -53,16 +53,51 @@ const StackNavigator = () => {
   return (
       <Stack.Navigator 
         screenOptions={{ headerShown: false }} 
-        initialRouteName={isAuthenticated === null ? "Loading" : isAuthenticated ? "Home" : "Intro"}
+        initialRouteName={isAuthenticated === null ? "Loading" : isAuthenticated ? "Home" : "Splash"}
       >
-        <Stack.Screen name="Loading" component={LoadingScreen} />
+        <Stack.Screen name="Splash" component={SplashScreenComponent} />
+        <Stack.Screen
+          name="Intro"
+          component={IntroScreen}
+          options={{
+            cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+          }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+          }}
+        />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen
+          name="Loading"
+          component={LoadingScreen}
+          options={{
+            cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+          }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          initialParams={{ user_id: userId }}
+          options={{
+            cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+          }}
+        />
+      <Stack.Screen name="Leaderboard" component={Leaderboard} />
+      <Stack.Screen name="Friends" component={Friends} />
+      <Stack.Screen name="Activity" component={Activity} />
+        {/* <Stack.Screen name="Loading" component={LoadingScreen} />
+        <Stack.Screen name="Splash" component={SplashScreenComponent} />
         <Stack.Screen name="Intro" component={IntroScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Home" component={HomeScreen} initialParams={{ user_id: userId }} />
         <Stack.Screen name="Leaderboard" component={Leaderboard} />
         <Stack.Screen name="Friends" component={Friends} />
-        <Stack.Screen name="Activity" component={Activity} />
+        <Stack.Screen name="Activity" component={Activity} /> */}
       </Stack.Navigator>
   );
 }

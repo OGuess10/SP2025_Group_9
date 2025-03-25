@@ -1,6 +1,5 @@
 import { supabase } from '../../supabaseClient';
-
-const BACKEND_URL = "http://127.0.0.1:5000";
+import { BACKEND_URL } from '@env';
 
 
 export const sendOtp = async (email) => {
@@ -32,6 +31,7 @@ export const verifyOtp = async (email, otp) => {
 
     if (session) {
         const token = session?.access_token;
+        console.log(`Auth_API: ${BACKEND_URL}`);
         const response = await fetch(`${BACKEND_URL}/protected`, {
             method: 'GET',
             headers: {

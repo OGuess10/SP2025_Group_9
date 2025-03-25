@@ -16,7 +16,9 @@ from email.mime.multipart import MIMEMultipart
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins=["exp://192.168.0.149:8081"])
+# CORS(app, origins=["exp://192.168.0.149:8081"])
+# CORS(app, origins=["exp://10.232.145.161:8081"]);
+CORS(app, origins=["*"])
 
 
 # Setup secret key for session
@@ -74,14 +76,10 @@ with app.app_context():
 def generate_otp():
     return str(random.randint(100000, 999999))
 
-<<<<<<< Updated upstream
-=======
-
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({"message": "Backend is working!"}), 200
 
->>>>>>> Stashed changes
 
 @app.route("/send-otp", methods=["POST"])
 def send_otp():

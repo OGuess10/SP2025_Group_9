@@ -28,7 +28,8 @@ const FriendsList = ({ userId }) => {
         const fetchFriends = async () => {
             try {
                 // Step 1: Get the list of friend IDs
-                const response = await fetch(`http://127.0.0.1:6000/get_friends?user_id=0`);
+                // const response = await fetch(`http://127.0.0.1:6000/get_friends?user_id=0`);
+                const response = await fetch(`${URL}/get_friends?user_id=0`);
                 const friendIds = await response.json();
 
                 // Add current user to the leaderboard also
@@ -36,7 +37,8 @@ const FriendsList = ({ userId }) => {
 
                 // Step 2: Fetch user details for each friend ID
                 const friendDataPromises = friendIds.friend_ids.map(async (friendId) => {
-                    const userResponse = await fetch(`http://127.0.0.1:6000/get_user?user_id=${friendId}`);
+                    // const userResponse = await fetch(`http://127.0.0.1:6000/get_user?user_id=${friendId}`);
+                    const userResponse = await fetch(`${URL}/get_user?user_id=${friendId}`);
                     return await userResponse.json();
                 });
 

@@ -113,6 +113,7 @@ export default function LoginScreen({ navigation }) {
 
     setLoading(true);
     try {
+      console.log("url:" + BACKEND_URL);
       const response = await fetch(`${BACKEND_URL}/send-otp`, {
         method: 'POST',
         headers: {
@@ -191,6 +192,9 @@ export default function LoginScreen({ navigation }) {
         {/* OTP Input and Buttons */}
         {!otpSent ? (
           <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+            <TouchableOpacity style={styles.button} onPress={testBackendConnection}>
+              <Text style={styles.buttonText}>test</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
               onPress={handleSendOtp}

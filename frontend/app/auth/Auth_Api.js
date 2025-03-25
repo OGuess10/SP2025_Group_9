@@ -2,10 +2,10 @@ import { supabase } from '../../supabaseClient';
 import { BACKEND_URL } from "../../config";
 
 <<<<<<< Updated upstream
-const BACKEND_URL = "http://127.0.0.1:5000";
+// const BACKEND_URL = "http://127.0.0.1:5000";
 
 =======
-//const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 >>>>>>> Stashed changes
 
 export const sendOtp = async (email) => {
@@ -37,6 +37,7 @@ export const verifyOtp = async (email, otp) => {
 
     if (session) {
         const token = session?.access_token;
+        console.log(`Auth_API: ${BACKEND_URL}`);
         const response = await fetch(`${BACKEND_URL}/protected`, {
             method: 'GET',
             headers: {

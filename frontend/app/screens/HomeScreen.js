@@ -119,7 +119,9 @@ const HomeScreen = ({ route, navigation }) => {
 
     </SafeAreaView>
   ) : (
-    <View></View>
+    <View>
+      <Text>failed to get user</Text>
+    </View>
   );
 };
 

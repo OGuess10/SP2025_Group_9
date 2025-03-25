@@ -1,10 +1,14 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 app = Flask(__name__)
 
-@app.route("/")
-def test():
-    return jsonify({"message": "Test test test"})
+CORS(app, origins=["*"])
+
+
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "Backend is working!"}), 200
 
 # example: /add_user?user_id=0&user_name=TestUser
 @app.route("/add_user")
@@ -172,4 +176,6 @@ def search():
     return jsonify({"data": data}), 200
 
 if __name__ == '__main__':
-    app.run(host="127.0.0.1", port="6000")
+    # app.run(host="127.0.0.1", port="6000")
+    # app.run(host="10.232.145.161", port="6000")
+    app.run(debug=True, host='0.0.0.0', port=6000)

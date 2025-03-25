@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SafeAreaView, View, Text, TouchableOpacity, FlatList, Modal, Alert } from 'react-native';
 import tw from "../../components/tailwind";
 import { Image } from 'expo-image';
@@ -91,9 +91,11 @@ const CameraScreen = ({ visible, onClose }) => {
 >>>>>>> Stashed changes
 const ActivityList = ({ user, setUserPoints }) => {
     const [selectedAction, setSelectedAction] = useState(null);
+    const [permission, requestPermission] = useCameraPermissions();
+    const cameraRef = useRef(null);
+    const [showCamera, setShowCamera] = useState(false);
 
     const handleActionSelect = async (action) => {
-        setSelectedAction(action);
         const newPoints = user.points + action.points;
         setUserPoints(newPoints);
 
@@ -122,7 +124,7 @@ const ActivityList = ({ user, setUserPoints }) => {
             console.error('Error updating points:', error);
             Alert.alert('Error', 'Failed to update points');
         }
-    };
+    };    
 
     return (
         <View style={tw`flex-1 px-4`}>
@@ -133,7 +135,7 @@ const ActivityList = ({ user, setUserPoints }) => {
 <<<<<<< Updated upstream
                 <View style={tw`border-b border-gray-300 flex py-4 items-center`}>
                     <TouchableOpacity style={tw`flex w-full flex-row`}
-                                onPress={() => handleActionSelect(item)}>
+                        onPress={() => setSelectedAction(item)}>
                         <FontAwesome5 name={item.icon} size={24} color="black" style={tw`mr-4`} />
                         <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
                     </TouchableOpacity>
@@ -166,15 +168,28 @@ const ActivityList = ({ user, setUserPoints }) => {
                         <FontAwesome5 name="times" size={24} color="black" />
                         </TouchableOpacity>
 
+                    <View style={tw`justify-center items-center`}>
                         {selectedAction && (
                         <>
                             <FontAwesome5 name={selectedAction.icon} size={80} color="green" />
-                            <Text style={[tw`text-2xl mt-6 font-bold`, { fontFamily: "Nunito_700Bold" }]}>
+                            <Text style={[tw`text-2xl mt-6`, { fontFamily: "Nunito_700Bold" }]}>
                             {selectedAction.label}
                             </Text>
                         </>
                         )}
                     </View>
+                    
+                    <View style={tw`justify-center items-center w-full mt-32`}>
+                        <TouchableOpacity
+                        style={tw`bg-white justify-center items-center w-5/6 py-2 shadow-lg`}
+                        onPress={() => setShowCamera(true)}
+                        >
+                            <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Take Photo</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                        style={tw`bg-white justify-center items-center w-5/6 mt-8 py-2 shadow-lg`}>
+                            <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Add</Text>
+                        </TouchableOpacity>
                     </View>
                 </Modal>
 =======

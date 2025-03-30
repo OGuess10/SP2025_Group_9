@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Image, StyleSheet } from "react-native";
-import { BACKEND_URL } from "../../config";
 
-//const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const Loading = () => {
   return (

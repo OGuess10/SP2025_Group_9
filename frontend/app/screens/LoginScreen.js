@@ -12,18 +12,13 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { useAuth } from "../auth/AuthContext";
-<<<<<<< Updated upstream
+
 
 const { width, height } = Dimensions.get('window');
-const BACKEND_URL = "http://127.0.0.1:5000"; // Replace with your Flask server IP
-=======
-import { BACKEND_URL } from "../../config";
-
-const { width, height } = Dimensions.get('window');
-//const URL = "http://localhost:8000";
+const URL = process.env.EXPO_PUBLIC_API_URL;
 // const URL = "https://0cd3-2600-6c40-75f0-5bc0-49dd-db1c-b716-824a.ngrok-free.app";
-// const BACKEND_URL = "http://localhost:8000";
->>>>>>> Stashed changes
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
+
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -192,9 +187,10 @@ export default function LoginScreen({ navigation }) {
         {/* OTP Input and Buttons */}
         {!otpSent ? (
           <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
-            <TouchableOpacity style={styles.button} onPress={testBackendConnection}>
+            {/* uncomment to test backend connection */}
+            {/* <TouchableOpacity style={styles.button} onPress={testBackendConnection}>
               <Text style={styles.buttonText}>test</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={styles.button}
               onPress={handleSendOtp}

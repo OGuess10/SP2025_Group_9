@@ -16,9 +16,7 @@ from email.mime.multipart import MIMEMultipart
 load_dotenv()
 
 app = Flask(__name__)
-# CORS(app, origins=["exp://192.168.0.149:8081"])
-# CORS(app, origins=["exp://10.232.145.161:8081"]);
-CORS(app, origins=["*"])
+CORS(app)
 
 
 # Setup secret key for session

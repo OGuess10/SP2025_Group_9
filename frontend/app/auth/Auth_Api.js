@@ -1,6 +1,6 @@
 import { supabase } from '../../supabaseClient';
-import { BACKEND_URL } from '@env';
 
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const sendOtp = async (email) => {
     const { error } = await supabase.auth.signInWithOtp({ email });

@@ -6,7 +6,8 @@ import NavBar from '../../components/NavBar';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import MediaLibrary from 'expo-media-library';
-import { BACKEND_URL } from '@env';
+
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 
 const ecoActions = [

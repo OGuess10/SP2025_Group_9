@@ -4,7 +4,8 @@ import tw from "../../components/tailwind";
 import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { URL } from '@env';
+
+const URL = process.env.EXPO_PUBLIC_API_URL;
 
 
 const imageMap = {

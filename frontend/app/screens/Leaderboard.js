@@ -5,7 +5,8 @@ import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
 import { LineChart } from "react-native-chart-kit";
 import { format, parseISO } from "date-fns";
-import { URL } from '@env';
+
+const URL = process.env.EXPO_PUBLIC_API_URL;
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;

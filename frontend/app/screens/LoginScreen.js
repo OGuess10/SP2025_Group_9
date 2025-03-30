@@ -12,11 +12,13 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { useAuth } from "../auth/AuthContext";
-import { URL, BACKEND_URL } from '@env';
+
 
 const { width, height } = Dimensions.get('window');
-// const BACKEND_URL = "http://127.0.0.1:5000"; // Replace with your Flask server IP
-console.log(BACKEND_URL);
+const URL = process.env.EXPO_PUBLIC_API_URL;
+// const URL = "https://0cd3-2600-6c40-75f0-5bc0-49dd-db1c-b716-824a.ngrok-free.app";
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
+
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -62,31 +64,36 @@ export default function LoginScreen({ navigation }) {
     return null;
   }
 
-  const testBackendConnection = async () => {
-    try {
-      // Print the URL you're trying to fetch from
-      console.log(`Testing backend connection... ${URL}`);
+  // uncomment to ensure backend connection is working
+  // const testBackendConnection = async () => {
+  //   try {
+  //     // Print the URL you're trying to fetch from
+  //     console.log(`Testing backend connection... ${URL}`);
   
-      const response = await fetch(`${URL}/`);
+  //     // const response = await fetch(`${URL}/`);
+  //     const response = await fetch(`${URL}`, {
+  //       method: 'GET', // Use the correct method (GET, POST, etc.)
+  //       mode: 'cors' // This is where 'cors' should go
+  //     });
   
-      // Check if the response is okay
-      if (response.ok) {
-        const data = await response.json();  // Assuming the response is in JSON format
-        console.log('Backend connection successful:', data);
-      } else {
-        console.log('Error: Backend returned an error', response.status);
-      }
-    } catch (error) {
-      console.error('Network request failed', error);
-      if (error instanceof TypeError) {
-        console.error('This might be a network issue or a CORS problem:', error.message);
-      } else {
-        console.error('Unknown error:', error);
-      }
-      const errorBody = await response.text(); // Read the error body as text
-      console.error('Error from backend:', response.status, errorBody);
-    }
-  };
+  //     // Check if the response is okay
+  //     if (response.ok) {
+  //       const data = await response.json();  // Assuming the response is in JSON format
+  //       console.log('Backend connection successful:', data);
+  //     } else {
+  //       console.log('Error: Backend returned an error', response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error('Network request failed', error);
+  //     if (error instanceof TypeError) {
+  //       console.error('This might be a network issue or a CORS problem:', error.message);
+  //     } else {
+  //       console.error('Unknown error:', error);
+  //     }
+  //     const errorBody = await response.text(); // Read the error body as text
+  //     console.error('Error from backend:', response.status, errorBody);
+  //   }
+  // };
   
 
   // Handle send OTP
@@ -177,9 +184,10 @@ export default function LoginScreen({ navigation }) {
         {/* OTP Input and Buttons */}
         {!otpSent ? (
           <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
-            <TouchableOpacity style={styles.button} onPress={testBackendConnection}>
+            {/* uncomment to test backend connection */}
+            {/* <TouchableOpacity style={styles.button} onPress={testBackendConnection}>
               <Text style={styles.buttonText}>test</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={styles.button}
               onPress={handleSendOtp}

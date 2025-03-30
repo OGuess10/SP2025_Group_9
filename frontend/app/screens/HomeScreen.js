@@ -6,8 +6,8 @@ import NavBar from "../../components/NavBar";
 import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
 
-// const BACKEND_URL = "http://127.0.0.1:5000";  // Replace with your Flask server IP
-const BACKEND_URL = "http://10.232.145.161:5000";
+
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const pastelGreen = "#A5D6A7";
 const pastelGreenLight = "#E8F5E9";

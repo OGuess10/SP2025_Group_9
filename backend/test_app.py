@@ -1,13 +1,16 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
+import logging
 
 app = Flask(__name__)
+CORS(app)
 
-CORS(app, origins=["*"])
+logging.basicConfig(level=logging.DEBUG)  # Set the logging level
 
-
-@app.route("/", methods=["GET"])
+@app.route("/")
+@cross_origin(allow_headers=['Content-Type'])
 def home():
+    app.logger.info("Request received at /")  
     return jsonify({"message": "Backend is working!"}), 200
 
 # example: /add_user?user_id=0&user_name=TestUser
@@ -176,6 +179,4 @@ def search():
     return jsonify({"data": data}), 200
 
 if __name__ == '__main__':
-    # app.run(host="127.0.0.1", port="6000")
-    # app.run(host="10.232.145.161", port="6000")
-    app.run(debug=True, host='0.0.0.0', port=6000)
+    app.run(host="0.0.0.0", port=6001, debug=True)

@@ -23,10 +23,7 @@ CORS(app, origins=["exp://192.168.0.149:8081"])
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "a_secret_key_here")
 
 # Database setup
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "sqlite:///database.db"
-)
-
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
@@ -77,6 +74,14 @@ with app.app_context():
 def generate_otp():
     return str(random.randint(100000, 999999))
 
+<<<<<<< Updated upstream
+=======
+
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "Backend is working!"}), 200
+
+>>>>>>> Stashed changes
 
 @app.route("/send-otp", methods=["POST"])
 def send_otp():
@@ -229,7 +234,128 @@ def update_points():
     else:
         print(f"User {user_id} not found")
         return jsonify({"error": "User not found"}), 404
+<<<<<<< Updated upstream
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+=======
+
+
+# ---------------------------------------
+# FAKE API
+# ---------------------------------------
+
+
+# example: /get_activity?user_id=0
+@app.route("/get_activity")
+def get_activity():
+    user_id = request.args.get("user_id", "")
+    if not user_id:
+        return jsonify({"error": "Missing required parameters"}), 400
+    if user_id == "0":
+        data = {
+            "2025-01-01": 10,
+            "2025-01-05": 15,
+            "2025-02-10": 17,
+            "2025-03-15": 70,
+            "2025-03-20": 100,
+        }
+        return jsonify({"data": data}), 200
+    else:
+        return jsonify({"error": "Could not find matching user"}), 400
+
+
+# example: /get_friends?user_id=0
+@app.route("/get_friends")
+def get_friends():
+    user_id = request.args.get("user_id", "")
+    if not user_id:
+        return jsonify({"error": "Missing required parameters"}), 400
+    if user_id == "0":
+        data = [1, 2, 3, 4, 5]
+        return jsonify({"friend_ids": data}), 200
+    else:
+        return jsonify({"error": "Could not find matching user"}), 400
+
+
+# Params: user_id, friend_id
+@app.route("/add_friend")
+def add_friend():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    friend_id = data.get("friend_id")
+    if not user_id or not friend_id:
+        return jsonify({"error": "Missing required parameters"}), 400
+    if user_id == "0":
+        # add friend_id to list of user friends
+        return jsonify({"message": "Friend added succesfully"}), 200
+    else:
+        return jsonify({"error": "Could not find matching user"}), 400
+
+
+# Params: user_id, friend_id
+@app.route("/remove_friend")
+def remove_friend():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    friend_id = data.get("friend_id")
+    if not user_id or not friend_id:
+        return jsonify({"error": "Missing required parameters"}), 400
+    if user_id == "0":
+        # remove friend_id from list of user friends
+        return jsonify({"message": "Friend removed succesfully"}), 200
+    else:
+        return jsonify({"error": "Could not find matching user"}), 400
+
+
+# Params: user_id, activity
+@app.route("/add_activity")
+def add_activity():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    activity = data.get("activity")
+    if not user_id or not activity:
+        return jsonify({"error": "Missing required parameters"}), 400
+    if user_id == "0":
+        # add activity
+        return jsonify({"message": "Activity added succesfully"}), 200
+    else:
+        return jsonify({"error": "Could not find matching user"}), 400
+
+
+# Params: user_id
+@app.route("/get_activities")
+def get_activities():
+    user_id = request.args.get("user_id", "")
+    if not user_id:
+        return jsonify({"error": "Missing required parameters"}), 400
+    if user_id == "0":
+        data = {
+            "recycled": ["2025-01-10", "picture.png"],
+            "recycled": ["2025-01-15", "picture.png"],
+            "litter_cleanup": ["2025-01-30", ""],
+        }
+        return jsonify({"data": data}), 200
+    else:
+        return jsonify({"error": "Could not find matching user"}), 400
+
+
+# Params: name
+@app.route("/search")
+def search():
+    name = request.args.get("user_id", "")
+    if not name:
+        return jsonify({"error": "Missing required paramaters"}), 400
+    # search for name in db
+    data = {
+        "user1": [1, "user1", 50],
+        "user2": [2, "user2", 75],
+        "user3": [3, "user3", 20],
+    }
+    return jsonify({"data": data}), 200
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
+>>>>>>> Stashed changes

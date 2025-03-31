@@ -5,8 +5,14 @@ import { Image } from "expo-image";
 import NavBar from "../../components/NavBar";
 import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
+import { BACKEND_URL } from "../../config";
 
+<<<<<<< Updated upstream
 const BACKEND_URL = "http://127.0.0.1:5000";  // Replace with your Flask server IP
+=======
+
+//const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
+>>>>>>> Stashed changes
 
 const pastelGreen = "#A5D6A7";
 const pastelGreenLight = "#E8F5E9";
@@ -41,10 +47,10 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/get_user?user_id=${user_id}`); 
+        const response = await fetch(`${BACKEND_URL}/get_user?user_id=${user_id}`);
         const data = await response.json();
         if (response.ok) {
-          setUser(data);          
+          setUser(data);
           setPoints(data.points);
         } else {
           Alert.alert("Error", "Unable to fetch user data.");
@@ -53,10 +59,10 @@ const HomeScreen = ({ route, navigation }) => {
         Alert.alert("Error", "Unable to fetch user data.");
       }
     };
-  
+
     fetchUserData();
-  }, [user_id]); 
-  
+  }, [user_id]);
+
 
   const imageMap = {
     kangaroo: require("../../assets/user_icons/kangaroo.png"),
@@ -108,9 +114,9 @@ const HomeScreen = ({ route, navigation }) => {
 
 
       {/* Navigation Bar */}
-      
+
       <NavBar user={user} />
-      
+
     </SafeAreaView>
   ) : (
     <View></View>

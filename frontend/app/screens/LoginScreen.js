@@ -12,9 +12,18 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { useAuth } from "../auth/AuthContext";
+<<<<<<< Updated upstream
 
 const { width, height } = Dimensions.get('window');
 const BACKEND_URL = "http://127.0.0.1:5000"; // Replace with your Flask server IP
+=======
+import { BACKEND_URL } from "../../config";
+
+const { width, height } = Dimensions.get('window');
+//const URL = "http://localhost:8000";
+// const URL = "https://0cd3-2600-6c40-75f0-5bc0-49dd-db1c-b716-824a.ngrok-free.app";
+// const BACKEND_URL = "http://localhost:8000";
+>>>>>>> Stashed changes
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -60,6 +69,41 @@ export default function LoginScreen({ navigation }) {
     return null;
   }
 
+<<<<<<< Updated upstream
+=======
+  // uncomment to ensure backend connection is working
+  // const testBackendConnection = async () => {
+  //   try {
+  //     // Print the URL you're trying to fetch from
+  //     console.log(`Testing backend connection... ${URL}`);
+
+  //     // const response = await fetch(`${URL}/`);
+  //     const response = await fetch(`${URL}`, {
+  //       method: 'GET', // Use the correct method (GET, POST, etc.)
+  //       mode: 'cors' // This is where 'cors' should go
+  //     });
+
+  //     // Check if the response is okay
+  //     if (response.ok) {
+  //       const data = await response.json();  // Assuming the response is in JSON format
+  //       console.log('Backend connection successful:', data);
+  //     } else {
+  //       console.log('Error: Backend returned an error', response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error('Network request failed', error);
+  //     if (error instanceof TypeError) {
+  //       console.error('This might be a network issue or a CORS problem:', error.message);
+  //     } else {
+  //       console.error('Unknown error:', error);
+  //     }
+  //     const errorBody = await response.text(); // Read the error body as text
+  //     console.error('Error from backend:', response.status, errorBody);
+  //   }
+  // };
+
+
+>>>>>>> Stashed changes
   // Handle send OTP
   const handleSendOtp = async () => {
     if (!email) {

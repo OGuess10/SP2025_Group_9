@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, Image, StyleSheet } from "react-native";
+import { BACKEND_URL } from "../../config";
 
+<<<<<<< Updated upstream
+=======
+//const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
+
+>>>>>>> Stashed changes
 const Loading = () => {
   return (
     <View style={styles.container}>

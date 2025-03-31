@@ -23,8 +23,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUserId(storedUserId);
           setIsAuthenticated(true);
         }
+        else {
+          console.log("No valid user session found.");
+          setUserId(null);
+          setIsAuthenticated(false);
+        }
       } catch (error) {
         console.error("Error checking auth status:", error);
+        setUserId(null);
+        setIsAuthenticated(false);
       } finally {
         setLoading(false); // Finish loading
       }
@@ -32,6 +39,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && !userId) {
+      console.warn("Invalid session state detected. Resetting session.");
+      setIsAuthenticated(false);
+    }
+  }, [isAuthenticated, userId]);
+
 
   const login = async (id: string) => {
     try {
@@ -51,6 +66,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(false);
     } catch (error) {
       console.error("Error during logout:", error);
+    }
+    finally {
+      setUserId(null);
+      setIsAuthenticated(false);
     }
   };
 

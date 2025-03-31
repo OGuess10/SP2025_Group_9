@@ -9,6 +9,4 @@ psycopg2-binary
 flask-security-too
 flask_mail
 Flask-SQLAlchemy
-email.mime.multipart
-email.mime.tex
-smtplib
+flask-cors

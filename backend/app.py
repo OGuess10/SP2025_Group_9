@@ -11,6 +11,8 @@ from sqlalchemy import Column, Integer, String, DateTime
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import base64
+import time
 
 
 load_dotenv()
@@ -76,6 +78,9 @@ with app.app_context():
 
 def generate_otp():
     return str(random.randint(100000, 999999))
+
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route("/", methods=["GET"])
 def home():
@@ -233,6 +238,30 @@ def update_points():
     else:
         print(f"User {user_id} not found")
         return jsonify({"error": "User not found"}), 404
+    
+@app.route("/upload", methods=["POST"])
+def upload_image():
+    try:
+        data = request.get_json()
+        image_base64 = data.get("image")
+        action = data.get("action")
+        userId = data.get("userId")
+
+        if not image_base64:
+            return jsonify({"success": False, "message": "No image provided"}), 400
+
+        # Decode base64 to binary data
+        image_data = base64.b64decode(image_base64)
+
+        # Save the image as a file
+        image_path = os.path.join(UPLOAD_FOLDER, f"{userId}/{action}_{int(time.time())}.jpg")
+        with open(image_path, "wb") as f:
+            f.write(image_data)
+
+        return jsonify({"success": True, "message": "Image uploaded successfully", "path": image_path})
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
     
 # ---------------------------------------
 # FAKE API

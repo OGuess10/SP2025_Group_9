@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+boto3 = "*"
+flask = "*"
+requests = "*"
+python-dotenv = "*"
+pyjwt = "*"
+supabase = "*"
+psycopg2-binary = "*"
+flask-security-too = "*"
+flask-mail = "*"
+flask-sqlalchemy = "*"
+"email.mime.multipart" = "*"
+"email.mime.tex" = "*"
+smtplib = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"

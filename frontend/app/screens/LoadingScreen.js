@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Image, StyleSheet } from "react-native";
 
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
+
 const Loading = () => {
   return (
     <View style={styles.container}>
@@ -25,7 +27,7 @@ export default function LoadingScreen({ navigation, route }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/get_user?user_id=0');
+        const response = await fetch(`${BACKEND_URL}/get_user?user_id=0`);
         const data = await response.json();
         setUser(data); // Set the fetched data to state
       } catch (error) {

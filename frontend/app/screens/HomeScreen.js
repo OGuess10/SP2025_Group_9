@@ -6,7 +6,8 @@ import NavBar from "../../components/NavBar";
 import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
 
-const BACKEND_URL = "http://127.0.0.1:5000";  // Replace with your Flask server IP
+
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const pastelGreen = "#A5D6A7";
 const pastelGreenLight = "#E8F5E9";
@@ -113,7 +114,9 @@ const HomeScreen = ({ route, navigation }) => {
       
     </SafeAreaView>
   ) : (
-    <View></View>
+    <View>
+      <Text>failed to get user</Text>
+    </View>
   );
 };
 

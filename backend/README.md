@@ -14,7 +14,7 @@
 3. SMTP setup (emai sender)
    Ask Mijung for GMAIL_PW 
 
-4. Run backend through docker
+4. Run backend through docker. (First go to root repo)
    ```docker-compose build
       docker-compose up
    ```

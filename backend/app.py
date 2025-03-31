@@ -24,6 +24,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "a_secret_key_here")
 
 # Database setup
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
@@ -73,6 +74,7 @@ with app.app_context():
 
 def generate_otp():
     return str(random.randint(100000, 999999))
+
 
 @app.route("/", methods=["GET"])
 def home():

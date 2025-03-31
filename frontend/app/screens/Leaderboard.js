@@ -8,6 +8,7 @@ import { format, parseISO } from "date-fns";
 
 const URL = process.env.EXPO_PUBLIC_API_URL;
 
+>>>>>>> Stashed changes
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 

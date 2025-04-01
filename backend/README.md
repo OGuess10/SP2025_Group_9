@@ -18,22 +18,18 @@
    ```docker-compose build
       docker-compose up
    ```
-<<<<<<< Updated upstream
-=======
-
 
 5. Run ngrok
    Create an ngrok account if you do not have one and follow setup instructions: https://ngrok.com/
 
    Then run
-   ````ngrok http 5000
+   ````ngrok http 8000
    ````
 
    Go to endpoints on the ngrok website and copy the url
    Paste the url in frontend/.env as EXPO_PUBLIC_API_URL
    Do not include quotations or semicolons
 
->>>>>>> Stashed changes
 ## Activate Virtual environment (if necessary)
     
    ```python3 -m venv venv

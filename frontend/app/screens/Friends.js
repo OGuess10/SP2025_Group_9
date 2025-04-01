@@ -4,14 +4,10 @@ import tw from "../../components/tailwind";
 import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { URL } from "../../config";
 
-<<<<<<< Updated upstream
-=======
-//const URL = process.env.EXPO_PUBLIC_API_URL;
+const URL = process.env.EXPO_PUBLIC_API_URL;
 
 
->>>>>>> Stashed changes
 const imageMap = {
     "kangaroo": require("../../assets/user_icons/kangaroo.png"),
     "koala": require("../../assets/user_icons/koala.png"),
@@ -88,16 +84,6 @@ const FriendsList = ({ userId }) => {
                 animationType="fade"
                 onRequestClose={() => setSelectedFriend(null)}
             >
-<<<<<<< Updated upstream
-            <View style={tw`flex-1 justify-center items-center bg-black/50`}>
-            <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-                <TouchableOpacity
-                style={tw`absolute top-4 left-4 p-2`}
-                onPress={() => setSelectedFriend(null)}
-                >
-                <FontAwesome5 name="times" size={24} color="black" />
-                </TouchableOpacity>
-=======
                 <View style={tw`flex-1 justify-center items-center bg-white`}>
                     <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
                         <TouchableOpacity
@@ -106,7 +92,6 @@ const FriendsList = ({ userId }) => {
                         >
                             <FontAwesome5 name="times" size={24} color="black" />
                         </TouchableOpacity>
->>>>>>> Stashed changes
 
                         {selectedFriend && (
                             <>

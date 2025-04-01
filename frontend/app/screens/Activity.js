@@ -4,16 +4,11 @@ import tw from "../../components/tailwind";
 import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
 import { FontAwesome5 } from '@expo/vector-icons';
-<<<<<<< Updated upstream
-=======
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import MediaLibrary from 'expo-media-library';
-import { BACKEND_URL } from "../../config";
+// import { BACKEND_URL } from "../../config";
 
-//const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
->>>>>>> Stashed changes
-
-const BACKEND_URL = "http://127.0.0.1:5000";  // Replace with your Flask server IP
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const ecoActions = [
     { id: '1', icon: 'recycle', label: 'Recycling', points: 20 },
@@ -23,8 +18,6 @@ const ecoActions = [
     { id: '5', icon: 'bicycle', label: 'Bike Instead of Drive', points: 25 }
 ];
 
-<<<<<<< Updated upstream
-=======
 const CameraScreen = ({ visible, onClose }) => {
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef(null);
@@ -88,7 +81,6 @@ const CameraScreen = ({ visible, onClose }) => {
     );
 };
 
->>>>>>> Stashed changes
 const ActivityList = ({ user, setUserPoints }) => {
     const [selectedAction, setSelectedAction] = useState(null);
     const [permission, requestPermission] = useCameraPermissions();
@@ -132,15 +124,6 @@ const ActivityList = ({ user, setUserPoints }) => {
                 data={ecoActions}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-<<<<<<< Updated upstream
-                <View style={tw`border-b border-gray-300 flex py-4 items-center`}>
-                    <TouchableOpacity style={tw`flex w-full flex-row`}
-                        onPress={() => setSelectedAction(item)}>
-                        <FontAwesome5 name={item.icon} size={24} color="black" style={tw`mr-4`} />
-                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
-                    </TouchableOpacity>
-                </View>
-=======
                     <View style={tw`border-b border-gray-300 flex py-4 items-center`}>
                         <TouchableOpacity style={tw`flex w-full flex-row`}
                             onPress={() => setSelectedAction(item)}>
@@ -148,51 +131,10 @@ const ActivityList = ({ user, setUserPoints }) => {
                             <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
                         </TouchableOpacity>
                     </View>
->>>>>>> Stashed changes
                 )}
             />
 
             <Modal
-<<<<<<< Updated upstream
-                    visible={!!selectedAction}
-                    transparent
-                    animationType="fade"
-                    onRequestClose={() => setSelectedAction(null)}
-                >
-                    <View style={tw`flex-1 justify-center items-center bg-black/50`}>
-                    <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-                        <TouchableOpacity
-                        style={tw`absolute top-4 left-4 p-2`}
-                        onPress={() => setSelectedAction(null)}
-                        >
-                        <FontAwesome5 name="times" size={24} color="black" />
-                        </TouchableOpacity>
-
-                    <View style={tw`justify-center items-center`}>
-                        {selectedAction && (
-                        <>
-                            <FontAwesome5 name={selectedAction.icon} size={80} color="green" />
-                            <Text style={[tw`text-2xl mt-6`, { fontFamily: "Nunito_700Bold" }]}>
-                            {selectedAction.label}
-                            </Text>
-                        </>
-                        )}
-                    </View>
-                    
-                    <View style={tw`justify-center items-center w-full mt-32`}>
-                        <TouchableOpacity
-                        style={tw`bg-white justify-center items-center w-5/6 py-2 shadow-lg`}
-                        onPress={() => setShowCamera(true)}
-                        >
-                            <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Take Photo</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                        style={tw`bg-white justify-center items-center w-5/6 mt-8 py-2 shadow-lg`}>
-                            <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Add</Text>
-                        </TouchableOpacity>
-                    </View>
-                </Modal>
-=======
                 visible={!!selectedAction}
                 transparent
                 animationType="fade"
@@ -236,7 +178,6 @@ const ActivityList = ({ user, setUserPoints }) => {
                 <CameraScreen visible={showCamera} onClose={() => setShowCamera(false)} />
             </Modal>
 
->>>>>>> Stashed changes
         </View>
     );
 };

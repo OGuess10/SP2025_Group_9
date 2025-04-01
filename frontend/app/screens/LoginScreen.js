@@ -64,8 +64,6 @@ export default function LoginScreen({ navigation }) {
     return null;
   }
 
-<<<<<<< Updated upstream
-=======
   // uncomment to ensure backend connection is working
   // const testBackendConnection = async () => {
   //   try {
@@ -98,7 +96,6 @@ export default function LoginScreen({ navigation }) {
   // };
 
 
->>>>>>> Stashed changes
   // Handle send OTP
   const handleSendOtp = async () => {
     if (!email) {

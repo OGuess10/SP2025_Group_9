@@ -5,14 +5,8 @@ import { Image } from "expo-image";
 import NavBar from "../../components/NavBar";
 import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
-import { BACKEND_URL } from "../../config";
 
-<<<<<<< Updated upstream
-const BACKEND_URL = "http://127.0.0.1:5000";  // Replace with your Flask server IP
-=======
-
-//const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
->>>>>>> Stashed changes
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const pastelGreen = "#A5D6A7";
 const pastelGreenLight = "#E8F5E9";

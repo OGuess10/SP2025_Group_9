@@ -232,12 +232,6 @@ def update_points():
     else:
         print(f"User {user_id} not found")
         return jsonify({"error": "User not found"}), 404
-<<<<<<< Updated upstream
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
-=======
 
 
 # ---------------------------------------
@@ -356,4 +350,3 @@ def search():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
->>>>>>> Stashed changes

@@ -232,6 +232,28 @@ def update_points():
         print(f"User {user_id} not found")
         return jsonify({"error": "User not found"}), 404
     
+
+@app.route("/get_friends", methods=["GET"])
+def get_friends():
+    user_id = request.args.get("user_id", "")
+
+    if not user_id:
+        return jsonify({"error": "Missing user_id parameter"}), 400
+
+    matching_friendships = Friendship.query.filter(Friendship.user_id == user_id).all()
+    friend_ids = [f.friend_id for f in matching_friendships]
+    print(friend_ids);
+
+    if friend_ids:
+        return jsonify(
+            {
+                "friend_ids": friend_ids
+            }
+        ), 200
+    else:
+        return jsonify({"error": "Friends not found"}), 404
+
+    
 # ---------------------------------------
 # FAKE API
 # ---------------------------------------
@@ -254,17 +276,6 @@ def get_activity():
     else:
         return jsonify({"error": "Could not find matching user"}), 400
     
-# example: /get_friends?user_id=0
-@app.route("/get_friends")
-def get_friends():
-    user_id = request.args.get('user_id', '')
-    if not user_id:
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id == '0':
-        data = [1, 2, 3, 4, 5]
-        return jsonify({"friend_ids": data}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
 
 # Params: user_id, friend_id
 @app.route("/add_friend")

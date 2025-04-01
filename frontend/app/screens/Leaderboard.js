@@ -11,6 +11,13 @@ const URL = process.env.EXPO_PUBLIC_API_URL;
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
+const imageMap = {
+    "kangaroo": require("../../assets/user_icons/kangaroo.png"),
+    "koala": require("../../assets/user_icons/koala.png"),
+    "sloth": require("../../assets/user_icons/sloth.png"),
+    "default": require("../../assets/user_icons/sloth.png")
+};
+
 const Chart = () => {
     const [activity, setActivity] = useState(null);
     const [activityLoading, setActivityLoading] = useState(true);
@@ -89,10 +96,10 @@ const FriendsList = ({ userId }) => {
         const fetchFriends = async () => {
             try {
                 // Step 1: Get the list of friend IDs
-                const response = await fetch(`${URL}/get_friends?user_id=0`);
+                const response = await fetch(`${URL}/get_friends?user_id=${userId}`);
                 const friendIds = await response.json();
                 // Add current user to the leaderboard also
-                friendIds.friend_ids.push(0);
+                friendIds.friend_ids.push(userId);
 
                 // Step 2: Fetch user details for each friend ID
                 const friendDataPromises = friendIds.friend_ids.map(async (friendId) => {
@@ -127,6 +134,9 @@ const FriendsList = ({ userId }) => {
                 keyExtractor={(item, index) => (item?.user_id ? item.user_id.toString() : `friend-${index}`)}
                 renderItem={({ item }) => (
                     <View style={tw`border-b border-gray-300 flex flex-row py-4 justify-around items-center`}>
+                        <View style={tw`rounded-full p-2 bg-white shadow-lg mr-4`}>
+                            <Image style={tw`w-8 h-8`} source={imageMap[item.icon] || imageMap["default"]} />
+                        </View>
                         <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
                         <Text style={[tw`text-sm`, { fontFamily: "Nunito_400Regular" }]}>{item.points}</Text>
                     </View >
@@ -167,7 +177,7 @@ const Leaderboard = ({ route, navigation }) => {
                     <View style={tw`flex-1`}>
                         <Text style={[tw`text-2xl my-2`, { fontFamily: "Nunito_700Bold" }]}>Leaderboard</Text>
                         <View style={tw`flex-1 bg-white shadow-lg`}>
-                            <FriendsList userId={0} />
+                            <FriendsList userId={user.user_id} />
                         </View>
                     </View>
                 </View>

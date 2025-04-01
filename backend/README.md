@@ -19,11 +19,13 @@
       docker-compose up
    ```
 
+
 5. Run ngrok
    Create an ngrok account if you do not have one and follow setup instructions: https://ngrok.com/
 
    Then run
    ````ngrok http 8000
+
    ````
 
    Go to endpoints on the ngrok website and copy the url

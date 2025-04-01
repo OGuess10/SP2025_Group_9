@@ -90,7 +90,7 @@ const ActivityList = ({ user, setUserPoints }) => {
     const handleActionSelect = async (action) => {
         const newPoints = user.points + action.points;
         setUserPoints(newPoints);
-    
+
         try {
             console.log("Sending request to update points:", newPoints);
             const response = await fetch(`${BACKEND_URL}/update_points`, {
@@ -100,11 +100,11 @@ const ActivityList = ({ user, setUserPoints }) => {
                 },
                 body: JSON.stringify({ user_id: user.user_id, points: newPoints }),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to update points');
             }
-    
+
             const data = await response.json();
             console.log("Response from server:", data);
             if (data.success) {
@@ -119,7 +119,7 @@ const ActivityList = ({ user, setUserPoints }) => {
     };    
 
     return (
-        <View style={tw`flex-1 px-4`}> 
+        <View style={tw`flex-1 px-4`}>
             <FlatList
                 data={ecoActions}
                 keyExtractor={(item) => item.id}
@@ -202,23 +202,23 @@ const Activity = ({ route, navigation }) => {
     }
 
     return (
-        user ? 
-        <SafeAreaView style={tw`flex items-center justify-start bg-white w-full h-full`}>
-            <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
-                <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]}/>
-            </View>
-            <View style={tw`flex w-5/6 h-3/4 justify-center`}>
-                <View style={tw`mb-4 my-2`}>
-                    <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>Choose Activity</Text>
+        user ?
+            <SafeAreaView style={tw`flex items-center justify-start bg-white w-full h-full`}>
+                <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
+                    <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]} />
                 </View>
-                <View style={tw`bg-white shadow-lg flex-1 h-5/6`}>
-                    <ActivityList user={user} setUserPoints={setUserPoints} />
+                <View style={tw`flex w-5/6 h-3/4 justify-center`}>
+                    <View style={tw`mb-4 my-2`}>
+                        <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>Choose Activity</Text>
+                    </View>
+                    <View style={tw`bg-white shadow-lg flex-1 h-5/6`}>
+                        <ActivityList user={user} setUserPoints={setUserPoints} />
+                    </View>
                 </View>
-            </View>
-            <NavBar user={{ ...user, points: userPoints }} />
-        </SafeAreaView>
-        :
-        <View></View>
+                <NavBar user={{ ...user, points: userPoints }} />
+            </SafeAreaView>
+            :
+            <View></View>
     );
 };
 

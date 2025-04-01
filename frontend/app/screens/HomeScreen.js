@@ -6,7 +6,6 @@ import NavBar from "../../components/NavBar";
 import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
 
-
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const pastelGreen = "#A5D6A7";
@@ -42,10 +41,10 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/get_user?user_id=${user_id}`); 
+        const response = await fetch(`${BACKEND_URL}/get_user?user_id=${user_id}`);
         const data = await response.json();
         if (response.ok) {
-          setUser(data);          
+          setUser(data);
           setPoints(data.points);
         } else {
           Alert.alert("Error", "Unable to fetch user data.");
@@ -54,10 +53,10 @@ const HomeScreen = ({ route, navigation }) => {
         Alert.alert("Error", "Unable to fetch user data.");
       }
     };
-  
+
     fetchUserData();
-  }, [user_id]); 
-  
+  }, [user_id]);
+
 
   const imageMap = {
     kangaroo: require("../../assets/user_icons/kangaroo.png"),
@@ -109,9 +108,9 @@ const HomeScreen = ({ route, navigation }) => {
 
 
       {/* Navigation Bar */}
-      
+
       <NavBar user={user} />
-      
+
     </SafeAreaView>
   ) : (
     <View>

@@ -69,13 +69,13 @@ export default function LoginScreen({ navigation }) {
   //   try {
   //     // Print the URL you're trying to fetch from
   //     console.log(`Testing backend connection... ${URL}`);
-  
+
   //     // const response = await fetch(`${URL}/`);
   //     const response = await fetch(`${URL}`, {
   //       method: 'GET', // Use the correct method (GET, POST, etc.)
   //       mode: 'cors' // This is where 'cors' should go
   //     });
-  
+
   //     // Check if the response is okay
   //     if (response.ok) {
   //       const data = await response.json();  // Assuming the response is in JSON format
@@ -94,7 +94,7 @@ export default function LoginScreen({ navigation }) {
   //     console.error('Error from backend:', response.status, errorBody);
   //   }
   // };
-  
+
 
   // Handle send OTP
   const handleSendOtp = async () => {

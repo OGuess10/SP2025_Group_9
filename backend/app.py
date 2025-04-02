@@ -67,6 +67,7 @@ class Action(db.Model):
     action_type = db.Column(db.String(50))
     points_earned = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    image = db.Column(db.String(100), nullable=True)
     user = db.relationship("User", backref=db.backref("actions"))
 
 
@@ -247,7 +248,6 @@ def get_friends():
 
     matching_friendships = Friendship.query.filter(Friendship.user_id == user_id).all()
     friend_ids = [f.friend_id for f in matching_friendships]
-    print(friend_ids);
 
     if friend_ids:
         return jsonify(
@@ -282,6 +282,37 @@ def upload_image():
 
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+    
+
+@app.route("/add_activity", methods=["POST"])
+def add_activity():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    action_type = data.get("activity_id")
+    points_earned = data.get("points")
+    image = data.get("image") or None
+
+
+    if not user_id or not action_type or not points_earned:
+        return jsonify({"error": "Missing required parameters"}), 400
+    else:
+        try:
+            new_action = Action(
+                user_id=user_id,
+                action_type=action_type,
+                points_earned=points_earned,
+                timestamp=datetime.datetime.utcnow(),
+                image=image
+            )
+            app.logger.info(f"new_action: {new_action}")
+            db.session.add(new_action)
+            db.session.commit()
+
+            return jsonify({"message": "Action added successfully"}), 200
+        except Exception as e:
+            app.logger.info(f"error: {str(e)}")
+            return jsonify({"error": str(e)}), 500
+
 
     
 # ---------------------------------------
@@ -335,19 +366,6 @@ def remove_friend():
     else:
         return jsonify({"error": "Could not find matching user"}), 400
     
-# Params: user_id, activity
-@app.route("/add_activity")
-def add_activity():
-    data = request.get_json()
-    user_id = data.get("user_id")
-    activity = data.get("activity")
-    if not user_id or not activity:
-        return jsonify({"error": "Missing required parameters"}), 400
-    if user_id == '0':
-        # add activity
-        return jsonify({"message": "Activity added succesfully"}), 200
-    else:
-        return jsonify({"error": "Could not find matching user"}), 400
 
 # Params: user_id
 @app.route("/get_activities")

@@ -106,30 +106,32 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
                             {capturedPhoto ? (
                                 <View style={tw`flex-1 justify-center items-center`}>
                                     <Image source={{ uri: capturedPhoto.uri }} style={tw`w-64 h-96 rounded-lg`} />
-                                    <View style={tw`flex-row mt-4`}>
-                                        <TouchableOpacity
-                                            style={tw`mx-2 px-4 py-2 bg-red-200 rounded`}
-                                            onPress={() => setCapturedPhoto(null)} // retake
-                                        >
-                                            <Text>Retake</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={tw`mx-2 px-4 py-2 bg-green-200 rounded`}
-                                            onPress={handleSubmit}
-                                        >
-                                            <Text>Submit</Text>
-                                        </TouchableOpacity>
-                                    </View>
+                                    <TouchableOpacity
+                                        style={tw`w-48 py-3 mt-6 bg-red-200 rounded-lg shadow-lg items-center`}
+                                        onPress={() => setCapturedPhoto(null)} // Retake
+                                    >
+                                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Retake</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={tw`w-48 py-3 mt-4 bg-green-200 rounded-lg shadow-lg items-center`}
+                                        onPress={handleSubmit}
+                                    >
+                                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Submit</Text>
+                                    </TouchableOpacity>
                                 </View>
                             ) : (
-                                <CameraView ref={cameraRef} style={tw`w-full h-2/3`} facing={facing}>
-                                    {/* Toggle camera button */}
-                                </CameraView>
+                                <>
+                                    <CameraView ref={cameraRef} style={tw`w-full h-2/3`} facing={facing}>
+                                        {/* You can add a toggle button inside here if needed */}
+                                    </CameraView>
+                                    <TouchableOpacity
+                                        style={tw`py-3 px-10 mt-10 shadow-lg bg-white rounded-lg`}
+                                        onPress={takePhoto}
+                                    >
+                                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_700Bold" }]}>Take Photo</Text>
+                                    </TouchableOpacity>
+                                </>
                             )}
-
-                            <TouchableOpacity style={tw`py-2 px-10 mt-10 shadow-lg bg-white rounded-lg`} onPress={takePhoto}>
-                                <Text style={[tw`text-lg`, { fontfamily: "Nunito_700Bold" }]}>Take Photo</Text>
-                            </TouchableOpacity>
                         </View>
                     </View>
                 ) : (

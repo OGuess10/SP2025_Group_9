@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, FlatList, Modal, Alert } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, FlatList, Modal, Alert, Image } from 'react-native';
 import tw from "../../components/tailwind";
-import { Image } from 'expo-image';
+// import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
@@ -17,7 +17,7 @@ const ecoActions = [
     { id: '5', icon: 'bicycle', label: 'Bike Instead of Drive', points: 25 }
 ];
 
-const CameraScreen = ({ userId, action, visible, onClose }) => {
+const CameraScreen = ({ userId, action, setImage, visible, onClose }) => {
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef(null);
     const [facing, setFacing] = useState('back');
@@ -40,6 +40,7 @@ const CameraScreen = ({ userId, action, visible, onClose }) => {
         console.log("taking photo...");
         if (cameraRef.current) {
             const photo = await cameraRef.current.takePictureAsync({ base64: true });
+            setImage(photo.uri);
         
             try {
                 const response = await fetch(`${BACKEND_URL}/upload`, {
@@ -118,10 +119,51 @@ const CameraScreen = ({ userId, action, visible, onClose }) => {
 const ActivityList = ({ user, setUserPoints }) => {
     const [selectedAction, setSelectedAction] = useState(null);
     const [showCamera, setShowCamera] = useState(false);
+    const [image, setImage] = useState("");
+    const [showImage, setShowImage] = useState(false);
+
+    console.log('Image URI:', image);
+    console.log(showImage);
+
+    useEffect(() => {
+        setImage("");
+    },[selectedAction]);
 
     const handleActionSelect = async (action) => {
         const newPoints = user.points + action.points;
         setUserPoints(newPoints);
+
+        // try {
+        //     const datatosend = {
+        //         user_id: user.user_id,
+        //         activity_id: action.id,
+        //         points: action.points,
+        //         image: image || ""
+        //     };
+
+        //     console.log(datatosend);
+
+        //     const response = await fetch(`${BACKEND_URL}/add_activity`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(datatosend),
+        //     });
+
+        //     if(!response.ok) {
+        //         throw new Error('Failed to add activity');
+        //     }
+        //     const data = await response.json();
+        //     if(!data.success) {
+        //         console.error('Error updating points:', data);
+        //         Alert.alert('Error', 'Failed to add activity');
+        //     }
+        // } catch (error) {
+        //     console.error('Error updating points:', error);
+        //     Alert.alert('Error', 'Failed to add activity');
+        // }
+
 
         try {
             console.log("Sending request to update points:", newPoints);
@@ -199,6 +241,14 @@ const ActivityList = ({ user, setUserPoints }) => {
                         >
                             <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Take Photo</Text>
                         </TouchableOpacity>
+                        {image && image !== '' && (
+                            <TouchableOpacity
+                                style={tw`bg-white justify-center items-center mt-8 w-5/6 py-2 shadow-lg`}
+                                onPress={() => setShowImage(true)}
+                            >
+                                <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>See Photo</Text>
+                            </TouchableOpacity>
+                        )}
                         <TouchableOpacity
                         onPress={() => {
                             handleActionSelect(selectedAction);
@@ -211,7 +261,28 @@ const ActivityList = ({ user, setUserPoints }) => {
                 </View>
                 </View>
 
-                <CameraScreen userId={user.user_id} action={selectedAction} visible={showCamera} onClose={() => setShowCamera(false)} />
+                <CameraScreen userId={user.user_id} action={selectedAction} setImage={setImage} visible={showCamera} onClose={() => setShowCamera(false)} />
+                
+                <Modal
+                visible={showImage && (image != "")}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setShowImage(false)}
+                >
+                    <View style={tw`flex-1 justify-center items-center bg-white`}>
+                    <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
+                    <TouchableOpacity
+                    style={tw`absolute top-4 left-4 p-2`}
+                    onPress={() => setShowImage(false)}
+                    >
+                        <FontAwesome5 name="times" size={24} color="black" />
+                    </TouchableOpacity>
+                    <Image source={{uri: 'file://' + image}}
+                        style={{ width: '100%', height: '80%'}}
+                        ></Image>
+                    </View>
+                    </View>
+                </Modal>
             </Modal>
 
         </View>

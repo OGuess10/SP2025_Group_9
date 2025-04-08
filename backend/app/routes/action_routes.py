@@ -13,12 +13,6 @@ action_bp = Blueprint("action", __name__)
 
 @action_bp.route("/upload_image", methods=["POST"])
 def upload_blob():
-    """
-    Endpoint to upload an image file and store it as BLOB in the SQLite database.
-    Expects a multipart/form-data request with:
-      - 'image': the file to upload,
-      - 'user_id': the ID of the user uploading the image.
-    """
     if "image" not in request.files:
         return jsonify({"error": "No image provided"}), 400
 
@@ -49,10 +43,6 @@ def upload_blob():
 
 @action_bp.route("/get_blob/<int:image_id>", methods=["GET"])
 def get_blob(image_id):
-    """
-    Endpoint to retrieve an image from the database by its image ID.
-    This will return the image data with the appropriate MIME type.
-    """
     image_record = ImageUpload.query.get(image_id)
     if not image_record:
         return jsonify({"error": "Image not found"}), 404

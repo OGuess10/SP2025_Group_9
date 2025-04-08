@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
-
+import { useAuth } from "../auth/AuthContext";
 
 const { width, height } = Dimensions.get('window');
 const URL = process.env.EXPO_PUBLIC_API_URL;
@@ -150,7 +150,6 @@ export default function LoginScreen({ navigation }) {
         // Store user ID to async so users don't have to login everytime
         await login(data.user.user_id.toString());
         navigation.replace("Home", { user_id: data.user.user_id });
-        console.log("User from AuthContext:", user);
 
       } else {
         alert(data.error || 'Invalid or expired OTP');

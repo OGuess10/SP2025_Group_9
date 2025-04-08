@@ -17,10 +17,12 @@ const ecoActions = [
     { id: '5', icon: 'bicycle', label: 'Bike Instead of Drive', points: 25 }
 ];
 
-const CameraScreen = ({ userId, action, visible, onClose }) => {
+const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => {
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef(null);
     const [facing, setFacing] = useState('back');
+    const [capturedPhoto, setCapturedPhoto] = useState(null);
+
 
     useEffect(() => {
         const checkPermission = async () => {
@@ -32,39 +34,59 @@ const CameraScreen = ({ userId, action, visible, onClose }) => {
                 }
             }
         };
-    
+
         checkPermission();
     }, []);
 
     const takePhoto = async () => {
         console.log("taking photo...");
         if (cameraRef.current) {
-            const photo = await cameraRef.current.takePictureAsync({ base64: true });
-        
-            try {
-                const response = await fetch(`${BACKEND_URL}/upload`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ image: photo.base64, action: action.id, userId: userId }),
-                });
-        
-                const result = await response.json();
-                console.log("Upload success:", result);
-                Alert.alert('Success', 'Photo taken successfully');
-                onClose();
-            } catch (error) {
-                console.log("Upload failed:", error);
-            }
+            const photo = await cameraRef.current.takePictureAsync();
+            setCapturedPhoto(photo);
+            const formData = new FormData();
+            formData.append("image", {
+                uri: photo.uri,
+                name: `photo.jpg`,
+                type: "image/jpeg",
+            });
+            formData.append("user_id", userId);
+
         } else {
             console.log("Camera not ready, photo not taken.");
-        }            
+        }
     };
 
     function toggleCameraFacing() {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
+
+    const handleSubmit = async () => {
+        if (!capturedPhoto) return;
+
+        const formData = new FormData();
+        formData.append("image", {
+            uri: capturedPhoto.uri,
+            name: "photo.jpg",
+            type: "image/jpeg",
+        });
+        formData.append("user_id", userId);
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/action/upload_image`, {
+                method: "POST",
+                body: formData,
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            Alert.alert('Success', 'Photo uploaded! You have earned ' + action.points + ' points!');
+
+            const result = await response.json();
+            console.log("Upload success:", result);
+            setCapturedPhoto(null); // Clear the preview
+            onClose(); // Close camera modal
+        } catch (error) {
+            console.log("Upload failed:", error);
+        }
+    };
 
     return (
         visible ? (
@@ -74,40 +96,57 @@ const CameraScreen = ({ userId, action, visible, onClose }) => {
             >
                 {permission?.granted ? (
                     <View style={tw`flex-1 justify-center items-center bg-white`}>
-                    <View style={tw`flex bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-                        <TouchableOpacity
-                            style={tw`absolute top-4 left-4 p-2`}
-                            onPress={onClose}
-                        >
-                            <FontAwesome5 name="times" size={24} color="black" />
-                        </TouchableOpacity>
-                        <CameraView ref={cameraRef} style={tw`flex w-full h-2/3 items-end`} facing={facing}>
-                            <View>
-                                <TouchableOpacity style={tw`p-2`} onPress={toggleCameraFacing}>
-                                    <FontAwesome5 name="sync-alt" size={24} color="black" />
-                                </TouchableOpacity>
-                            </View>
-                        </CameraView>
-                        <TouchableOpacity style={tw`py-2 px-10 mt-10 shadow-lg bg-white rounded-lg`} onPress={takePhoto}>
-                            <Text style={[tw`text-lg`, { fontfamily: "Nunito_700Bold" }]}>Take Photo</Text>
-                        </TouchableOpacity>
-                    </View>
+                        <View style={tw`flex bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
+                            <TouchableOpacity
+                                style={tw`absolute top-4 left-4 p-2`}
+                                onPress={onClose}
+                            >
+                                <FontAwesome5 name="times" size={24} color="black" />
+                            </TouchableOpacity>
+                            {capturedPhoto ? (
+                                <View style={tw`flex-1 justify-center items-center`}>
+                                    <Image source={{ uri: capturedPhoto.uri }} style={tw`w-64 h-96 rounded-lg`} />
+                                    <View style={tw`flex-row mt-4`}>
+                                        <TouchableOpacity
+                                            style={tw`mx-2 px-4 py-2 bg-red-200 rounded`}
+                                            onPress={() => setCapturedPhoto(null)} // retake
+                                        >
+                                            <Text>Retake</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={tw`mx-2 px-4 py-2 bg-green-200 rounded`}
+                                            onPress={handleSubmit}
+                                        >
+                                            <Text>Submit</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            ) : (
+                                <CameraView ref={cameraRef} style={tw`w-full h-2/3`} facing={facing}>
+                                    {/* Toggle camera button */}
+                                </CameraView>
+                            )}
+
+                            <TouchableOpacity style={tw`py-2 px-10 mt-10 shadow-lg bg-white rounded-lg`} onPress={takePhoto}>
+                                <Text style={[tw`text-lg`, { fontfamily: "Nunito_700Bold" }]}>Take Photo</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 ) : (
                     <View>
-                    <Modal
-                        transparent
-                        animationType="fade"
-                    >
-                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" }}>
-                        <View style={tw`bg-white p-10 rounded-lg items-center`}>
-                            <Text style={[tw`text-xl`, { fontFamily: "Nunito_500Regular" }]}>Camera permission is required</Text>
-                            <TouchableOpacity style={tw`mt-10 py-2 px-10 shadow-lg bg-white`} onPress={onClose}>
-                                <Text style={[tw`text-lg`,{ fontFamily: "Nunito_700Bold" }]} >OK</Text>
-                            </TouchableOpacity>
-                        </View>
-                        </View>
-                    </Modal>
+                        <Modal
+                            transparent
+                            animationType="fade"
+                        >
+                            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" }}>
+                                <View style={tw`bg-white p-10 rounded-lg items-center`}>
+                                    <Text style={[tw`text-xl`, { fontFamily: "Nunito_500Regular" }]}>Camera permission is required</Text>
+                                    <TouchableOpacity style={tw`mt-10 py-2 px-10 shadow-lg bg-white`} onPress={onClose}>
+                                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_700Bold" }]} >OK</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
                     </View>
                 )}
             </Modal>
@@ -124,8 +163,25 @@ const ActivityList = ({ user, setUserPoints }) => {
         setUserPoints(newPoints);
 
         try {
+
+            const actionResponse = await fetch(`${BACKEND_URL}/action/log_action`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: user.user_id,
+                    action_type: action.label, // use readable label like "Recycling"
+                    points: action.points
+                }),
+            });
+
+            if (!actionResponse.ok) {
+                throw new Error("Failed to log action");
+            }
+
+            console.log("Action logged successfully");
+
             console.log("Sending request to update points:", newPoints);
-            const response = await fetch(`${BACKEND_URL}/update_points`, {
+            const response = await fetch(`${BACKEND_URL}/user/update_points`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,7 +204,7 @@ const ActivityList = ({ user, setUserPoints }) => {
             console.error('Error updating points:', error);
             Alert.alert('Error', 'Failed to update points');
         }
-    };    
+    };
 
     return (
         <View style={tw`flex-1 px-4`}>
@@ -156,13 +212,13 @@ const ActivityList = ({ user, setUserPoints }) => {
                 data={ecoActions}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                <View style={tw`border-b border-gray-300 flex py-4 items-center`}>
-                    <TouchableOpacity style={tw`flex w-full flex-row`}
-                        onPress={() => setSelectedAction(item)}>
-                        <FontAwesome5 name={item.icon} size={24} color="black" style={tw`mr-4`} />
-                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
-                    </TouchableOpacity>
-                </View>
+                    <View style={tw`border-b border-gray-300 flex py-4 items-center`}>
+                        <TouchableOpacity style={tw`flex w-full flex-row`}
+                            onPress={() => setSelectedAction(item)}>
+                            <FontAwesome5 name={item.icon} size={24} color="black" style={tw`mr-4`} />
+                            <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
+                        </TouchableOpacity>
+                    </View>
                 )}
             />
 
@@ -173,42 +229,42 @@ const ActivityList = ({ user, setUserPoints }) => {
                 onRequestClose={() => setSelectedAction(null)}
             >
                 <View style={tw`flex-1 justify-center items-center bg-white`}>
-                <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-                    <TouchableOpacity
-                    style={tw`absolute top-4 left-4 p-2`}
-                    onPress={() => setSelectedAction(null)}
-                    >
-                        <FontAwesome5 name="times" size={24} color="black" />
-                    </TouchableOpacity>
-
-                    <View style={tw`justify-center items-center`}>
-                        {selectedAction && (
-                        <>
-                            <FontAwesome5 name={selectedAction.icon} size={80} color="green" />
-                            <Text style={[tw`text-2xl mt-6`, { fontFamily: "Nunito_700Bold" }]}>
-                            {selectedAction.label}
-                            </Text>
-                        </>
-                        )}
-                    </View>
-                    
-                    <View style={tw`justify-center items-center w-full mt-32`}>
+                    <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
                         <TouchableOpacity
-                        style={tw`bg-white justify-center items-center w-5/6 py-2 shadow-lg`}
-                        onPress={() => setShowCamera(true)}
+                            style={tw`absolute top-4 left-4 p-2`}
+                            onPress={() => setSelectedAction(null)}
                         >
-                            <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Take Photo</Text>
+                            <FontAwesome5 name="times" size={24} color="black" />
                         </TouchableOpacity>
-                        <TouchableOpacity
-                        onPress={() => {
-                            handleActionSelect(selectedAction);
-                            setSelectedAction(null);
-                        }}
-                        style={tw`bg-white justify-center items-center w-5/6 mt-8 py-2 shadow-lg`}>
-                            <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Add</Text>
-                        </TouchableOpacity>
+
+                        <View style={tw`justify-center items-center`}>
+                            {selectedAction && (
+                                <>
+                                    <FontAwesome5 name={selectedAction.icon} size={80} color="green" />
+                                    <Text style={[tw`text-2xl mt-6`, { fontFamily: "Nunito_700Bold" }]}>
+                                        {selectedAction.label}
+                                    </Text>
+                                </>
+                            )}
+                        </View>
+
+                        <View style={tw`justify-center items-center w-full mt-32`}>
+                            <TouchableOpacity
+                                style={tw`bg-white justify-center items-center w-5/6 py-2 shadow-lg`}
+                                onPress={() => setShowCamera(true)}
+                            >
+                                <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Take Photo</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    handleActionSelect(selectedAction);
+                                    setSelectedAction(null);
+                                }}
+                                style={tw`bg-white justify-center items-center w-5/6 mt-8 py-2 shadow-lg`}>
+                                <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Add</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
                 </View>
 
                 <CameraScreen userId={user.user_id} action={selectedAction} visible={showCamera} onClose={() => setShowCamera(false)} />

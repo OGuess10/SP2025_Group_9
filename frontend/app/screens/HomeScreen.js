@@ -41,7 +41,7 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/get_user?user_id=${user_id}`);
+        const response = await fetch(`${BACKEND_URL}/user/get_user?user_id=${user_id}`);
         const data = await response.json();
         if (response.ok) {
           setUser(data);
@@ -114,7 +114,6 @@ const HomeScreen = ({ route, navigation }) => {
     </SafeAreaView>
   ) : (
     <View>
-      <Text>failed to get user</Text>
     </View>
   );
 };

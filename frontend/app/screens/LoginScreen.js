@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
-import { useAuth } from "../auth/AuthContext";
 
 
 const { width, height } = Dimensions.get('window');
@@ -106,7 +105,7 @@ export default function LoginScreen({ navigation }) {
     setLoading(true);
     try {
       console.log("url:" + BACKEND_URL);
-      const response = await fetch(`${BACKEND_URL}/send-otp`, {
+      const response = await fetch(`${BACKEND_URL}/auth/send-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +137,7 @@ export default function LoginScreen({ navigation }) {
 
     setLoading(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/verify_otp`, {
+      const response = await fetch(`${BACKEND_URL}/auth/verify-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,6 +150,8 @@ export default function LoginScreen({ navigation }) {
         // Store user ID to async so users don't have to login everytime
         await login(data.user.user_id.toString());
         navigation.replace("Home", { user_id: data.user.user_id });
+        console.log("User from AuthContext:", user);
+
       } else {
         alert(data.error || 'Invalid or expired OTP');
       }

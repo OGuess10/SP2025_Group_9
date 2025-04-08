@@ -40,16 +40,16 @@ const NavBar: React.FC<{ user: any }> = ({ user }) => {
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to log out?", [
       { text: "Cancel", style: "cancel" },
-      { 
-        text: "Logout", 
+      {
+        text: "Logout",
         onPress: async () => {
           await logout();
-          navigation.navigate("Splash"); 
+          navigation.navigate("Splash");
         }
       }
     ]);
   };
-  
+
   const buttons = [
     { name: "Home", icon: <MaterialCommunityIcons name="tree" size={28} />, route: "Home" },
     { name: "Leaderboard", icon: <MaterialIcons name="show-chart" size={28} />, route: "Leaderboard" },
@@ -60,7 +60,8 @@ const NavBar: React.FC<{ user: any }> = ({ user }) => {
   return (
     <View style={tw`flex flex-row items-center justify-between w-5/6 bg-white shadow-lg rounded-full px-5 py-3 my-4`}>
       {buttons.map(({ name, icon, route }) => {
-        const isActive = route === route.name;
+        const currentRoute = useRoute();
+        const isActive = route === currentRoute.name;
 
         return (
           <Animated.View key={name} style={{ transform: [{ scale: scaleAnim }] }}>

@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
 import { FontAwesome5 } from '@expo/vector-icons';
 
-const URL = process.env.EXPO_PUBLIC_API_URL;
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 
 const imageMap = {
@@ -25,7 +25,7 @@ const FriendsList = ({ userId }) => {
             try {
                 // Step 1: Get the list of friend IDs
                 // const response = await fetch(`http://127.0.0.1:6000/get_friends?user_id=0`);
-                const response = await fetch(`${URL}/get_friends?user_id=${userId}`);
+                const response = await fetch(`${BACKEND_URL}/user/get_friends?user_id=${userId}`);
                 const friendIds = await response.json();
 
                 // Add current user to the leaderboard also
@@ -34,7 +34,7 @@ const FriendsList = ({ userId }) => {
                 // Step 2: Fetch user details for each friend ID
                 const friendDataPromises = friendIds.friend_ids.map(async (friendId) => {
                     // const userResponse = await fetch(`http://127.0.0.1:6000/get_user?user_id=${friendId}`);
-                    const userResponse = await fetch(`${URL}/get_user?user_id=${friendId}`);
+                    const userResponse = await fetch(`${BACKEND_URL}/user/get_user?user_id=${friendId}`);
                     return await userResponse.json();
                 });
 

@@ -16,7 +16,7 @@ class Friendship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
     friend_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
-    status = db.Column(db.String(20))  # e.g., "Pending", "Accepted"
+    status = db.Column(db.String(20))  # "Pending", "Accepted"
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 

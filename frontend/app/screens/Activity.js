@@ -110,7 +110,7 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
                                         style={tw`w-48 py-3 mt-6 bg-red-200 rounded-lg shadow-lg items-center`}
                                         onPress={() => setCapturedPhoto(null)} // Retake
                                     >
-                                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Retake</Text>
+                                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Submit</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={tw`w-48 py-3 mt-4 bg-green-200 rounded-lg shadow-lg items-center`}

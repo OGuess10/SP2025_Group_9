@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: group9-backend
+  labels:
+    app: group9-backend
+spec:
+  selector:
+    matchLabels:
+      app: group9-backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: group9-backend
+    spec:
+      containers:
+        - image: group9-backend:v1.0
+          imagePullPolicy: Never
+          name: group9-backend
+          command: ["./script/run"]
+          ports:
+            - containerPort: 3000
+          env:
+            - name: APP_DATABASE__HOST
+              value: group9-backend
+            - name: APP_DATABASE__PORT
+              value: "5432"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: group9-backend
+spec:
+  type: LoadBalancer
+  selector:
+    app: group9-backend
+  ports:
+    - port: 3000
+---
+

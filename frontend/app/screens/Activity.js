@@ -6,6 +6,8 @@ import NavBar from '../../components/NavBar';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import MediaLibrary from 'expo-media-library';
+import { Animated } from 'react-native';
+
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -14,7 +16,7 @@ const ecoActions = [
     { id: '2', icon: 'tree', label: 'Plant a Tree', points: 30 },
     { id: '3', icon: 'trash', label: 'Litter Cleanup', points: 15 },
     { id: '4', icon: 'solar-panel', label: 'Use Solar Energy', points: 15 },
-    { id: '5', icon: 'bicycle', label: 'Bike Instead of Drive', points: 25 }
+    { id: '5', icon: 'bicycle', label: 'Bike ', points: 25 }
 ];
 
 const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => {
@@ -70,6 +72,9 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
             type: "image/jpeg",
         });
         formData.append("user_id", userId);
+        formData.append("action_type", action.label); // send action label
+        formData.append("points", action.points.toString()); // send base points
+
 
         try {
             const response = await fetch(`${BACKEND_URL}/action/upload_image`, {
@@ -77,10 +82,14 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
                 body: formData,
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            Alert.alert('Success', 'Photo uploaded! You have earned ' + action.points + ' points!');
-
             const result = await response.json();
             console.log("Upload success:", result);
+
+            Alert.alert(
+                "Photo uploaded!",
+                `You have earned ${result.action_points} points! 🎉`
+            );
+
             setCapturedPhoto(null); // Clear the preview
             onClose(); // Close camera modal
         } catch (error) {
@@ -156,7 +165,29 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
     );
 };
 
+
 const ActivityList = ({ user, setUserPoints }) => {
+
+    const pulseAnim = useRef(new Animated.Value(1)).current;
+
+    useEffect(() => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, {
+                    toValue: 1.2,
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulseAnim, {
+                    toValue: 1,
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    }, []);
+
+
     const [selectedAction, setSelectedAction] = useState(null);
     const [showCamera, setShowCamera] = useState(false);
     const [image, setImage] = useState("");
@@ -205,7 +236,8 @@ const ActivityList = ({ user, setUserPoints }) => {
             const data = await response.json();
             console.log("Response from server:", data);
             if (data.success) {
-                Alert.alert('Success', 'Points updated successfully');
+                Alert.alert('Good job!', 'You have earned ' + action.points + ' points! 🎉');
+
             } else {
                 Alert.alert('Error', 'Failed to update points');
             }
@@ -221,13 +253,25 @@ const ActivityList = ({ user, setUserPoints }) => {
                 data={ecoActions}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <View style={tw`border-b border-gray-300 flex py-4 items-center`}>
-                        <TouchableOpacity style={tw`flex w-full flex-row`}
-                            onPress={() => setSelectedAction(item)}>
-                            <FontAwesome5 name={item.icon} size={24} color="black" style={tw`mr-4`} />
-                            <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
+                    <View style={tw`border-b border-gray-300 py-4 w-full`}>
+                        <TouchableOpacity
+                            style={tw`flex-row justify-between items-center w-full px-4`}
+                            onPress={() => setSelectedAction(item)}
+                        >
+                            {/*Icon + Label */}
+                            <View style={tw`flex-row items-center ml-0`}>
+                                <FontAwesome5 name={item.icon} size={24} color="black" style={tw`mr-4`} />
+                                <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
+                            </View>
+
+                            {/* Points */}
+                            <Text style={[tw`text-sm text-green-700`, { fontFamily: "Nunito_700Bold" }]}>
+                                +{item.points} pts
+                            </Text>
                         </TouchableOpacity>
                     </View>
+
+
                 )}
             />
 
@@ -254,17 +298,30 @@ const ActivityList = ({ user, setUserPoints }) => {
                                     <Text style={[tw`text-2xl mt-6`, { fontFamily: "Nunito_700Bold" }]}>
                                         {selectedAction.label}
                                     </Text>
+                                    <Text style={[tw`text-sm text-green-700`, { fontFamily: "Nunito_700Bold" }]}>
+                                        +{selectedAction.points} pts
+                                    </Text>
                                 </>
                             )}
                         </View>
 
                         <View style={tw`justify-center items-center w-full mt-32`}>
+                            <Animated.Text
+                                style={[
+                                    tw`text-sm text-green-700 mt-1`,
+                                    { fontFamily: "Nunito_400Regular", transform: [{ scale: pulseAnim }] },
+                                ]}
+                            >
+                                +5 bonus points!
+                            </Animated.Text>
+
                             <TouchableOpacity
                                 style={tw`bg-white justify-center items-center w-5/6 py-2 shadow-lg`}
                                 onPress={() => setShowCamera(true)}
                             >
                                 <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Take Photo</Text>
                             </TouchableOpacity>
+
                             <TouchableOpacity
                                 onPress={() => {
                                     handleActionSelect(selectedAction);
@@ -277,7 +334,10 @@ const ActivityList = ({ user, setUserPoints }) => {
                     </View>
                 </View>
 
-                <CameraScreen userId={user.user_id} action={selectedAction} setImage={setImage} visible={showCamera} onClose={() => setShowCamera(false)} />
+                <CameraScreen userId={user.user_id} action={selectedAction} setImage={setImage} visible={showCamera} onClose={() => {
+                    setShowCamera(false);
+                    setSelectedAction(null);
+                }} />
 
                 <Modal
                     visible={showImage && (image != "")}

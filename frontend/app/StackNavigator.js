@@ -18,6 +18,10 @@ import Leaderboard from "./screens/Leaderboard";
 import Friends from "./screens/Friends";
 import Activity from "./screens/Activity";
 import ChangeUsernameScreen from "./screens/ChangeUserNameScreen";
+import UserPhotosScreen from "./screens/UserPhotosScreen";
+
+
+
 
 
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
@@ -92,6 +96,7 @@ const StackNavigator = () => {
         <Stack.Screen name="Friends" component={Friends} />
         <Stack.Screen name="Activity" component={Activity} />
         <Stack.Screen name="ChangeUsername" component={ChangeUsernameScreen} />
+        <Stack.Screen name="UserPhotos" component={UserPhotosScreen} />
 
         {/* <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen name="Splash" component={SplashScreenComponent} />

@@ -8,9 +8,8 @@ import time
 
 action_bp = Blueprint("action", __name__)
 
+
 # Existing endpoints (upload image to filesystem, fake API endpoints, etc.) remain here.
-
-
 @action_bp.route("/upload_image", methods=["POST"])
 def upload_blob():
     if "image" not in request.files:
@@ -18,13 +17,15 @@ def upload_blob():
 
     image_file = request.files["image"]
     user_id = request.form.get("user_id")
-    if not user_id:
-        return jsonify({"error": "user_id is required"}), 400
+    action_type = request.form.get("action_type")
+    base_points = request.form.get("points")
+
+    if not user_id or not action_type or not base_points:
+        return jsonify({"error": "user_id, action_type, and points are required"}), 400
 
     try:
-        # Read image data as binary
+        # Save image
         image_data = image_file.read()
-        # Create new ImageUpload record
         new_image = ImageUpload(
             user_id=user_id,
             filename=image_file.filename,
@@ -33,11 +34,37 @@ def upload_blob():
             uploaded_at=datetime.datetime.utcnow(),
         )
         db.session.add(new_image)
+
+        # Log action with bonus points
+        total_points = int(base_points) + 5  # 🎉 Add 5 bonus points
+
+        new_action = Action(
+            user_id=user_id,
+            action_type=action_type,
+            points_earned=total_points,
+            timestamp=datetime.datetime.utcnow(),
+        )
+        db.session.add(new_action)
+
+        # Also update user's point total
+        from app.models import User
+
+        user = User.query.get(user_id)
+        if user:
+            user.points += total_points
+
         db.session.commit()
+
         return jsonify(
-            {"message": "Image uploaded successfully", "image_id": new_image.id}
+            {
+                "message": "Image uploaded and action logged with bonus points!",
+                "image_id": new_image.id,
+                "action_points": total_points,
+            }
         ), 200
+
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 
@@ -123,3 +150,36 @@ def log_action():
         return jsonify({"message": "Action logged"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@action_bp.route("/get_action_count", methods=["GET"])
+def get_action_count():
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Missing user_id parameter"}), 400
+
+    try:
+        count = Action.query.filter_by(user_id=user_id).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# List all photos uploaded by a user
+@action_bp.route("/get_user_photos", methods=["GET"])
+def get_user_photos():
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Missing user_id"}), 400
+
+    photos = (
+        ImageUpload.query.filter_by(user_id=user_id)
+        .order_by(ImageUpload.uploaded_at.desc())
+        .all()
+    )
+    photo_data = [
+        {"id": p.id, "filename": p.filename, "uploaded_at": p.uploaded_at.isoformat()}
+        for p in photos
+    ]
+
+    return jsonify({"photos": photo_data}), 200

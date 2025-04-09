@@ -20,6 +20,9 @@ const HomeScreen = ({ route, navigation }) => {
   const { user_id } = route.params;
   const [user, setUser] = useState(null);
   const [points, setPoints] = useState(0);
+  const [postCount, setPostCount] = useState(0);
+  const [friendCount, setFriendCount] = useState(0);
+
 
 
   // Button animation
@@ -46,20 +49,36 @@ const HomeScreen = ({ route, navigation }) => {
     React.useCallback(() => {
       const fetchUserData = async () => {
         try {
+          // Get user info
           const response = await fetch(`${BACKEND_URL}/user/get_user?user_id=${user_id}`);
           const data = await response.json();
           if (response.ok) {
             setUser(data);
             setPoints(data.points);
-          } else {
-            Alert.alert("Error", "Unable to fetch user data.");
           }
+
+          // Get action count
+          const actionRes = await fetch(`${BACKEND_URL}/action/get_action_count?user_id=${user_id}`);
+          const actionData = await actionRes.json();
+          if (actionRes.ok) {
+            setPostCount(actionData.count);
+          }
+
+          // Get friend count
+          const friendsRes = await fetch(`${BACKEND_URL}/user/get_friends?user_id=${user_id}`);
+          const friendData = await friendsRes.json();
+          if (friendsRes.ok && Array.isArray(friendData.friend_ids)) {
+            setFriendCount(friendData.friend_ids.length);
+          }
+
         } catch (error) {
-          Alert.alert("Error", "Unable to fetch user data.");
+          Alert.alert("Error", "Failed to load user data.");
+          console.error(error);
         }
       };
 
       fetchUserData();
+
     }, [user_id])
   );
 
@@ -76,61 +95,75 @@ const HomeScreen = ({ route, navigation }) => {
     <SafeAreaView style={[tw`flex items-center w-full h-full`, { backgroundColor: "#FFFFFF" }]}>
       <StatusBar barStyle="light-content" />
 
-      {/* Profile Picture*/}
-      <View style={[tw`mt-6 mb-4`, { position: "relative" }]}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ChangeUsername", { user })}
-          style={[tw`rounded-full p-3 shadow-md`, { backgroundColor: pastelGreenLight }]}
-        >
-          <Image
-            style={tw`w-20 h-20`}
-            source={imageMap[user.icon] || imageMap["default"]}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ChangeUsername", { user })}
-          style={[
-            tw`absolute rounded-full p-2`,
-            { bottom: 0, right: -10 }, { backgroundColor: pastelGreenLight }
-          ]}
-        >
-          <Pencil size={18} color="#1B5E20" />
-        </TouchableOpacity>
+      {/* Header: Profile and Stats */}
+      <View style={tw`flex-row items-center justify-between mt-6 px-6`}>
+        <View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ChangeUsername", { user })}
+            style={[tw`rounded-full p-2 shadow-md`, { backgroundColor: pastelGreenLight }]}
+          >
+            <Image
+              style={tw`w-20 h-20 rounded-full`}
+              source={imageMap[user.icon] || imageMap["default"]}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ChangeUsername", { user })}
+            style={[tw`absolute`, { bottom: 5, left: 75, backgroundColor: pastelGreenLight, borderRadius: 999, padding: 4 }]}
+          >
+            <Pencil size={18} color="#1B5E20" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={tw`flex-row justify-around flex-1 ml-6`}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("UserPhotos", { userId: user.user_id })}
+            style={tw`items-center`}
+          >
+            <Text style={[tw`text-xl font-bold`, { fontFamily: "Nunito_700Bold" }]}>{postCount}</Text>
+            <Text style={[tw`text-sm`, { fontFamily: "Nunito_400Regular" }]}>Actions</Text>
+          </TouchableOpacity>
+
+          <View style={tw`items-center`}>
+            <Text style={[tw`text-xl font-bold`, { fontFamily: "Nunito_700Bold" }]}>{friendCount}</Text>
+            <Text style={[tw`text-sm`, { fontFamily: "Nunito_400Regular" }]}>Friends</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Username */}
+      <View style={tw`w-full px-12 mt-2 items-start`}>
+        <Text style={[tw`text-lg`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>
+          {user.user_name}
+        </Text>
       </View>
 
 
-      {/* Points Display & Title */}
-      <Text style={[tw`text-3xl mt-2`, { fontFamily: "Nunito_700Bold", color: "#2E7D32" }]}>
-        My Tree
-      </Text>
-      <Text style={[tw`text-lg mb-4`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>
-        Points: {points}
-      </Text>
 
 
       {/* Tree Display */}
-      <View style={[tw`w-5/6 rounded-xl shadow-lg items-center p-5`, { backgroundColor: pastelGreenLight }]}>
+      <View style={[tw`w-5/6 rounded-xl shadow-lg items-start p-3 mt-6`, { backgroundColor: pastelGreenLight }]}>
+
+
+        {/* Top Row: Points + Share */}
+        <View style={tw`flex-row justify-between items-center w-full mb-4`}>
+          <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>
+            Points: {points}
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => console.log("Share My Tree")}
+            style={tw`px-4 py-2.5 rounded-full border border-gray-300 bg-white`}
+          >
+            <Text style={[tw`text-sm`, { fontFamily: "Nunito_600SemiBold", color: "#1B5E20" }]}>
+              Share
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+
         <GrowingTree seed={12345} points={points} />
       </View>
-
-
-      {/* Earn Points Button 
-      <Animated.View style={[tw`mt-5 w-5/6`, { transform: [{ scale: scaleAnim }] }]}>
-        <TouchableOpacity
-          style={[tw`w-full py-4 rounded-full shadow-md`, { backgroundColor: pastelGreen }]}
-          activeOpacity={0.7}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          onPress={() => setPoints(prev => Math.min(prev + 100, 1000))}
-        >
-          <Text style={[tw`text-lg uppercase`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>
-            Earn Points
-          </Text>
-        </TouchableOpacity>
-      </Animated.View>*/}
-
-
-      {/* Navigation Bar */}
 
       <NavBar user={user} />
 

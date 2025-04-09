@@ -118,7 +118,7 @@ export default function LoginScreen({ navigation }) {
         setResendCooldown(10); // Start cooldown
         alert('OTP sent successfully!');
       } else {
-        alert(data.error || 'Failed to send OTP');
+        alert('Failed to send OTP');
       }
     } catch (error) {
       console.error('Error sending OTP:', error);
@@ -149,6 +149,7 @@ export default function LoginScreen({ navigation }) {
         // alert('Login successful');
         // Store user ID to async so users don't have to login everytime
         await login(data.user.user_id.toString());
+        alert("Welcome to EcoHolic! Add activities to grow your tree. The more points you earn, the bigger your tree gets!");
         navigation.replace("Home", { user_id: data.user.user_id });
 
       } else {

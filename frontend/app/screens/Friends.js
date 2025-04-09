@@ -34,9 +34,23 @@ const UserCard = ({ user, actions }) => (
                     key={index}
                     onPress={onPress}
                     disabled={disabled}
-                    style={tw`ml-2 px-3 py-1 rounded bg-green-100`}
+                    style={[
+                        tw`ml-2 px-3 py-1 rounded`,
+                        label === "Pending" && tw`border border-green-600 border-dotted bg-transparent`,
+                        label === "Deny" && tw`bg-pink-200`,
+                        label === "✕" && tw`bg-transparent`,
+                        label === "Accept" && tw`bg-green-100`,
+                        label === "Request" && tw`bg-green-100`,
+                    ]}
                 >
-                    <Text style={tw`text-sm`}>{label}</Text>
+                    <Text style={[
+                        tw`text-sm`,
+                        label === "Pending" && tw`text-green-600`,
+                        label === "Deny" && tw`text-red-700`,
+                        label === "✕" && tw`text-black`
+                    ]}>
+                        {label}
+                    </Text>
                 </TouchableOpacity>
             ))}
         </View>
@@ -109,7 +123,9 @@ const FriendScreen = ({ route, navigation }) => {
     };
 
     const filteredUsers = allUsers.filter(u =>
-        u.user_name.toLowerCase().includes(searchText.toLowerCase()) && u.user_id !== user.user_id
+        u.user_name && u.user_name.trim() !== "" &&
+        u.user_name.toLowerCase().includes(searchText.toLowerCase()) &&
+        u.user_id !== user.user_id
     );
 
     const friendRequests = filteredUsers.filter(u => friendMap[u.user_id]?.status === "Pending" && !friendMap[u.user_id].isMeSender);
@@ -117,11 +133,11 @@ const FriendScreen = ({ route, navigation }) => {
     const suggestedUsers = filteredUsers.filter(u => !friendMap[u.user_id]);
 
     return (
-        <SafeAreaView style={[tw`flex items-center w-full h-full`, { backgroundColor: "#FFFFFF" }]}>
+        <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
             <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
                 <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]} />
             </View>
-            <View style={tw`pt-10`}>
+            <View style={tw`flex pt-10 w-5/6 justify-center`}>
                 <TextInput
                     style={tw`px-4 py-2 border border-gray-300 rounded-full`}
                     placeholder="Search users..."
@@ -133,49 +149,54 @@ const FriendScreen = ({ route, navigation }) => {
             {refreshing ? (
                 <ActivityIndicator size="large" color="#32a852" />
             ) : (
-                <ScrollView style={tw`px-4`}>
-                    {friendRequests.length > 0 && (
-                        <Text style={tw`text-lg font-bold mt-4 mb-2`}>Friend Requests</Text>
-                    )}
-                    {friendRequests.map(user => (
-                        <UserCard
-                            key={user.user_id}
-                            user={user}
-                            actions={[
-                                { label: "Accept", onPress: () => acceptRequest(friendMap[user.user_id].id) },
-                                { label: "Deny", onPress: () => denyRequest(friendMap[user.user_id].id) }
-                            ]}
-                        />
-                    ))}
+                <ScrollView style={tw`w-full`} contentContainerStyle={tw`items-center`}>
 
-                    {pendingRequests.length > 0 && (
-                        <Text style={tw`text-lg font-bold mt-6 mb-2`}>Pending Requests</Text>
-                    )}
-                    {pendingRequests.map(user => (
-                        <UserCard
-                            key={user.user_id}
-                            user={user}
-                            actions={[{ label: "Pending", disabled: true }]}
-                        />
-                    ))}
+                    <View style={tw`flex w-5/6 justify-center`}>
 
-                    {suggestedUsers.length > 0 && (
-                        <Text style={tw`text-lg font-bold mt-6 mb-2`}>Suggested For You</Text>
-                    )}
-                    {suggestedUsers.map(user => (
-                        <UserCard
-                            key={user.user_id}
-                            user={user}
-                            actions={[
-                                { label: "Request", onPress: () => sendRequest(user.user_id) },
-                                { label: "✕", onPress: () => { /* Optional: remove from list */ } }
-                            ]}
-                        />
-                    ))}
+                        {friendRequests.length > 0 && (
+                            <Text style={tw`text-lg font-bold mt-4 mb-2`}>Friend Requests</Text>
+                        )}
+                        {friendRequests.map(user => (
+                            <UserCard
+                                key={user.user_id}
+                                user={user}
+                                actions={[
+                                    { label: "Accept", onPress: () => acceptRequest(friendMap[user.user_id].id) },
+                                    { label: "Deny", onPress: () => denyRequest(friendMap[user.user_id].id) }
+                                ]}
+                            />
+                        ))}
+
+                        {pendingRequests.length > 0 && (
+                            <Text style={tw`text-lg font-bold mt-6 mb-2`}>Pending Requests</Text>
+                        )}
+                        {pendingRequests.map(user => (
+                            <UserCard
+                                key={user.user_id}
+                                user={user}
+                                actions={[{ label: "Pending", disabled: true }]}
+                            />
+                        ))}
+
+                        {suggestedUsers.length > 0 && (
+                            <Text style={tw`text-lg font-bold mt-6 mb-2`}>Suggested For You</Text>
+                        )}
+                        {suggestedUsers.map(user => (
+                            <UserCard
+                                key={user.user_id}
+                                user={user}
+                                actions={[
+                                    { label: "Request", onPress: () => sendRequest(user.user_id) },
+                                    { label: "✕", onPress: () => { /* Optional: remove from list */ } }
+                                ]}
+                            />
+                        ))}
+                    </View>
                 </ScrollView>
             )}
+            <View />
             <NavBar user={user} />
-        </SafeAreaView>
+        </SafeAreaView >
     );
 };
 

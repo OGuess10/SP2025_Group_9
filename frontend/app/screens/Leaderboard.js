@@ -71,14 +71,7 @@ const Chart = ({ userId, navigation }) => {
                 <Text style={[tw`text-lg text-center ml-8 mr-8 mb-4`, { fontFamily: "Nunito_600SemiBold" }]}>
                     Make environmental actions to earn points🌱 !
                 </Text>
-                <TouchableOpacity
-                    style={[tw`px-6 py-3 rounded-xl shadow-lg`, { backgroundColor: "#E8F5E9" }]}
-                    onPress={() => {
 
-                        navigation.navigate('Activity', { user: updatedUser });
-                    }}
-                >
-                </TouchableOpacity>
             </View >
         );
     }
@@ -201,19 +194,39 @@ const Leaderboard = ({ route, navigation }) => {
 
             const endpoint =
                 filter === 'Friends'
-                    ? `${BACKEND_URL}/user/get_friends_leaderboard?user_id=${user.user_id}`
+                    ? `${BACKEND_URL}/user/get_accepted_friends?user_id=${user.user_id}`
                     : `${BACKEND_URL}/user/get_all_leaderboard`;
 
             const res = await fetch(endpoint);
             const data = await res.json();
 
             if (res.ok) {
-                let filteredUsers = (data.users || []).filter((u) => u.points > 0);
+                let filteredUsers = [];
+
+                if (filter === 'Friends') {
+                    const userIds = data.friend_ids || [];
+                    userIds.push(user.user_id); // ✅ Ensure current user is included
+
+                    const friendDataPromises = userIds.map(async (id) => {
+                        const res = await fetch(`${BACKEND_URL}/user/get_user?user_id=${id}`);
+                        return await res.json();
+                    });
+
+                    const friendsData = await Promise.all(friendDataPromises);
+                    filteredUsers = friendsData
+                        .filter((u) => u.points > 0)
+                        .sort((a, b) => b.points - a.points); // ✅ sort by points descending
+
+                } else {
+                    filteredUsers = (data.users || []).filter((u) => u.points > 0);
+                }
+
                 setLeaderboardData(filteredUsers);
 
                 const rank = filteredUsers.findIndex((u) => u.user_id === user.user_id) + 1;
                 setUserRank(rank || null);
             }
+
         } catch (error) {
             console.error('Leaderboard fetch error:', error);
         } finally {

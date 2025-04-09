@@ -28,6 +28,9 @@ const HomeScreen = ({ route, navigation }) => {
   const [points, setPoints] = useState(0);
   const [postCount, setPostCount] = useState(0);
   const [friendCount, setFriendCount] = useState(0);
+  const [showFriends, setShowFriends] = useState(false);
+  const [friendsList, setFriendsList] = useState([]);
+
 
   const [showShareModal, setShowShareModal] = useState(false);
   const viewShotRef = useRef();
@@ -96,11 +99,13 @@ const HomeScreen = ({ route, navigation }) => {
           }
 
           // Get friend count
-          const friendsRes = await fetch(`${BACKEND_URL}/user/get_friends?user_id=${user_id}`);
+          // Get friend count
+          const friendsRes = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${user_id}`);
           const friendData = await friendsRes.json();
           if (friendsRes.ok && Array.isArray(friendData.friend_ids)) {
             setFriendCount(friendData.friend_ids.length);
           }
+
 
         } catch (error) {
           Alert.alert("Error", "Failed to load user data.");
@@ -155,10 +160,16 @@ const HomeScreen = ({ route, navigation }) => {
             <Text style={[tw`text-sm`, { fontFamily: "Nunito_400Regular" }]}>Actions</Text>
           </TouchableOpacity>
 
-          <View style={tw`items-center`}>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate("UserFriends", { userId: user.user_id })}
+            style={tw`items-center`}
+          >
             <Text style={[tw`text-xl font-bold`, { fontFamily: "Nunito_700Bold" }]}>{friendCount}</Text>
             <Text style={[tw`text-sm`, { fontFamily: "Nunito_400Regular" }]}>Friends</Text>
-          </View>
+          </TouchableOpacity>
+
+
         </View>
       </View>
 
@@ -222,9 +233,6 @@ const HomeScreen = ({ route, navigation }) => {
               </Text>
 
             </View>
-
-
-
           </ViewShot>
 
           <TouchableOpacity

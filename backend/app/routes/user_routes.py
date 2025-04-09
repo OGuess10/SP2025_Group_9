@@ -105,6 +105,7 @@ def get_all_leaderboard():
     return jsonify({"users": users_data}), 200
 
 
+""" 
 @user_bp.route("/get_friends_leaderboard", methods=["GET"])
 def get_friends_leaderboard():
     user_id = request.args.get("user_id", "")
@@ -132,7 +133,7 @@ def get_friends_leaderboard():
         }
         for user in users
     ]
-    return jsonify({"users": users_data}), 200
+    return jsonify({"users": users_data}), 200 """
 
 
 # Handles friendship stuff
@@ -202,3 +203,24 @@ def unfriend():
         return jsonify({"message": "Unfriended"}), 200
 
     return jsonify({"error": "Friendship not found"}), 404
+
+
+@user_bp.route("/get_accepted_friends", methods=["GET"])
+def get_accepted_friends():
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Missing user_id parameter"}), 400
+
+    friendships = Friendship.query.filter(
+        ((Friendship.user_id == user_id) | (Friendship.friend_id == user_id))
+        & (Friendship.status == "Accepted")
+    ).all()
+
+    friend_ids = []
+    for f in friendships:
+        if str(f.user_id) == user_id:
+            friend_ids.append(f.friend_id)
+        else:
+            friend_ids.append(f.user_id)
+
+    return jsonify({"friend_ids": friend_ids}), 200

@@ -6,6 +6,8 @@ import NavBar from "../../components/NavBar";
 import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
 import { Pencil } from "lucide-react-native";
+import { useFocusEffect } from '@react-navigation/native';
+
 
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -40,24 +42,26 @@ const HomeScreen = ({ route, navigation }) => {
     }).start();
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`${BACKEND_URL}/user/get_user?user_id=${user_id}`);
-        const data = await response.json();
-        if (response.ok) {
-          setUser(data);
-          setPoints(data.points);
-        } else {
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch(`${BACKEND_URL}/user/get_user?user_id=${user_id}`);
+          const data = await response.json();
+          if (response.ok) {
+            setUser(data);
+            setPoints(data.points);
+          } else {
+            Alert.alert("Error", "Unable to fetch user data.");
+          }
+        } catch (error) {
           Alert.alert("Error", "Unable to fetch user data.");
         }
-      } catch (error) {
-        Alert.alert("Error", "Unable to fetch user data.");
-      }
-    };
+      };
 
-    fetchUserData();
-  }, [user_id]);
+      fetchUserData();
+    }, [user_id])
+  );
 
 
   const imageMap = {

@@ -110,7 +110,7 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
                                         style={tw`w-48 py-3 mt-6 bg-red-200 rounded-lg shadow-lg items-center`}
                                         onPress={() => setCapturedPhoto(null)} // Retake
                                     >
-                                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Submit</Text>
+                                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Retake</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={tw`w-48 py-3 mt-4 bg-green-200 rounded-lg shadow-lg items-center`}
@@ -162,48 +162,14 @@ const ActivityList = ({ user, setUserPoints }) => {
     const [image, setImage] = useState("");
     const [showImage, setShowImage] = useState(false);
 
-    console.log('Image URI:', image);
-    console.log(showImage);
 
     useEffect(() => {
         setImage("");
-    },[selectedAction]);
+    }, [selectedAction]);
 
     const handleActionSelect = async (action) => {
         const newPoints = user.points + action.points;
         setUserPoints(newPoints);
-
-        // try {
-        //     const datatosend = {
-        //         user_id: user.user_id,
-        //         activity_id: action.id,
-        //         points: action.points,
-        //         image: image || ""
-        //     };
-
-        //     console.log(datatosend);
-
-        //     const response = await fetch(`${BACKEND_URL}/add_activity`, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(datatosend),
-        //     });
-
-        //     if(!response.ok) {
-        //         throw new Error('Failed to add activity');
-        //     }
-        //     const data = await response.json();
-        //     if(!data.success) {
-        //         console.error('Error updating points:', data);
-        //         Alert.alert('Error', 'Failed to add activity');
-        //     }
-        // } catch (error) {
-        //     console.error('Error updating points:', error);
-        //     Alert.alert('Error', 'Failed to add activity');
-        // }
-
 
         try {
 
@@ -312,25 +278,25 @@ const ActivityList = ({ user, setUserPoints }) => {
                 </View>
 
                 <CameraScreen userId={user.user_id} action={selectedAction} setImage={setImage} visible={showCamera} onClose={() => setShowCamera(false)} />
-                
+
                 <Modal
-                visible={showImage && (image != "")}
-                transparent
-                animationType="fade"
-                onRequestClose={() => setShowImage(false)}
+                    visible={showImage && (image != "")}
+                    transparent
+                    animationType="fade"
+                    onRequestClose={() => setShowImage(false)}
                 >
                     <View style={tw`flex-1 justify-center items-center bg-white`}>
-                    <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-                    <TouchableOpacity
-                    style={tw`absolute top-4 left-4 p-2`}
-                    onPress={() => setShowImage(false)}
-                    >
-                        <FontAwesome5 name="times" size={24} color="black" />
-                    </TouchableOpacity>
-                    <Image source={{uri: 'file://' + image}}
-                        style={{ width: '100%', height: '80%'}}
-                        ></Image>
-                    </View>
+                        <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
+                            <TouchableOpacity
+                                style={tw`absolute top-4 left-4 p-2`}
+                                onPress={() => setShowImage(false)}
+                            >
+                                <FontAwesome5 name="times" size={24} color="black" />
+                            </TouchableOpacity>
+                            <Image source={{ uri: 'file://' + image }}
+                                style={{ width: '100%', height: '80%' }}
+                            ></Image>
+                        </View>
                     </View>
                 </Modal>
             </Modal>

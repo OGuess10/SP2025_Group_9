@@ -5,6 +5,8 @@ import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
 import { LineChart } from "react-native-chart-kit";
 import { format, parseISO } from "date-fns";
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -22,6 +24,8 @@ const Chart = ({ userId }) => {
 
     const [activity, setActivity] = useState(null);
     const [activityLoading, setActivityLoading] = useState(true);
+    const [updatedUser, setUpdatedUser] = useState(userId);
+
 
     useEffect(() => {
         const fetchData = async () => {

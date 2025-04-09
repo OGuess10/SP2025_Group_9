@@ -41,7 +41,7 @@ def upload_blob():
         return jsonify({"error": str(e)}), 500
 
 
-@action_bp.route("/get_blob/<int:image_id>", methods=["GET"])
+@action_bp.route("/get_images/<int:image_id>", methods=["GET"])
 def get_blob(image_id):
     image_record = ImageUpload.query.get(image_id)
     if not image_record:

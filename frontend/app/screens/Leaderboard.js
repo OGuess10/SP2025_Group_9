@@ -29,8 +29,6 @@ const Chart = ({ userId }) => {
 
                 const response = await fetch(`${BACKEND_URL}/action/get_activity?user_id=${userId}`);
                 const data = await response.json();
-                console.log("Raw response text:", data);
-
                 const formattedData = Object.keys(data.data).map((date) => ({
                     date,
                     value: data.data[date],

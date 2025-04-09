@@ -5,6 +5,8 @@ import { Image } from "expo-image";
 import NavBar from "../../components/NavBar";
 import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
+import { Pencil } from "lucide-react-native";
+
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -71,8 +73,25 @@ const HomeScreen = ({ route, navigation }) => {
       <StatusBar barStyle="light-content" />
 
       {/* Profile Picture*/}
-      <View style={[tw`mt-6 mb-4 rounded-full p-3 shadow-md`, { backgroundColor: pastelGreenLight }]}>
-        <Image style={tw`w-20 h-20`} source={imageMap[user.icon] || imageMap["default"]} />
+      <View style={[tw`mt-6 mb-4`, { position: "relative" }]}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ChangeUsername", { user })}
+          style={[tw`rounded-full p-3 shadow-md`, { backgroundColor: pastelGreenLight }]}
+        >
+          <Image
+            style={tw`w-20 h-20`}
+            source={imageMap[user.icon] || imageMap["default"]}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ChangeUsername", { user })}
+          style={[
+            tw`absolute rounded-full p-2`,
+            { bottom: 0, right: -10 }, { backgroundColor: pastelGreenLight }
+          ]}
+        >
+          <Pencil size={18} color="#1B5E20" />
+        </TouchableOpacity>
       </View>
 
 

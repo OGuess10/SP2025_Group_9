@@ -46,7 +46,7 @@ const UserFriends = ({ route }) => {
 
     return (
         <View style={tw`p-4 bg-white h-full`}>
-            <Text style={[tw`text-xl mb-4`, { fontFamily: "Nunito_700Bold" }]}>Your Friends</Text>
+            <Text style={[tw`text-xl mb-4`, { fontFamily: "Nunito_700Bold" }]}>My Friends</Text>
             <FlatList
                 data={friends}
                 keyExtractor={(item) => item.user_id.toString()}

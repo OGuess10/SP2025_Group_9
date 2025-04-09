@@ -67,14 +67,27 @@ def update_points():
 
 @user_bp.route("/get_friends", methods=["GET"])
 def get_friends():
-    user_id = request.args.get("user_id", "")
+    user_id = request.args.get("user_id")
     if not user_id:
         return jsonify({"error": "Missing user_id parameter"}), 400
 
-    matching_friendships = Friendship.query.filter(Friendship.user_id == user_id).all()
-    friend_ids = [f.friend_id for f in matching_friendships]
-    # Always return a JSON with friend_ids, even if empty.
-    return jsonify({"friend_ids": friend_ids}), 200
+    friendships = Friendship.query.filter(
+        (Friendship.user_id == user_id) | (Friendship.friend_id == user_id)
+    ).all()
+
+    data = []
+    for f in friendships:
+        data.append(
+            {
+                "id": f.id,
+                "user_id": f.user_id,
+                "friend_id": f.friend_id,
+                "status": f.status,
+                "created_at": f.created_at.isoformat(),
+            }
+        )
+
+    return jsonify({"friendships": data}), 200
 
 
 @user_bp.route("/get_all_leaderboard", methods=["GET"])
@@ -120,3 +133,72 @@ def get_friends_leaderboard():
         for user in users
     ]
     return jsonify({"users": users_data}), 200
+
+
+# Handles friendship stuff
+@user_bp.route("/send_friend_request", methods=["POST"])
+def send_friend_request():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    friend_id = data.get("friend_id")
+
+    if not user_id or not friend_id:
+        return jsonify({"error": "Missing user_id or friend_id"}), 400
+
+    # Check for existing friendship
+    existing = Friendship.query.filter_by(user_id=user_id, friend_id=friend_id).first()
+    if existing:
+        return jsonify({"message": "Friend request already sent or exists."}), 400
+
+    friendship = Friendship(user_id=user_id, friend_id=friend_id, status="Pending")
+    db.session.add(friendship)
+    db.session.commit()
+
+    return jsonify({"message": "Friend request sent."}), 200
+
+
+@user_bp.route("/accept_friend_request", methods=["POST"])
+def accept_friend_request():
+    data = request.get_json()
+    friendship_id = data.get("friendship_id")
+
+    friendship = Friendship.query.get(friendship_id)
+    if not friendship:
+        return jsonify({"error": "Friend request not found"}), 404
+
+    friendship.status = "Accepted"
+    db.session.commit()
+    return jsonify({"message": "Friend request accepted"}), 200
+
+
+@user_bp.route("/deny_friend_request", methods=["POST"])
+def deny_friend_request():
+    data = request.get_json()
+    friendship_id = data.get("friendship_id")
+
+    friendship = Friendship.query.get(friendship_id)
+    if not friendship:
+        return jsonify({"error": "Friend request not found"}), 404
+
+    db.session.delete(friendship)
+    db.session.commit()
+    return jsonify({"message": "Friend request denied"}), 200
+
+
+@user_bp.route("/unfriend", methods=["POST"])
+def unfriend():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    friend_id = data.get("friend_id")
+
+    friendship = Friendship.query.filter(
+        ((Friendship.user_id == user_id) & (Friendship.friend_id == friend_id))
+        | ((Friendship.user_id == friend_id) & (Friendship.friend_id == user_id))
+    ).first()
+
+    if friendship:
+        db.session.delete(friendship)
+        db.session.commit()
+        return jsonify({"message": "Unfriended"}), 200
+
+    return jsonify({"error": "Friendship not found"}), 404

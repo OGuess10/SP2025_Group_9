@@ -75,3 +75,48 @@ def get_friends():
     friend_ids = [f.friend_id for f in matching_friendships]
     # Always return a JSON with friend_ids, even if empty.
     return jsonify({"friend_ids": friend_ids}), 200
+
+
+@user_bp.route("/get_all_leaderboard", methods=["GET"])
+def get_all_leaderboard():
+    users = User.query.order_by(User.points.desc()).all()
+    users_data = [
+        {
+            "user_id": user.user_id,
+            "user_name": user.user_name,
+            "points": user.points,
+            "icon": user.icon,
+        }
+        for user in users
+    ]
+    return jsonify({"users": users_data}), 200
+
+
+@user_bp.route("/get_friends_leaderboard", methods=["GET"])
+def get_friends_leaderboard():
+    user_id = request.args.get("user_id", "")
+    if not user_id:
+        return jsonify({"error": "Missing user_id parameter"}), 400
+
+    # Fetch friend IDs
+    matching_friendships = Friendship.query.filter_by(user_id=user_id).all()
+    friend_ids = [f.friend_id for f in matching_friendships]
+
+    # Also include the current user in the leaderboard
+    friend_ids.append(int(user_id))
+
+    users = (
+        User.query.filter(User.user_id.in_(friend_ids))
+        .order_by(User.points.desc())
+        .all()
+    )
+    users_data = [
+        {
+            "user_id": user.user_id,
+            "user_name": user.user_name,
+            "points": user.points,
+            "icon": user.icon,
+        }
+        for user in users
+    ]
+    return jsonify({"users": users_data}), 200

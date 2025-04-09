@@ -139,6 +139,7 @@ def log_action():
         else:
             timestamp = datetime.datetime.utcnow()
 
+        # 1. Log the action
         new_action = Action(
             user_id=user_id,
             action_type=action_type,
@@ -146,9 +147,19 @@ def log_action():
             timestamp=timestamp,
         )
         db.session.add(new_action)
+
+        # 2. Update user's point total
+        from app.models import User
+
+        user = User.query.get(user_id)
+        if user:
+            user.points += int(points)
+
         db.session.commit()
-        return jsonify({"message": "Action logged"}), 200
+
+        return jsonify({"message": "Action logged and user points updated"}), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 

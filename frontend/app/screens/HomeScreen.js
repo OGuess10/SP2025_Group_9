@@ -163,7 +163,7 @@ const HomeScreen = ({ route, navigation }) => {
       </View>
 
       {/* Username */}
-      <View style={tw`w-full px-12 mt-2 items-start`}>
+      <View style={tw`w-full px-10 mt-2 items-start`}>
         <Text style={[tw`text-lg`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>
           {user.user_name}
         </Text>

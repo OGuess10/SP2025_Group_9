@@ -199,53 +199,34 @@ const ActivityList = ({ user, setUserPoints }) => {
     }, [selectedAction]);
 
     const handleActionSelect = async (action) => {
-        const newPoints = user.points + action.points;
-        setUserPoints(newPoints);
-
         try {
-
+            // Step 1: Log the action (backend will now update points too)
             const actionResponse = await fetch(`${BACKEND_URL}/action/log_action`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     user_id: user.user_id,
-                    action_type: action.label, // use readable label like "Recycling"
-                    points: action.points
+                    action_type: action.label,
+                    points: action.points,
                 }),
             });
 
-            if (!actionResponse.ok) {
-                throw new Error("Failed to log action");
-            }
+            if (!actionResponse.ok) throw new Error("Failed to log action");
 
-            console.log("Action logged successfully");
+            // Step 2: Fetch latest user info
+            const updatedUserResponse = await fetch(`${BACKEND_URL}/user/get_user?user_id=${user.user_id}`);
+            const updatedUser = await updatedUserResponse.json();
 
-            console.log("Sending request to update points:", newPoints);
-            const response = await fetch(`${BACKEND_URL}/user/update_points`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ user_id: user.user_id, points: newPoints }),
-            });
+            // Step 3: Update UI
+            setUserPoints(updatedUser.points);
+            Alert.alert('Good job!', `You have earned ${action.points} points! 🎉`);
 
-            if (!response.ok) {
-                throw new Error('Failed to update points');
-            }
-
-            const data = await response.json();
-            console.log("Response from server:", data);
-            if (data.success) {
-                Alert.alert('Good job!', 'You have earned ' + action.points + ' points! 🎉');
-
-            } else {
-                Alert.alert('Error', 'Failed to update points');
-            }
         } catch (error) {
-            console.error('Error updating points:', error);
-            Alert.alert('Error', 'Failed to update points');
+            console.error('Error logging action:', error);
+            Alert.alert('Error', 'Something went wrong while adding the action.');
         }
     };
+
 
     return (
         <View style={tw`flex-1 px-4`}>

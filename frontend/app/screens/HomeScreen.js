@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { SafeAreaView, View, Text, TouchableOpacity, Animated } from "react-native";
+import { SafeAreaView, View, Text, TouchableOpacity, Animated, Alert } from "react-native";
 import GrowingTree from "../../components/GrowingTree";
 import { Image } from "expo-image";
 import NavBar from "../../components/NavBar";
@@ -7,6 +7,12 @@ import tw from "../../components/tailwind";
 import { StatusBar } from "react-native";
 import { Pencil } from "lucide-react-native";
 import { useFocusEffect } from '@react-navigation/native';
+import { Modal } from "react-native";
+import ViewShot from "react-native-view-shot";
+import * as MediaLibrary from "expo-media-library";
+import * as Sharing from "expo-sharing";
+import { FontAwesome5 } from '@expo/vector-icons';
+
 
 
 
@@ -23,7 +29,32 @@ const HomeScreen = ({ route, navigation }) => {
   const [postCount, setPostCount] = useState(0);
   const [friendCount, setFriendCount] = useState(0);
 
+  const [showShareModal, setShowShareModal] = useState(false);
+  const viewShotRef = useRef();
 
+  const handleShare = async () => {
+    try {
+      const uri = await viewShotRef.current.capture();
+      await Sharing.shareAsync(uri);
+    } catch (error) {
+      console.log("Share error", error);
+    }
+  };
+
+  const handleSaveToPhotos = async () => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission required", "Please allow media access to save photos.");
+        return;
+      }
+      const uri = await viewShotRef.current.capture();
+      await MediaLibrary.saveToLibraryAsync(uri);
+      Alert.alert("Success!", "Photo has been saved! 📸");
+    } catch (error) {
+      console.log("Save error", error);
+    }
+  };
 
   // Button animation
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -152,13 +183,12 @@ const HomeScreen = ({ route, navigation }) => {
           </Text>
 
           <TouchableOpacity
-            onPress={() => console.log("Share My Tree")}
-            style={tw`px-4 py-2.5 rounded-full border border-gray-300 bg-white`}
+            onPress={() => setShowShareModal(true)}
+            style={tw`px-2 py-2 rounded-lg `}
           >
-            <Text style={[tw`text-sm`, { fontFamily: "Nunito_600SemiBold", color: "#1B5E20" }]}>
-              Share
-            </Text>
+            <FontAwesome5 name="download" size={16} color="#1B5E20" />
           </TouchableOpacity>
+
         </View>
 
 
@@ -167,7 +197,60 @@ const HomeScreen = ({ route, navigation }) => {
 
       <NavBar user={user} />
 
-    </SafeAreaView>
+
+      {/* Share Modal */}
+      <Modal visible={showShareModal} animationType="slide" transparent={true}>
+        <View style={tw`flex-1 justify-center items-center bg-white px-4`}>
+          <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0 }} style={[tw`rounded-xl shadow-lg`, { backgroundColor: pastelGreenLight }]}>
+            <View style={tw`p-4 rounded-lg shadow-lg`}>
+              <Text style={[tw`text-xl`, { fontFamily: "Nunito_700Bold" }]}>{user.user_name}'s Tree</Text>
+              <Text style={[tw`text-base`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>
+                Points: {points}
+              </Text>
+              <GrowingTree seed={12345} points={points} />
+
+            </View>
+
+
+            {/* Timestamp*/}
+            <View style={tw`flex-row justify-between items-center`}>
+              <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>
+              </Text>
+
+              <Text style={[tw`text-xs text-gray-600 py-3 px-3`, { fontFamily: "Nunito_400Regular", fontStyle: "italic" }]}>
+                {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+              </Text>
+
+            </View>
+
+
+
+          </ViewShot>
+
+          <TouchableOpacity
+            style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
+            onPress={handleShare}
+          >
+            <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>Share</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={tw`mt-4 w-5/6 py-3 bg-blue-100 rounded-lg shadow-lg items-center`}
+            onPress={handleSaveToPhotos}
+          >
+            <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>Save to Photos</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={tw`mt-4 w-5/6 py-3 bg-gray-100 rounded-lg shadow-lg items-center`}
+            onPress={() => setShowShareModal(false)}
+          >
+            <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+    </SafeAreaView >
   ) : (
     <View>
     </View>

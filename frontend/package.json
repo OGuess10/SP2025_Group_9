@@ -64,7 +64,9 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "resize-observer": "^1.0.4",
-    "tailwind-react-native-classnames": "^3.0.1"
+    "tailwind-react-native-classnames": "^3.0.1",
+    "expo-sharing": "~13.0.1",
+    "react-native-view-shot": "~4.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

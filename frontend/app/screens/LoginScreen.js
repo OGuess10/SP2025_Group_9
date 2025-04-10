@@ -13,7 +13,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { useAuth } from "../auth/AuthContext";
 
-
 const { width, height } = Dimensions.get('window');
 const URL = process.env.EXPO_PUBLIC_API_URL;
 // const URL = "https://0cd3-2600-6c40-75f0-5bc0-49dd-db1c-b716-824a.ngrok-free.app";
@@ -106,7 +105,7 @@ export default function LoginScreen({ navigation }) {
     setLoading(true);
     try {
       console.log("url:" + BACKEND_URL);
-      const response = await fetch(`${BACKEND_URL}/send-otp`, {
+      const response = await fetch(`${BACKEND_URL}/auth/send-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +137,7 @@ export default function LoginScreen({ navigation }) {
 
     setLoading(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/verify_otp`, {
+      const response = await fetch(`${BACKEND_URL}/auth/verify-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,6 +151,7 @@ export default function LoginScreen({ navigation }) {
         await login(data.user.user_id.toString());
         alert("Welcome to EcoHolic! Add activities to grow your tree. The more points you earn, the bigger your tree gets!");
         navigation.replace("Home", { user_id: data.user.user_id });
+
       } else {
         alert(data.error || 'Invalid or expired OTP');
       }

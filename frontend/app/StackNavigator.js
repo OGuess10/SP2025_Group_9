@@ -17,6 +17,12 @@ import HomeScreen from "./screens/HomeScreen";
 import Leaderboard from "./screens/Leaderboard";
 import Friends from "./screens/Friends";
 import Activity from "./screens/Activity";
+import ChangeUsernameScreen from "./screens/ChangeUserNameScreen";
+import UserPhotosScreen from "./screens/UserPhotosScreen";
+import UserFriends from "./screens/UserFriends";
+
+
+
 
 
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
@@ -32,7 +38,7 @@ const StackNavigator = () => {
   });
   // const [isAuthenticated, setIsAuthenticated] = useState(null);
   // const [userID, setUserID] = useState(null);
-  
+
   const { isAuthenticated, userId } = useAuth();
 
   useEffect(() => {
@@ -51,8 +57,9 @@ const StackNavigator = () => {
   console.log("user id: " + userId);
 
   return (
-      <Stack.Navigator 
-        screenOptions={{ headerShown: false }} 
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{ headerShown: false }}
         initialRouteName={isAuthenticated === null ? "Loading" : isAuthenticated ? "Home" : "Splash"}
       >
         <Stack.Screen name="Splash" component={SplashScreenComponent} />
@@ -86,19 +93,15 @@ const StackNavigator = () => {
             cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
           }}
         />
-      <Stack.Screen name="Leaderboard" component={Leaderboard} />
-      <Stack.Screen name="Friends" component={Friends} />
-      <Stack.Screen name="Activity" component={Activity} />
-        {/* <Stack.Screen name="Loading" component={LoadingScreen} />
-        <Stack.Screen name="Splash" component={SplashScreenComponent} />
-        <Stack.Screen name="Intro" component={IntroScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} initialParams={{ user_id: userId }} />
         <Stack.Screen name="Leaderboard" component={Leaderboard} />
         <Stack.Screen name="Friends" component={Friends} />
-        <Stack.Screen name="Activity" component={Activity} /> */}
+        <Stack.Screen name="Activity" component={Activity} />
+        <Stack.Screen name="ChangeUsername" component={ChangeUsernameScreen} />
+        <Stack.Screen name="UserPhotos" component={UserPhotosScreen} />
+        <Stack.Screen name="UserFriends" component={UserFriends} />
+
       </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

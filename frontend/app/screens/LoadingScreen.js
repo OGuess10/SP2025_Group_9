@@ -13,35 +13,36 @@ const Loading = () => {
 
 const GoHome = ({ navigation, userData }) => {
   useEffect(() => {
-    navigation.navigate('Home', { user: userData });
+    navigation.navigate('Home', { user_id: userData.user_id });
   }, []);
   return null;
 };
 
-export default function LoadingScreen({ navigation, route }) {
-  // Route used to get userId later
-  // ex. route.params.userId
 
-  // Retrieve user data
+
+export default function LoadingScreen({ navigation, route }) {
+  // For instance, route.params might contain the authenticated user's id.
+  const userId = route.params?.userId;
   const [user, setUser] = useState(null);
+
   useEffect(() => {
+    // Use /user/get_user endpoint
     const fetchData = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/get_user?user_id=0`);
+        const response = await fetch(`${BACKEND_URL}/user/get_user?user_id=${userId}`);
         const data = await response.json();
-        setUser(data); // Set the fetched data to state
+        setUser(data);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [userId]);
 
   if (!user) {
-    return <Loading />
-  }
-  else {
-    return <GoHome navigation={navigation} userData={user} />
+    return <Loading />;
+  } else {
+    return <GoHome navigation={navigation} userData={user} />;
   }
 }
 

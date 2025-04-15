@@ -55,6 +55,10 @@ const OnboardingScreen = ({ route, navigation }) => {
         source={require('../../assets/tutorial/10.png')}
         style={styles.image}
       />
+      <Image
+        source={require('../../assets/tutorial/userAgreement.png')}
+        style={styles.image}
+      />
 
       <View style={{ width, height }}>
         <Image

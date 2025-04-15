@@ -20,6 +20,7 @@ import Activity from "./screens/Activity";
 import ChangeUsernameScreen from "./screens/ChangeUserNameScreen";
 import UserPhotosScreen from "./screens/UserPhotosScreen";
 import UserFriends from "./screens/UserFriends";
+import FriendsProfile from "./screens/friendsProfile";  
 
 
 
@@ -99,6 +100,7 @@ const StackNavigator = () => {
         <Stack.Screen name="ChangeUsername" component={ChangeUsernameScreen} />
         <Stack.Screen name="UserPhotos" component={UserPhotosScreen} />
         <Stack.Screen name="UserFriends" component={UserFriends} />
+        <Stack.Screen name="FriendsProfile" component={FriendsProfile} />
 
       </Stack.Navigator>
     </NavigationContainer>

@@ -7,6 +7,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import MediaLibrary from 'expo-media-library';
 import { Animated } from 'react-native';
+import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
 
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -360,17 +361,44 @@ const Activity = ({ route, navigation }) => {
         "sloth": require("../../assets/user_icons/sloth.png"),
         "default": require("../../assets/user_icons/sloth.png")
     };
-
-    if (!user) {
-        return <View><Text>Loading...</Text></View>;
+    const isCustomAvatar = user.icon && user.icon.startsWith('{');
+    let parsedAvatar = null;
+    try {
+        if (isCustomAvatar) {
+            parsedAvatar = JSON.parse(user.icon);
+        }
+    } catch (error) {
+        console.error("Failed to parse custom avatar:", error);
     }
+
 
     return (
         user ?
             <SafeAreaView style={tw`flex items-center justify-start bg-white w-full h-full`}>
-                <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
-                    <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]} />
+            <View
+                style={[
+                    tw`rounded-full m-2 p-2 shadow-lg`,
+                    {
+                    backgroundColor:
+                        user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default"
+                        ? "#FFFFFF"
+                        : (typeof user.icon === "string"
+                            ? JSON.parse(user.icon).bgColor
+                            : user.icon?.bgColor || "#FFFFFF")
+                    }
+                ]}
+                >
+                {user.icon && (user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default") ? (
+                    <Image style={tw`w-12 h-12 rounded-full`} source={imageMap[user.icon] || imageMap["default"]} />
+                ) : (
+                    <Avatar
+                    style={tw`w-12 h-12`} // No rounded-full here to preserve full bgColor
+                    {...(typeof user.icon === "string" ? JSON.parse(user.icon) : user.icon)}
+                    />
+                )}
                 </View>
+
+                
                 <View style={tw`flex w-5/6 h-3/4 justify-center`}>
                     <View style={tw`mb-4 my-2`}>
                         <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>Choose Activity</Text>

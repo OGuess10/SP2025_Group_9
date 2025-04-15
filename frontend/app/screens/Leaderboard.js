@@ -7,6 +7,7 @@ import { LineChart } from "react-native-chart-kit";
 import { format, parseISO } from "date-fns";
 import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
 
 
 
@@ -180,7 +181,7 @@ const Leaderboard = ({ route, navigation }) => {
     const [updatedUser, setUpdatedUser] = useState(user);
 
     const imageMap = {
-        "kanagroo": require("../../assets/user_icons/kangaroo.png"),
+        "kangaroo": require("../../assets/user_icons/kangaroo.png"),
         "koala": require("../../assets/user_icons/koala.png"),
         "sloth": require("../../assets/user_icons/sloth.png"),
         "default": require("../../assets/user_icons/sloth.png")
@@ -205,7 +206,7 @@ const Leaderboard = ({ route, navigation }) => {
 
                 if (filter === 'Friends') {
                     const userIds = data.friend_ids || [];
-                    userIds.push(user.user_id); // ✅ Ensure current user is included
+                    userIds.push(user.user_id); 
 
                     const friendDataPromises = userIds.map(async (id) => {
                         const res = await fetch(`${BACKEND_URL}/user/get_user?user_id=${id}`);
@@ -215,7 +216,7 @@ const Leaderboard = ({ route, navigation }) => {
                     const friendsData = await Promise.all(friendDataPromises);
                     filteredUsers = friendsData
                         .filter((u) => u.points > 0)
-                        .sort((a, b) => b.points - a.points); // ✅ sort by points descending
+                        .sort((a, b) => b.points - a.points); 
 
                 } else {
                     filteredUsers = (data.users || []).filter((u) => u.points > 0);
@@ -243,8 +244,27 @@ const Leaderboard = ({ route, navigation }) => {
     return (
         updatedUser ?
             <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
-                <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
-                    <Image style={tw`w-12 h-12`} source={imageMap[updatedUser.icon] || imageMap["default"]} />
+                <View
+                style={[
+                    tw`rounded-full m-2 p-2 shadow-lg`,
+                    {
+                    backgroundColor:
+                        user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default"
+                        ? "#FFFFFF"
+                        : (typeof user.icon === "string"
+                            ? JSON.parse(user.icon).bgColor
+                            : user.icon?.bgColor || "#FFFFFF")
+                    }
+                ]}
+                >
+                {user.icon && (user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default") ? (
+                    <Image style={tw`w-12 h-12 rounded-full`} source={imageMap[user.icon] || imageMap["default"]} />
+                ) : (
+                    <Avatar
+                    style={tw`w-12 h-12`} // No rounded-full here to preserve full bgColor
+                    {...(typeof user.icon === "string" ? JSON.parse(user.icon) : user.icon)}
+                    />
+                )}
                 </View>
                 <View style={tw`flex w-5/6 h-3/4 justify-center`}>
 
@@ -284,19 +304,55 @@ const Leaderboard = ({ route, navigation }) => {
 
                             {/* Leaderboard list */}
                             <FlatList
-                                data={leaderboardData}
-                                keyExtractor={(item) => item.user_id.toString()}
-                                renderItem={({ item, index }) => (
+                            data={leaderboardData}
+                            keyExtractor={(item) => item.user_id.toString()}
+                            renderItem={({ item, index }) => {
+                                const iconKey = item.icon || "default";
+                                const isDefaultIcon = ["koala", "kangaroo", "sloth", "default"].includes(iconKey);
+                                                                let avatarConfig = null;
+                                if (!isDefaultIcon && typeof item.icon === "string" && item.icon.trim().startsWith("{")) {
+                                    try {
+                                        avatarConfig = JSON.parse(item.icon);
+                                    } catch (e) {
+                                        console.warn("Invalid avatar JSON for user:", item.user_name, item.icon);
+                                    }
+                                }
+
+                                return (
+                                    <TouchableOpacity
+                                    onPress={() =>
+                                    navigation.navigate("FriendsProfile", {
+                                        userId: item.user_id,
+                                        currentUserId: user.user_id,
+                                    })
+                                    }
+                                    >
                                     <View style={tw`flex-row justify-between items-center py-3 border-b border-gray-200`}>
                                         <View style={tw`flex-row items-center`}>
                                             <Text style={[tw`mr-2 w-6 text-right`, { fontFamily: "Nunito_700Bold" }]}>{index + 1}</Text>
-                                            <Image source={imageMap[item.icon] || imageMap["default"]} style={tw`w-8 h-8 rounded-full mr-3`} />
+                                            <View style={[
+                                                tw`rounded-full p-1 mr-3`,
+                                                { backgroundColor: isDefaultIcon ? "#FFFFFF" : avatarConfig?.bgColor || "#FFFFFF" }
+                                            ]}>
+                                                {isDefaultIcon ? (
+                                                    <Image
+                                                        source={imageMap[item.icon] || imageMap["default"]}
+                                                        style={tw`w-8 h-8 rounded-full`}
+                                                    />
+                                                ) : (
+                                                    avatarConfig && <Avatar style={tw`w-8 h-8`} {...avatarConfig} />
+                                                )}
+                                            </View>
                                             <Text style={[tw`text-base`, { fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
                                         </View>
                                         <Text style={[tw`text-base`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>{item.points}</Text>
                                     </View>
-                                )}
-                            />
+                                    </TouchableOpacity>
+
+                                );
+                            }}
+                        />
+
                         </View>
                     </View>
 

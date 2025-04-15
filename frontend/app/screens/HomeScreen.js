@@ -12,6 +12,8 @@ import ViewShot from "react-native-view-shot";
 import * as MediaLibrary from "expo-media-library";
 import * as Sharing from "expo-sharing";
 import { FontAwesome5 } from '@expo/vector-icons';
+import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
+
 
 
 
@@ -134,15 +136,39 @@ const HomeScreen = ({ route, navigation }) => {
       {/* Header: Profile and Stats */}
       <View style={tw`flex-row items-center justify-between mt-6 px-6`}>
         <View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("ChangeUsername", { user })}
-            style={[tw`rounded-full p-2 shadow-md`, { backgroundColor: pastelGreenLight }]}
-          >
-            <Image
-              style={tw`w-20 h-20 rounded-full`}
-              source={imageMap[user.icon] || imageMap["default"]}
-            />
-          </TouchableOpacity>
+        <TouchableOpacity
+  onPress={() => navigation.navigate("ChangeUsername", { user })}
+  style={[
+    tw`rounded-full m-2 p-2 shadow-lg`,
+    {
+      backgroundColor: (user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default")
+        ? "#FFFFFF"
+        : (
+            typeof user.icon === "string"
+              ? JSON.parse(user.icon).bgColor
+              : user.icon?.bgColor || "#FFFFFF"
+          )
+    }
+  ]}
+>
+  <View style={tw`w-20 h-20 rounded-full overflow-hidden`}>
+    {user.icon && (user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default") ? (
+      <Image
+        source={imageMap[user.icon] || imageMap["default"]}
+        style={tw`w-full h-full`}
+        resizeMode="cover"
+      />
+    ) : (
+      <Avatar
+        style={tw`w-full h-full`}
+        {...(typeof user.icon === "string" ? JSON.parse(user.icon) : user.icon)}
+      />
+    )}
+  </View>
+</TouchableOpacity>
+
+
+
           <TouchableOpacity
             onPress={() => navigation.navigate("ChangeUsername", { user })}
             style={[tw`absolute`, { bottom: 5, left: 75, backgroundColor: pastelGreenLight, borderRadius: 999, padding: 4 }]}

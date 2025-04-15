@@ -12,6 +12,7 @@ import {
 import tw from "../../components/tailwind";
 import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
+import Avatar from "@zamplyy/react-native-nice-avatar";
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -22,40 +23,67 @@ const imageMap = {
     "default": require("../../assets/user_icons/sloth.png")
 };
 
-const UserCard = ({ user, actions }) => (
-    <View style={tw`flex-row justify-between items-center p-4 border-b border-gray-200`}>
-        <View style={tw`flex-row items-center`}>
-            <Image source={imageMap[user.icon] || imageMap.default} style={tw`w-8 h-8 rounded-full mr-4`} />
-            <Text style={tw`text-base`}>{user.user_name}</Text>
-        </View>
-        <View style={tw`flex-row`}>
-            {actions.map(({ label, onPress, disabled }, index) => (
-                <TouchableOpacity
-                    key={index}
-                    onPress={onPress}
-                    disabled={disabled}
-                    style={[
-                        tw`ml-2 px-3 py-1 rounded`,
-                        label === "Pending" && tw`border border-green-600 border-dotted bg-transparent`,
-                        label === "Deny" && tw`bg-pink-200`,
-                        label === "✕" && tw`bg-transparent`,
-                        label === "Accept" && tw`bg-green-100`,
-                        label === "Request" && tw`bg-green-100`,
-                    ]}
+const UserCard = ({ user, actions, navigation, currentUserId }) => {
+    const isDefaultIcon = ["koala", "kangaroo", "sloth", "default"].includes(user.icon);
+
+    let avatarConfig = null;
+    try {
+        if (!isDefaultIcon && typeof user.icon === "string" && user.icon.trim() !== "") {
+            avatarConfig = JSON.parse(user.icon);
+        }
+    } catch (e) {
+        console.warn("Invalid avatar JSON for user:", user.user_name, user.icon);
+    }
+
+    return (
+        <View style={tw`flex-row justify-between items-center p-4 border-b border-gray-200`}>
+            <TouchableOpacity
+                onPress={() => navigation.navigate("FriendsProfile", {
+                    userId: user.user_id,
+                    currentUserId: currentUserId,
+                })}
+                style={tw`flex-row items-center`}
+            >
+                <View style={[tw`rounded-full mr-2 p-2`, {
+                    backgroundColor: isDefaultIcon ? "#FFFFFF" : avatarConfig?.bgColor || "#FFFFFF"
+                }]}
                 >
-                    <Text style={[
-                        tw`text-sm`,
-                        label === "Pending" && tw`text-green-600`,
-                        label === "Deny" && tw`text-red-700`,
-                        label === "✕" && tw`text-black`
-                    ]}>
-                        {label}
-                    </Text>
-                </TouchableOpacity>
-            ))}
+                    {isDefaultIcon ? (
+                        <Image source={imageMap[user.icon] || imageMap.default} style={tw`w-8 h-8 rounded-full`} />
+                    ) : avatarConfig ? (
+                        <Avatar style={tw`w-8 h-8`} {...avatarConfig} />
+                    ) : (
+                        <Image source={imageMap.default} style={tw`w-8 h-8 rounded-full`} />
+                    )}
+                </View>
+                <Text style={tw`text-base`}>{user.user_name}</Text>
+            </TouchableOpacity>
+
+            <View style={tw`flex-row`}>
+                {actions.map(({ label, onPress, disabled }, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        onPress={onPress}
+                        disabled={disabled}
+                        style={[tw`ml-2 px-3 py-1 rounded`,
+                            label === "Pending" && tw`border border-green-600 border-dotted bg-transparent`,
+                            label === "Deny" && tw`bg-pink-200`,
+                            label === "✕" && tw`bg-transparent`,
+                            label === "Accept" && tw`bg-green-100`,
+                            label === "Request" && tw`bg-green-100`
+                        ]}
+                    >
+                        <Text style={[tw`text-sm`,
+                            label === "Pending" && tw`text-green-600`,
+                            label === "Deny" && tw`text-red-700`,
+                            label === "✕" && tw`text-black`
+                        ]}>{label}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
         </View>
-    </View>
-);
+    );
+};
 
 const FriendScreen = ({ route, navigation }) => {
     const { user } = route.params;
@@ -63,6 +91,8 @@ const FriendScreen = ({ route, navigation }) => {
     const [allUsers, setAllUsers] = useState([]);
     const [friendships, setFriendships] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
+
+    
 
     const fetchUsersAndFriendships = async () => {
         try {
@@ -132,12 +162,25 @@ const FriendScreen = ({ route, navigation }) => {
     const pendingRequests = filteredUsers.filter(u => friendMap[u.user_id]?.status === "Pending" && friendMap[u.user_id].isMeSender);
     const suggestedUsers = filteredUsers.filter(u => !friendMap[u.user_id]);
 
+    const isDefault = icon => ["koala", "kangaroo", "sloth", "default"].includes(icon);
+    const avatarConfig = typeof user.icon === "string" && !isDefault(user.icon) ? JSON.parse(user.icon) : null;
+
     return (
         <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
-            <View style={tw`rounded-full m-2 p-2 bg-white shadow-lg`}>
-                <Image style={tw`w-12 h-12`} source={imageMap[user.icon] || imageMap["default"]} />
+            <View style={[tw`rounded-full m-2 p-2 shadow-lg`, {
+                backgroundColor: isDefault(user.icon)
+                    ? "#FFFFFF"
+                    : avatarConfig?.bgColor || "#FFFFFF"
+            }]}
+            >
+                {isDefault(user.icon) ? (
+                    <Image style={tw`w-12 h-12 rounded-full`} source={imageMap[user.icon] || imageMap["default"]} />
+                ) : (
+                    <Avatar style={tw`w-12 h-12`} {...avatarConfig} />
+                )}
             </View>
-            <View style={tw`flex pt-10 w-5/6 justify-center`}>
+
+            <View style={tw`flex pt-6 w-5/6 justify-center`}>
                 <TextInput
                     style={tw`px-4 py-2 border border-gray-300 rounded-full`}
                     placeholder="Search users..."
@@ -150,19 +193,19 @@ const FriendScreen = ({ route, navigation }) => {
                 <ActivityIndicator size="large" color="#32a852" />
             ) : (
                 <ScrollView style={tw`w-full`} contentContainerStyle={tw`items-center`}>
-
                     <View style={tw`flex w-5/6 justify-center`}>
-
                         {friendRequests.length > 0 && (
                             <Text style={tw`text-lg font-bold mt-4 mb-2`}>Friend Requests</Text>
                         )}
-                        {friendRequests.map(user => (
+                        {friendRequests.map(friend => (
                             <UserCard
-                                key={user.user_id}
-                                user={user}
+                                key={friend.user_id}
+                                user={friend}
+                                navigation={navigation}
+                                currentUserId={user.user_id}
                                 actions={[
-                                    { label: "Accept", onPress: () => acceptRequest(friendMap[user.user_id].id) },
-                                    { label: "Deny", onPress: () => denyRequest(friendMap[user.user_id].id) }
+                                    { label: "Accept", onPress: () => acceptRequest(friendMap[friend.user_id].id) },
+                                    { label: "Deny", onPress: () => denyRequest(friendMap[friend.user_id].id) }
                                 ]}
                             />
                         ))}
@@ -170,10 +213,12 @@ const FriendScreen = ({ route, navigation }) => {
                         {pendingRequests.length > 0 && (
                             <Text style={tw`text-lg font-bold mt-6 mb-2`}>Pending Requests</Text>
                         )}
-                        {pendingRequests.map(user => (
+                        {pendingRequests.map(friend => (
                             <UserCard
-                                key={user.user_id}
-                                user={user}
+                                key={friend.user_id}
+                                user={friend}
+                                navigation={navigation}
+                                currentUserId={user.user_id}
                                 actions={[{ label: "Pending", disabled: true }]}
                             />
                         ))}
@@ -181,13 +226,15 @@ const FriendScreen = ({ route, navigation }) => {
                         {suggestedUsers.length > 0 && (
                             <Text style={tw`text-lg font-bold mt-6 mb-2`}>Suggested For You</Text>
                         )}
-                        {suggestedUsers.map(user => (
+                        {suggestedUsers.map(friend => (
                             <UserCard
-                                key={user.user_id}
-                                user={user}
+                                key={friend.user_id}
+                                user={friend}
+                                navigation={navigation}
+                                currentUserId={user.user_id}
                                 actions={[
-                                    { label: "Request", onPress: () => sendRequest(user.user_id) },
-                                    { label: "✕", onPress: () => { /* Optional: remove from list */ } }
+                                    { label: "Request", onPress: () => sendRequest(friend.user_id) },
+                                    { label: "✕", onPress: () => { } }
                                 ]}
                             />
                         ))}
@@ -196,7 +243,7 @@ const FriendScreen = ({ route, navigation }) => {
             )}
             <View />
             <NavBar user={user} />
-        </SafeAreaView >
+        </SafeAreaView>
     );
 };
 

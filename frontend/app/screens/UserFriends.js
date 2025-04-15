@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import tw from "../../components/tailwind";
 import { Image } from 'expo-image';
+import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 

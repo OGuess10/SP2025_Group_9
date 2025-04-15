@@ -21,12 +21,7 @@ import ChangeUsernameScreen from "./screens/ChangeUserNameScreen";
 import UserPhotosScreen from "./screens/UserPhotosScreen";
 import UserFriends from "./screens/UserFriends";
 import OnboardingScreen from "./screens/Onboarding";
-import FriendsProfile from "./screens/friendsProfile";  
-
-
-
-
-
+import FriendsProfile from "./screens/friendsProfile";
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
 
 

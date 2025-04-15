@@ -372,6 +372,7 @@ const Activity = ({ route, navigation }) => {
         console.error("Failed to parse custom avatar:", error);
     }
 
+
     return (
         user ?
             <SafeAreaView style={tw`flex items-center justify-start bg-white w-full h-full`}>

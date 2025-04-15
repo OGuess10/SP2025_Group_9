@@ -32,6 +32,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
     npm install
     npm install @react-native-async-storage/async-storage
     npm install @zamplyy/react-native-nice-avatar --legacy-peer-deps
+    npm install react-native-swiper --legacy-peer-deps
    ```
 
 2. Start the app

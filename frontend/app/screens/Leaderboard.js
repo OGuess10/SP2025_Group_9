@@ -39,11 +39,17 @@ const Chart = ({ userId, navigation }) => {
                 try {
                     const response = await fetch(`${BACKEND_URL}/action/get_activity?user_id=${userId}`);
                     const data = await response.json();
-                    const formattedData = Object.keys(data.data).map((date) => ({
+                    const sortedDates = Object.keys(data.data).sort();
+                    let total = 0;
+                    const accumulatedData = sortedDates.map((date) => {
+                    total += data.data[date];
+                    return {
                         date,
-                        value: data.data[date],
-                    }));
-                    setActivity(formattedData);
+                        value: total,
+                    };
+                    });
+                    setActivity(accumulatedData);
+
                 } catch (error) {
                     console.error('Error fetching activity data:', error);
                 } finally {
@@ -77,26 +83,16 @@ const Chart = ({ userId, navigation }) => {
         );
     }
 
-    const monthlyData = {};
-    activity.forEach(({ date, value }) => {
-        const monthKey = format(parseISO(date), "yyyy-MM"); // Group by "YYYY-MM"
-        if (!monthlyData[monthKey]) {
-            monthlyData[monthKey] = { total: 0, count: 0 };
-        }
-        monthlyData[monthKey].total += value;
-        monthlyData[monthKey].count += 1;
-    });
-    const formattedLabels = Object.keys(monthlyData).map((monthKey) => ({
-        date: format(parseISO(monthKey + "-01"), "MMM yyyy"), // Convert to "Jan 2025" format
-        value: Math.round(monthlyData[monthKey].total / monthlyData[monthKey].count), // Average value
-    }));
+    const labels = activity.map(item => format(parseISO(item.date), "MMM d"));
+    const values = activity.map(item => item.value);
+
 
     return (
         <View style={tw`flex-1 p-4 items-center bg-white w-full h-full`}>
             <LineChart
                 data={{
-                    labels: formattedLabels.map(item => item.date),  // Dates as labels
-                    datasets: [{ data: activity.map(item => item.value) }] // Values as data
+                    labels: labels,
+                    datasets: [{ data: values }]
                 }}
                 width={screenWidth * 5 / 6}
                 height={screenHeight * 0.25}
@@ -106,13 +102,14 @@ const Chart = ({ userId, navigation }) => {
                     backgroundGradientFrom: "#ffffff",
                     backgroundGradientTo: "#ffffff",
                     decimalPlaces: 0,
-                    color: (opacity = 1) => `rgba(50, 168, 82, ${opacity})`, // Light Green Line
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Black text
-                    propsForDots: { r: "4", strokeWidth: "2", stroke: "#32a852" } // Green dots
+                    color: (opacity = 1) => `rgba(50, 168, 82, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    propsForDots: { r: "4", strokeWidth: "2", stroke: "#32a852" }
                 }}
-                bezier // Smooth curved line
+                bezier
                 style={{ borderRadius: 10 }}
-            />
+                />
+
         </View>
     );
 };

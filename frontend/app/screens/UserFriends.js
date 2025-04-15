@@ -81,10 +81,18 @@ const UserFriends = ({ route , navigation}) => {
             }
         >
             <View style={tw`flex-row items-center py-2 border-b border-gray-200`}>
-                <Image
-                    source={imageMap[item.icon] || imageMap["default"]}
-                    style={tw`w-8 h-8 rounded-full mr-4`}
-                />
+            {item.icon && typeof item.icon === "string" && item.icon.trim().startsWith("{") ? (
+            <Avatar
+                style={tw`w-8 h-8 mr-4`}
+                {...JSON.parse(item.icon)}
+            />
+            ) : (
+            <Image
+                source={imageMap[item.icon] || imageMap["default"]}
+                style={tw`w-8 h-8 rounded-full mr-4`}
+            />
+            )}
+
                 <Text style={[tw`text-base`, { fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
             </View>
         </TouchableOpacity>

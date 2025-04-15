@@ -23,14 +23,27 @@ const imageMap = {
 
 export default function ChangeUsernameScreen({ route, navigation }) {
     const { user } = route.params;
-    const [newUsername, setNewUsername] = useState(user.username || "");
+    const [newUsername, setNewUsername] = useState(user.user_name || "");
     const [statusMessage, setStatusMessage] = useState("");
     const [statusColor, setStatusColor] = useState("text-green-700");
 
-    const [selectedAnimal, setSelectedAnimal] = useState("default");
-    const [customAvatar, setCustomAvatar] = useState(null);
-    const [modalVisible, setModalVisible] = useState(false);
 
+    const [modalVisible, setModalVisible] = useState(false);
+    let initialAvatar = null;
+    let initialAnimal = "default";
+    try {
+        if (user.icon && typeof user.icon === "string" && user.icon.trim().startsWith("{")) {
+            initialAvatar = JSON.parse(user.icon);
+            initialAnimal = null;
+        } else {
+            initialAnimal = user.icon || "default";
+        }
+    } catch (e) {
+        console.warn("Invalid user icon JSON:", user.icon);
+    }
+
+    const [selectedAnimal, setSelectedAnimal] = useState(initialAnimal);
+    const [customAvatar, setCustomAvatar] = useState(initialAvatar);
     const [avatarConfig, setAvatarConfig] = useState(() =>
         genConfig({
             sex: "man",
@@ -75,26 +88,36 @@ export default function ChangeUsernameScreen({ route, navigation }) {
         }
 
         try {
+            const body = {
+                user_id: user.user_id,
+                new_username: newUsername,
+                new_icon: customAvatar ? JSON.stringify(customAvatar) : selectedAnimal
+            };
+    
             const response = await fetch(`${BACKEND_URL}/auth/change_username`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id: user.user_id, new_username: newUsername }),
+                body: JSON.stringify(body)
             });
-
+    
             const data = await response.json();
-
+    
             if (response.ok) {
-                setStatusMessage("Username updated successfully!");
+                setStatusMessage("Username and avatar updated successfully!");
                 setStatusColor("text-green-700");
+                setTimeout(() => {
+                    navigation.goBack();
+                }, 1000);
             } else {
                 setStatusMessage(data.error || "Something went wrong.");
                 setStatusColor("text-red-600");
             }
-        } catch (error) {
-            console.error("Error updating username:", error);
-            setStatusMessage("Failed to update username.");
-            setStatusColor("text-red-600");
-        }
+            } 
+            catch (error) {
+                console.error("Error updating profile:", error);
+                setStatusMessage("Failed to update profile.");
+                setStatusColor("text-red-600");
+            }
     };
 
     return (

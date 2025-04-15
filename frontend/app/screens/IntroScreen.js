@@ -3,6 +3,8 @@ import { View, Text, Button, TouchableOpacity, Image, StyleSheet, StatusBar, Ani
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
 import { supabase } from "../../supabaseClient";
+import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
+
 
 export default function IntroScreen({ navigation }) {
   let [fontsLoaded] = useFonts({

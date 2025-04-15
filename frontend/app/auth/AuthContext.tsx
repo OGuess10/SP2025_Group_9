@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
+
 interface AuthContextType {
   isAuthenticated: boolean;
   userId: string | null;
@@ -15,18 +17,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true); // Prevents flashing
 
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
-        if (storedUserId) {
+        const checkUserExists = await fetch(`${BACKEND_URL}/user/get_user?user_id=${storedUserId}`);
+        // check if userId is still in DB
+        if(!storedUserId || !checkUserExists.ok) {
+          await AsyncStorage.removeItem("userId");
+          setIsAuthenticated(false);
+          setUserId(null);
+        } else {
           setUserId(storedUserId);
           setIsAuthenticated(true);
-        }
-        else {
-          console.log("No valid user session found.");
-          setUserId(null);
-          setIsAuthenticated(false);
         }
       } catch (error) {
         console.error("Error checking auth status:", error);

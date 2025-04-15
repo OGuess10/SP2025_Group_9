@@ -206,7 +206,7 @@ const Leaderboard = ({ route, navigation }) => {
 
                 if (filter === 'Friends') {
                     const userIds = data.friend_ids || [];
-                    userIds.push(user.user_id); // ✅ Ensure current user is included
+                    userIds.push(user.user_id); 
 
                     const friendDataPromises = userIds.map(async (id) => {
                         const res = await fetch(`${BACKEND_URL}/user/get_user?user_id=${id}`);
@@ -216,7 +216,7 @@ const Leaderboard = ({ route, navigation }) => {
                     const friendsData = await Promise.all(friendDataPromises);
                     filteredUsers = friendsData
                         .filter((u) => u.points > 0)
-                        .sort((a, b) => b.points - a.points); // ✅ sort by points descending
+                        .sort((a, b) => b.points - a.points); 
 
                 } else {
                     filteredUsers = (data.users || []).filter((u) => u.points > 0);
@@ -319,6 +319,14 @@ const Leaderboard = ({ route, navigation }) => {
                                 }
 
                                 return (
+                                    <TouchableOpacity
+                                    onPress={() =>
+                                    navigation.navigate("FriendsProfile", {
+                                        userId: item.user_id,
+                                        currentUserId: user.user_id,
+                                    })
+                                    }
+                                    >
                                     <View style={tw`flex-row justify-between items-center py-3 border-b border-gray-200`}>
                                         <View style={tw`flex-row items-center`}>
                                             <Text style={[tw`mr-2 w-6 text-right`, { fontFamily: "Nunito_700Bold" }]}>{index + 1}</Text>
@@ -339,6 +347,8 @@ const Leaderboard = ({ route, navigation }) => {
                                         </View>
                                         <Text style={[tw`text-base`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>{item.points}</Text>
                                     </View>
+                                    </TouchableOpacity>
+
                                 );
                             }}
                         />

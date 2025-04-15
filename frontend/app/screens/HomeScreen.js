@@ -101,7 +101,6 @@ const HomeScreen = ({ route, navigation }) => {
           }
 
           // Get friend count
-          // Get friend count
           const friendsRes = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${user_id}`);
           const friendData = await friendsRes.json();
           if (friendsRes.ok && Array.isArray(friendData.friend_ids)) {
@@ -193,9 +192,12 @@ const HomeScreen = ({ route, navigation }) => {
         </View>
       </View>
 
-      {/* Username */}
-      <View style={tw`w-full px-10 mt-2 items-start`}>
+      {/* Username and Help Button*/}
+      <View style={tw`w-full px-10 mt-2 flex-row justify-between`}>
         <Text style={[tw`text-lg`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>{user.user_name}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Onboarding", { user_id: user.user_id })} style={[tw`items-center shadow-lg`, { backgroundColor: "#fff", borderRadius: 999 }]}>
+          <Text style={[tw`text-xl font-bold px-2`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>?</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Tree Display */}

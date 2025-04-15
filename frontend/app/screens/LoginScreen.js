@@ -146,11 +146,10 @@ export default function LoginScreen({ navigation }) {
       });
       const data = await response.json();
       if (response.ok) {
-        // alert('Login successful');
         // Store user ID to async so users don't have to login everytime
         await login(data.user.user_id.toString());
-        alert("Welcome to EcoHolic! Add activities to grow your tree. The more points you earn, the bigger your tree gets!");
-        navigation.replace("Home", { user_id: data.user.user_id });
+        navigation.replace("Onboarding", { user_id: data.user.user_id });
+        // navigation.replace("Home", { user_id: data.user.user_id });
 
       } else {
         alert(data.error || 'Invalid or expired OTP');

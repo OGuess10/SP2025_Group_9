@@ -20,6 +20,13 @@ const ecoActions = [
     { id: '5', icon: 'bicycle', label: 'Bike ', points: 25 }
 ];
 
+const imageMap = {
+    "kanagroo": require("../../assets/user_icons/kangaroo.png"),
+    "koala": require("../../assets/user_icons/koala.png"),
+    "sloth": require("../../assets/user_icons/sloth.png"),
+    "default": require("../../assets/user_icons/sloth.png")
+};
+
 const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => {
 
     const [permission, requestPermission] = useCameraPermissions();
@@ -355,12 +362,6 @@ const Activity = ({ route, navigation }) => {
         setUserPoints(user.points);
     }, [user.points]);
 
-    const imageMap = {
-        "kanagroo": require("../../assets/user_icons/kangaroo.png"),
-        "koala": require("../../assets/user_icons/koala.png"),
-        "sloth": require("../../assets/user_icons/sloth.png"),
-        "default": require("../../assets/user_icons/sloth.png")
-    };
     const isCustomAvatar = user.icon && user.icon.startsWith('{');
     let parsedAvatar = null;
     try {
@@ -370,7 +371,6 @@ const Activity = ({ route, navigation }) => {
     } catch (error) {
         console.error("Failed to parse custom avatar:", error);
     }
-
 
     return (
         user ?
@@ -410,7 +410,7 @@ const Activity = ({ route, navigation }) => {
                 <NavBar user={{ ...user, points: userPoints }} />
             </SafeAreaView>
             :
-            <View></View>
+            <View><Text>Loading...</Text></View>
     );
 };
 

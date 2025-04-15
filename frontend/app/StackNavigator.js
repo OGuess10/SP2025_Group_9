@@ -20,6 +20,7 @@ import Activity from "./screens/Activity";
 import ChangeUsernameScreen from "./screens/ChangeUserNameScreen";
 import UserPhotosScreen from "./screens/UserPhotosScreen";
 import UserFriends from "./screens/UserFriends";
+import OnboardingScreen from "./screens/Onboarding";
 import FriendsProfile from "./screens/friendsProfile";  
 
 
@@ -82,6 +83,14 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Loading"
           component={LoadingScreen}
+          options={{
+            cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+          }}
+        />
+        <Stack.Screen 
+          name="Onboarding"
+          component={OnboardingScreen}
+          initialParams={{ user_id: userId }}
           options={{
             cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
           }}

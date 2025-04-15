@@ -20,11 +20,8 @@ import Activity from "./screens/Activity";
 import ChangeUsernameScreen from "./screens/ChangeUserNameScreen";
 import UserPhotosScreen from "./screens/UserPhotosScreen";
 import UserFriends from "./screens/UserFriends";
-
-
-
-
-
+import OnboardingScreen from "./screens/Onboarding";
+import FriendsProfile from "./screens/friendsProfile";
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
 
 
@@ -85,6 +82,14 @@ const StackNavigator = () => {
             cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
           }}
         />
+        <Stack.Screen 
+          name="Onboarding"
+          component={OnboardingScreen}
+          initialParams={{ user_id: userId }}
+          options={{
+            cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+          }}
+        />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -99,6 +104,7 @@ const StackNavigator = () => {
         <Stack.Screen name="ChangeUsername" component={ChangeUsernameScreen} />
         <Stack.Screen name="UserPhotos" component={UserPhotosScreen} />
         <Stack.Screen name="UserFriends" component={UserFriends} />
+        <Stack.Screen name="FriendsProfile" component={FriendsProfile} />
 
       </Stack.Navigator>
     </NavigationContainer>

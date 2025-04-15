@@ -4,6 +4,7 @@ import random
 from app.models import User
 from app import db, mail
 from flask_mail import Message
+import re
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -43,7 +44,7 @@ def send_otp():
             otp_expiry=expiry,
             user_name=username,
             points=0,
-            icon="",
+            icon="default",
         )
         db.session.add(user)
 
@@ -96,33 +97,34 @@ def change_username():
     data = request.get_json()
     user_id = data.get("user_id")
     new_username = data.get("new_username", "").strip()
+    new_icon = data.get("new_icon")  # Can be default icon name or JSON string for custom avatar
 
     if not user_id or not new_username:
         return jsonify({"error": "Missing user_id or new_username"}), 400
 
-    # Normalize username
     new_username = new_username.lower()
-
-    # Optional validation rules
     if len(new_username) < 3 or len(new_username) > 30:
         return jsonify({"error": "Username must be between 3 and 30 characters"}), 400
+    if not re.match(r"^[a-zA-Z0-9._]+$", new_username):
+        return jsonify({"error": "Username can only contain letters, numbers, dots, and underscores."}), 400
 
-    if not new_username.isalnum():
-        return jsonify({"error": "Username must be alphanumeric only"}), 400
 
-    # Uniqueness check
     existing_user = User.query.filter_by(user_name=new_username).first()
     if existing_user and existing_user.user_id != int(user_id):
         return jsonify({"error": "Username already taken"}), 409
 
-    # Find and update user
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
 
     user.user_name = new_username
+    if new_icon is not None:
+        user.icon = new_icon  # Store either default animal or JSON string of avatar config
+
     db.session.commit()
 
-    return jsonify(
-        {"message": "Username updated successfully", "user_name": user.user_name}
-    ), 200
+    return jsonify({
+        "message": "Username and icon updated successfully",
+        "user_name": user.user_name,
+        "icon": user.icon
+    }), 200

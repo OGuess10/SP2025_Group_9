@@ -36,7 +36,7 @@ def upload_blob():
         db.session.add(new_image)
 
         # Log action with bonus points
-        total_points = int(base_points) + 5  # 🎉 Add 5 bonus points
+        total_points = int(base_points) + 5  
 
         new_action = Action(
             user_id=user_id,

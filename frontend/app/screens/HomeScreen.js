@@ -127,47 +127,50 @@ const HomeScreen = ({ route, navigation }) => {
     sloth: require("../../assets/user_icons/sloth.png"),
     default: require("../../assets/user_icons/sloth.png"),
   };
+  const isDefaultIcon = user?.icon && ["koala", "kangaroo", "sloth", "default"].includes(user.icon);
+  const isCustomAvatar = user?.icon && typeof user.icon === "string" && user.icon.trim().startsWith("{"
+
+  );
+
+  let avatarConfig = {};
+  try {
+    avatarConfig = isCustomAvatar ? JSON.parse(user.icon) : {};
+  } catch (e) {
+    avatarConfig = {};
+  }
+
+  const avatarBgColor = isDefaultIcon
+    ? "#FFFFFF"
+    : (avatarConfig?.bgColor || "#FFFFFF");
 
 
   return user ? (
     <SafeAreaView style={[tw`flex items-center w-full h-full`, { backgroundColor: "#FFFFFF" }]}>
       <StatusBar barStyle="light-content" />
-
-      {/* Header: Profile and Stats */}
       <View style={tw`flex-row items-center justify-between mt-6 px-6`}>
         <View>
-        <TouchableOpacity
-  onPress={() => navigation.navigate("ChangeUsername", { user })}
-  style={[
-    tw`rounded-full m-2 p-2 shadow-lg`,
-    {
-      backgroundColor: (user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default")
-        ? "#FFFFFF"
-        : (
-            typeof user.icon === "string"
-              ? JSON.parse(user.icon).bgColor
-              : user.icon?.bgColor || "#FFFFFF"
-          )
-    }
-  ]}
->
-  <View style={tw`w-20 h-20 rounded-full overflow-hidden`}>
-    {user.icon && (user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default") ? (
-      <Image
-        source={imageMap[user.icon] || imageMap["default"]}
-        style={tw`w-full h-full`}
-        resizeMode="cover"
-      />
-    ) : (
-      <Avatar
-        style={tw`w-full h-full`}
-        {...(typeof user.icon === "string" ? JSON.parse(user.icon) : user.icon)}
-      />
-    )}
-  </View>
-</TouchableOpacity>
-
-
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ChangeUsername", { user })}
+            style={[
+              tw`rounded-full m-2 p-2 shadow-lg`,
+              { backgroundColor: avatarBgColor }
+            ]}
+          >
+            <View style={tw`w-20 h-20 rounded-full overflow-hidden`}>
+              {isDefaultIcon ? (
+                <Image
+                  source={imageMap[user.icon] || imageMap["default"]}
+                  style={tw`w-full h-full`}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Avatar
+                  style={tw`w-full h-full`}
+                  {...avatarConfig}
+                />
+              )}
+            </View>
+          </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => navigation.navigate("ChangeUsername", { user })}
@@ -178,62 +181,35 @@ const HomeScreen = ({ route, navigation }) => {
         </View>
 
         <View style={tw`flex-row justify-around flex-1 ml-6`}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("UserPhotos", { userId: user.user_id })}
-            style={tw`items-center`}
-          >
+          <TouchableOpacity onPress={() => navigation.navigate("UserPhotos", { userId: user.user_id })} style={tw`items-center`}>
             <Text style={[tw`text-xl font-bold`, { fontFamily: "Nunito_700Bold" }]}>{postCount}</Text>
             <Text style={[tw`text-sm`, { fontFamily: "Nunito_400Regular" }]}>Actions</Text>
           </TouchableOpacity>
 
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate("UserFriends", { userId: user.user_id })}
-            style={tw`items-center`}
-          >
+          <TouchableOpacity onPress={() => navigation.navigate("UserFriends", { userId: user.user_id })} style={tw`items-center`}>
             <Text style={[tw`text-xl font-bold`, { fontFamily: "Nunito_700Bold" }]}>{friendCount}</Text>
             <Text style={[tw`text-sm`, { fontFamily: "Nunito_400Regular" }]}>Friends</Text>
           </TouchableOpacity>
-
-
         </View>
       </View>
 
       {/* Username */}
       <View style={tw`w-full px-10 mt-2 items-start`}>
-        <Text style={[tw`text-lg`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>
-          {user.user_name}
-        </Text>
+        <Text style={[tw`text-lg`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>{user.user_name}</Text>
       </View>
-
-
-
 
       {/* Tree Display */}
       <View style={[tw`w-5/6 rounded-xl shadow-lg items-start p-3 mt-6`, { backgroundColor: pastelGreenLight }]}>
-
-
-        {/* Top Row: Points + Share */}
         <View style={tw`flex-row justify-between items-center w-full mb-4`}>
-          <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>
-            Points: {points}
-          </Text>
-
-          <TouchableOpacity
-            onPress={() => setShowShareModal(true)}
-            style={tw`px-2 py-2 rounded-lg `}
-          >
+          <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>Points: {points}</Text>
+          <TouchableOpacity onPress={() => setShowShareModal(true)} style={tw`px-2 py-2 rounded-lg `}>
             <FontAwesome5 name="download" size={16} color="#1B5E20" />
           </TouchableOpacity>
-
         </View>
-
-
         <GrowingTree seed={12345} points={points} />
       </View>
 
       <NavBar user={user} />
-
 
       {/* Share Modal */}
       <Modal visible={showShareModal} animationType="slide" transparent={true}>
@@ -241,56 +217,33 @@ const HomeScreen = ({ route, navigation }) => {
           <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0 }} style={[tw`rounded-xl shadow-lg`, { backgroundColor: pastelGreenLight }]}>
             <View style={tw`p-4 rounded-lg shadow-lg`}>
               <Text style={[tw`text-xl`, { fontFamily: "Nunito_700Bold" }]}>{user.user_name}'s Tree</Text>
-              <Text style={[tw`text-base`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>
-                Points: {points}
-              </Text>
+              <Text style={[tw`text-base`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>Points: {points}</Text>
               <GrowingTree seed={12345} points={points} />
-
             </View>
-
-
-            {/* Timestamp*/}
             <View style={tw`flex-row justify-between items-center`}>
-              <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>
-              </Text>
-
               <Text style={[tw`text-xs text-gray-600 py-3 px-3`, { fontFamily: "Nunito_400Regular", fontStyle: "italic" }]}>
                 {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
               </Text>
-
             </View>
           </ViewShot>
 
-          <TouchableOpacity
-            style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
-            onPress={handleShare}
-          >
+          <TouchableOpacity style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`} onPress={handleShare}>
             <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>Share</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={tw`mt-4 w-5/6 py-3 bg-blue-100 rounded-lg shadow-lg items-center`}
-            onPress={handleSaveToPhotos}
-          >
+          <TouchableOpacity style={tw`mt-4 w-5/6 py-3 bg-blue-100 rounded-lg shadow-lg items-center`} onPress={handleSaveToPhotos}>
             <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>Save to Photos</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={tw`mt-4 w-5/6 py-3 bg-gray-100 rounded-lg shadow-lg items-center`}
-            onPress={() => setShowShareModal(false)}
-          >
+          <TouchableOpacity style={tw`mt-4 w-5/6 py-3 bg-gray-100 rounded-lg shadow-lg items-center`} onPress={() => setShowShareModal(false)}>
             <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>Close</Text>
           </TouchableOpacity>
         </View>
       </Modal>
-
-    </SafeAreaView >
+    </SafeAreaView>
   ) : (
-    <View>
-    </View>
+    <View />
   );
 };
 
-
 export default HomeScreen;
-

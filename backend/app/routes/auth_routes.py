@@ -4,6 +4,7 @@ import random
 from app.models import User
 from app import db, mail
 from flask_mail import Message
+import re
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -43,7 +44,7 @@ def send_otp():
             otp_expiry=expiry,
             user_name=username,
             points=0,
-            icon="",
+            icon="default",
         )
         db.session.add(user)
 
@@ -104,8 +105,9 @@ def change_username():
     new_username = new_username.lower()
     if len(new_username) < 3 or len(new_username) > 30:
         return jsonify({"error": "Username must be between 3 and 30 characters"}), 400
-    if not new_username.isalnum():
-        return jsonify({"error": "Username must be alphanumeric only"}), 400
+    if not re.match(r"^[a-zA-Z0-9._]+$", new_username):
+        return jsonify({"error": "Username can only contain letters, numbers, dots, and underscores."}), 400
+
 
     existing_user = User.query.filter_by(user_name=new_username).first()
     if existing_user and existing_user.user_id != int(user_id):

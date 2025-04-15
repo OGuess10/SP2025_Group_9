@@ -13,13 +13,17 @@ def get_user():
 
     user = User.query.get(user_id)
     if user:
+        if not user.icon:
+            user.icon = "default"
+            db.session.commit()
         return jsonify(
             {
                 "user_id": user.user_id,
                 "user_name": user.user_name,
                 "email": user.email,
                 "points": user.points,
-                "icon": user.icon,
+                "icon": user.icon if user.icon else "default",
+
             }
         ), 200
     else:
@@ -34,7 +38,8 @@ def get_all_users():
             "user_id": user.user_id,
             "user_name": user.user_name,
             "points": user.points,
-            "icon": user.icon,
+            "icon": user.icon if user.icon else "default",
+
         }
         for user in users
     ]

@@ -118,11 +118,11 @@ export default function LoginScreen({ navigation }) {
         setResendCooldown(10); // Start cooldown
         alert('OTP sent successfully!');
       } else {
-        alert('Failed to send OTP');
+        alert('Failed to send. Make sure your email is correct.');
       }
     } catch (error) {
-      console.error('Error sending OTP:', error);
-      alert('Something went wrong, please try again');
+      //console.error('Error sending OTP:', error);
+      alert('Error sending OTP. Check your network connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -155,8 +155,8 @@ export default function LoginScreen({ navigation }) {
         alert(data.error || 'Invalid or expired OTP');
       }
     } catch (error) {
-      console.error('Error verifying OTP:', error);
-      alert('Something went wrong, please try again');
+      console.log('Error verifying OTP:', error);
+      alert('Something went wrong. Please check your network connection and try again.');
     } finally {
       setLoading(false);
     }

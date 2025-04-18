@@ -23,20 +23,23 @@ export default function UserPhotosScreen({ route, navigation }) {
     const [loading, setLoading] = useState(true);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [error, setError] = useState(false);
+
+    const fetchPhotos = async () => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/action/get_user_photos?user_id=${userId}`);
+            const data = await response.json();
+            setPhotos(data.photos);
+            setError(false);
+        } catch (err) {
+            console.log(err);
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchPhotos = async () => {
-            try {
-                const response = await fetch(`${BACKEND_URL}/action/get_user_photos?user_id=${userId}`);
-                const data = await response.json();
-                setPhotos(data.photos);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchPhotos();
     }, [userId]);
 
@@ -59,7 +62,7 @@ export default function UserPhotosScreen({ route, navigation }) {
 
     if (loading) return <ActivityIndicator size="large" />;
 
-    return (
+    return !error ? (
         <View style={tw`flex-1 bg-white p-4`}>
             {/* Header */}
             <View style={tw`flex-row items-center mb-4`}>
@@ -118,5 +121,25 @@ export default function UserPhotosScreen({ route, navigation }) {
             </View>
         </Modal>
         </View>
-    );
+        ) : (
+            <View style={tw`flex-1 justify-center items-center bg-white px-4`}>
+              <View style={tw`rounded-xl shadow-lg bg-green-50 p-6 items-center`}>
+                <Text style={[tw`text-xl mb-2 text-green-900`, { fontFamily: "Nunito_700Bold" }]}>
+                  ⚠️ Connection Issue
+                </Text>
+                <Text style={[tw`text-base text-center text-green-900`, { fontFamily: "Nunito_400Regular" }]}>
+                  We couldn’t connect to the server. Check your internet or try again shortly.
+                </Text>
+              </View>
+        
+              <TouchableOpacity
+                style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
+                onPress={fetchPhotos} // define this function to retry the request
+              >
+                <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>
+                  Try Again
+                </Text>
+              </TouchableOpacity>
+            </View>
+        );
 }

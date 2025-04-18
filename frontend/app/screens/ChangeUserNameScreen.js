@@ -116,7 +116,7 @@ export default function ChangeUsernameScreen({ route, navigation }) {
             }
             } 
             catch (error) {
-                console.error("Error updating profile:", error);
+                console.log("Error updating profile:", error);
                 setStatusMessage("Failed to update profile.");
                 setStatusColor("text-red-600");
             }

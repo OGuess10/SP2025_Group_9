@@ -81,41 +81,40 @@ const HomeScreen = ({ route, navigation }) => {
     }).start();
   };
 
+  const fetchUserData = async () => {
+    try {
+      // Get user info
+      const response = await fetch(`${BACKEND_URL}/user/get_user?user_id=${user_id}`);
+      const data = await response.json();
+      if (response.ok) {
+        setUser(data);
+        setPoints(data.points);
+      }
+
+      // Get action count
+      const actionRes = await fetch(`${BACKEND_URL}/action/get_action_count?user_id=${user_id}`);
+      const actionData = await actionRes.json();
+      if (actionRes.ok) {
+        setPostCount(actionData.count);
+      }
+
+      // Get friend count
+      const friendsRes = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${user_id}`);
+      const friendData = await friendsRes.json();
+      if (friendsRes.ok && Array.isArray(friendData.friend_ids)) {
+        setFriendCount(friendData.friend_ids.length);
+      }
+
+
+    } catch (error) {
+      Alert.alert("Error", "Failed to load user data. Please check your network connection.");
+      console.log(error);
+    }
+  };
+
   useFocusEffect(
     React.useCallback(() => {
-      const fetchUserData = async () => {
-        try {
-          // Get user info
-          const response = await fetch(`${BACKEND_URL}/user/get_user?user_id=${user_id}`);
-          const data = await response.json();
-          if (response.ok) {
-            setUser(data);
-            setPoints(data.points);
-          }
-
-          // Get action count
-          const actionRes = await fetch(`${BACKEND_URL}/action/get_action_count?user_id=${user_id}`);
-          const actionData = await actionRes.json();
-          if (actionRes.ok) {
-            setPostCount(actionData.count);
-          }
-
-          // Get friend count
-          const friendsRes = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${user_id}`);
-          const friendData = await friendsRes.json();
-          if (friendsRes.ok && Array.isArray(friendData.friend_ids)) {
-            setFriendCount(friendData.friend_ids.length);
-          }
-
-
-        } catch (error) {
-          Alert.alert("Error", "Failed to load user data.");
-          console.error(error);
-        }
-      };
-
       fetchUserData();
-
     }, [user_id])
   );
 
@@ -244,7 +243,25 @@ const HomeScreen = ({ route, navigation }) => {
       </Modal>
     </SafeAreaView>
   ) : (
-    <View />
+    <View style={tw`flex-1 justify-center items-center bg-white px-4`}>
+      <View style={tw`rounded-xl shadow-lg bg-green-50 p-6 items-center`}>
+        <Text style={[tw`text-xl mb-2 text-green-900`, { fontFamily: "Nunito_700Bold" }]}>
+          ⚠️ Connection Issue
+        </Text>
+        <Text style={[tw`text-base text-center text-green-900`, { fontFamily: "Nunito_400Regular" }]}>
+          We couldn’t connect to the server. Check your internet or try again shortly.
+        </Text>
+      </View>
+
+      <TouchableOpacity
+        style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
+        onPress={fetchUserData} // define this function to retry the request
+      >
+        <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>
+          Try Again
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 

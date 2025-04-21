@@ -102,6 +102,7 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
             onClose(); // Close camera modal
         } catch (error) {
             console.log("Upload failed:", error);
+            Alert.alert("Error","Failed to submit photo. Please check your network connection.");
         }
     };
 
@@ -230,8 +231,8 @@ const ActivityList = ({ user, setUserPoints }) => {
             Alert.alert('Good job!', `You have earned ${action.points} points! 🎉`);
 
         } catch (error) {
-            console.error('Error logging action:', error);
-            Alert.alert('Error', 'Something went wrong while adding the action.');
+            console.log('Error logging action:', error);
+            Alert.alert('Error', 'Something went wrong while adding the action. Please check your network connection.');
         }
     };
 

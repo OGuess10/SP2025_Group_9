@@ -14,6 +14,7 @@ import {
 import tw from "../../components/tailwind";
 import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -30,32 +31,34 @@ const UserFriends = ({ route , navigation}) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const loadFriends = async () => {
-        try {
-            const res = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${userId}`);
-            const data = await res.json();
-            const ids = data.friend_ids || [];
+    useFocusEffect(
+        React.useCallback(() => {
+            const loadFriends = async () => {
+                try {
+                    const res = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${userId}`);
+                    const data = await res.json();
+                    const ids = data.friend_ids || [];
 
-            const userData = await Promise.all(
-                ids.map(async (id) => {
-                    const uRes = await fetch(`${BACKEND_URL}/user/get_user?user_id=${id}`);
-                    return await uRes.json();
-                })
-            );
+                    const userData = await Promise.all(
+                        ids.map(async (id) => {
+                            const uRes = await fetch(`${BACKEND_URL}/user/get_user?user_id=${id}`);
+                            return await uRes.json();
+                        })
+                    );
 
-            setFriends(userData);
-            setError(false);
-        } catch (err) {
-            console.log("Failed to load friends:", err);
-            setError(true);
-        } finally {
-            setLoading(false);
-        }
-    };
+                    setFriends(userData);
+                    setError(false);
+                } catch (err) {
+                    console.log("Failed to load friends:", err);
+                    setError(true);
+                } finally {
+                    setLoading(false);
+                }
+            };
 
-    useEffect(() => {
-        loadFriends();
-    }, [userId]);
+            loadFriends();
+        }, [userId])
+    );
 
     if (loading) return <ActivityIndicator size="large" color="#32a852" style={tw`mt-10`} />;
 

@@ -186,6 +186,7 @@ const FriendScreen = ({ route, navigation }) => {
                 <TextInput
                     style={tw`px-4 py-2 border border-gray-300 rounded-full`}
                     placeholder="Search users..."
+                    placeholderTextColor="#909090"
                     value={searchText}
                     onChangeText={setSearchText}
                 />
@@ -236,7 +237,7 @@ const FriendScreen = ({ route, navigation }) => {
                                 currentUserId={user.user_id}
                                 actions={[
                                     { label: "Request", onPress: () => sendRequest(friend.user_id) },
-                                    { label: "✕", onPress: () => { } }
+                                    // { label: "✕", onPress: () => { } }
                                 ]}
                             />
                         ))}

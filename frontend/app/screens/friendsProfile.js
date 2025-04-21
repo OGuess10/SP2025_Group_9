@@ -95,40 +95,42 @@ export default function FriendsProfile({ route, navigation }) {
   const [photos, setPhotos] = useState([]);
   const [isFriend, setIsFriend] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const loadData = async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/user/get_user?user_id=${userId}`);
+      const info = await res.json();
+      setUserInfo(info);
+  
+      if (userId === currentUserId) {
+        setIsFriend(true);
+        const photoRes = await fetch(`${BACKEND_URL}/action/get_user_photos?user_id=${userId}`);
+        const photoData = await photoRes.json();
+        setPhotos(photoData.photos);
+        return;
+      }
+  
+      const friendsRes = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${currentUserId}`);
+      const friendData = await friendsRes.json();
+  
+      if (friendData.friend_ids.includes(userId)) {
+        setIsFriend(true);
+        const photoRes = await fetch(`${BACKEND_URL}/action/get_user_photos?user_id=${userId}`);
+        const photoData = await photoRes.json();
+        setPhotos(photoData.photos);
+      }
+      setError(false);
+  
+    } catch (err) {
+      console.log("Error loading profile data:", err);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-        try {
-          const res = await fetch(`${BACKEND_URL}/user/get_user?user_id=${userId}`);
-          const info = await res.json();
-          setUserInfo(info);
-      
-          if (userId === currentUserId) {
-            setIsFriend(true);
-            const photoRes = await fetch(`${BACKEND_URL}/action/get_user_photos?user_id=${userId}`);
-            const photoData = await photoRes.json();
-            setPhotos(photoData.photos);
-            return;
-          }
-      
-          const friendsRes = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${currentUserId}`);
-          const friendData = await friendsRes.json();
-      
-          if (friendData.friend_ids.includes(userId)) {
-            setIsFriend(true);
-            const photoRes = await fetch(`${BACKEND_URL}/action/get_user_photos?user_id=${userId}`);
-            const photoData = await photoRes.json();
-            setPhotos(photoData.photos);
-          }
-      
-        } catch (err) {
-          console.error("Error loading profile data:", err);
-        } finally {
-          setLoading(false);
-        }
-      };
-      
-
     loadData();
   }, [userId, currentUserId]);
 
@@ -140,7 +142,7 @@ export default function FriendsProfile({ route, navigation }) {
     );
   }
 
-  return (
+  return !error ? (
     <View style={tw`flex-1 justify-center items-center bg-white`}>
       <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
         {/* Back Button */}
@@ -213,5 +215,25 @@ export default function FriendsProfile({ route, navigation }) {
         )}
       </View>
     </View>
+    ) : (
+      <View style={tw`flex-1 justify-center items-center bg-white px-4`}>
+        <View style={tw`rounded-xl shadow-lg bg-green-50 p-6 items-center`}>
+          <Text style={[tw`text-xl mb-2 text-green-900`, { fontFamily: "Nunito_700Bold" }]}>
+            ⚠️ Connection Issue
+          </Text>
+          <Text style={[tw`text-base text-center text-green-900`, { fontFamily: "Nunito_400Regular" }]}>
+            We couldn’t connect to the server. Check your internet or try again shortly.
+          </Text>
+        </View>
+  
+        <TouchableOpacity
+          style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
+          onPress={loadData} // define this function to retry the request
+        >
+          <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>
+            Try Again
+          </Text>
+        </TouchableOpacity>
+      </View>
   );
 }

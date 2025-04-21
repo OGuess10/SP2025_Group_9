@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  Alert
 } from 'react-native';
 import tw from "../../components/tailwind";
 import Avatar from "@zamplyy/react-native-nice-avatar";
@@ -44,6 +45,48 @@ const UserIcon = ({ icon, size = 80 }) => {
 
   );
 };
+
+const handleUnfriendPress = (navigation, user_id, friend_id) => {
+  Alert.alert(
+    'Unfriend User',
+    'Are you sure you want to remove this person from your friends list?',
+    [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Unfriend',
+        onPress: () => unfriend(navigation, user_id, friend_id),
+        style: 'destructive',
+      },
+    ],
+    { cancelable: true }
+  );
+};
+
+
+const unfriend = async (navigation, user_id, friend_id) => {
+  try {
+    const response = await fetch(`${BACKEND_URL}/user/unfriend`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id, friend_id })
+    });
+
+    if (!response.ok) {
+      console.log("user_id: " + user_id + " friend_id: " + friend_id);
+      throw new Error('Failed to unfriend user');
+    }
+    console.log('Unfriended successfully');
+    Alert.alert("Success", "Unfriend was succesful!");
+    navigation.goBack();
+  } catch (error) {
+    console.log('Error unfriending:', error);
+    Alert.alert("Error", "Could not unfriend user. Please check your network connection and try again.");
+  }
+};
+
 
 export default function FriendsProfile({ route, navigation }) {
   const { userId, currentUserId } = route.params;
@@ -100,8 +143,6 @@ export default function FriendsProfile({ route, navigation }) {
   return (
     <View style={tw`flex-1 justify-center items-center bg-white`}>
       <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-      
-
         {/* Back Button */}
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -110,6 +151,16 @@ export default function FriendsProfile({ route, navigation }) {
           <FontAwesome5 name="chevron-left" size={20} color="#1B5E20" />
         </TouchableOpacity>
 
+        {/* Unfriend button */}
+        {isFriend && userId !== currentUserId && (
+          <TouchableOpacity
+          style={tw`m-2 px-3 py-1 rounded bg-pink-200 absolute top-4 right-4`}
+          onPress={() => handleUnfriendPress(navigation, userId, currentUserId)}
+          >
+              <Text style={[tw`text-xs text-red-700`, { fontFamily: "Nunito_700Bold" }]}
+              >Unfriend</Text>
+          </TouchableOpacity>
+        )}
         
         {/* Icon in background circle */}
         <View
@@ -134,8 +185,6 @@ export default function FriendsProfile({ route, navigation }) {
 >
   <UserIcon icon={userInfo?.icon} size={64} />
 </View>
-
-
         {/* Username */}
         <Text style={tw`text-xl font-bold mb-2`}>{userInfo?.user_name}</Text>
 

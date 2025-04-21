@@ -207,7 +207,7 @@ def unfriend():
         db.session.commit()
         return jsonify({"message": "Unfriended"}), 200
 
-    return jsonify({"error": "Friendship not found"}), 404
+    return jsonify({"error": "Friendship not found. user_id=" + str(user_id) + " friend id=" + str(friend_id)}), 404
 
 
 @user_bp.route("/get_accepted_friends", methods=["GET"])

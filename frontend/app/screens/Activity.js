@@ -470,7 +470,7 @@ const Activity = ({ route, navigation }) => {
             parsedAvatar = JSON.parse(user.icon);
         }
     } catch (error) {
-        console.error("Failed to parse custom avatar:", error);
+        console.log("Failed to parse custom avatar:", error);
     }
 
 

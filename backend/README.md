@@ -2,12 +2,14 @@
 
 1. Install requirements
 
-   ```bash
+   ```
+      bash
       pip install -r requirements.txt
    ```
 
 2. Set up database:
-   ```mkdir -p db
+   ```
+      mkdir -p db
       touch db/database.db
    ```
    Recommend downloading SQL editor or viewer extension on VS code
@@ -15,7 +17,8 @@
    Ask Mijung for GMAIL_PW 
 
 4. Run backend through docker. (First go to root repo)
-   ```docker compose build
+   ```
+      docker compose build
       docker compose up
    ```
 
@@ -24,9 +27,9 @@
    Create an ngrok account if you do not have one and follow setup instructions: https://ngrok.com/
 
    Then run
-   ````ngrok http 8000
-
-   ````
+   ```
+      ngrok http 8080
+   ```
 
 6. Run Kubernetes
    
@@ -38,14 +41,15 @@ Prerequisites
 
 
    Then run
-   ````kind create cluster --config k8s/kind-cluster.yaml
+   ```
+      kind create cluster --config k8s/kind-cluster.yaml
       kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
 
       cd backend           #Make sure you are in backend
       docker build -t group9-backend:v1.6 .
       kind load docker-image group9-backend:v1.6
       cd ..             #MAke sure you are in root project
-   ````
+   ```
 
    Make sure that k8s/deployment.yaml has  (or the image you built in docker)
    image: group9-backend:v1.6
@@ -67,6 +71,7 @@ Prerequisites
 
 ## Activate Virtual environment (if necessary)
     
-   ```python3 -m venv venv
+   ```
+      python3 -m venv venv
       source venv/bin/activate
    ```

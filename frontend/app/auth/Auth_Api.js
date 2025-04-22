@@ -6,7 +6,7 @@ export const sendOtp = async (email) => {
     const { error } = await supabase.auth.signInWithOtp({ email });
 
     if (error) {
-        console.error("Error sending OTP:", error.message);
+        console.log("Error sending OTP:", error.message);
         throw new Error("Failed to send OTP. Try again.");
     } else {
         console.log("OTP sent! Check your email.");
@@ -21,7 +21,7 @@ export const verifyOtp = async (email, otp) => {
     });
 
     if (error) {
-        console.error("Error verifying OTP:", error.message);
+        console.log("Error verifying OTP:", error.message);
         return { success: false, message: error.message };
     }
 

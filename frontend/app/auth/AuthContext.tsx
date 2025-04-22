@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsAuthenticated(true);
         }
       } catch (error) {
-        console.error("Error checking auth status:", error);
+        console.log("Error checking auth status:", error);
         setUserId(null);
         setIsAuthenticated(false);
       } finally {
@@ -59,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(true);
       console.log("logged in with id: " + id);
     } catch (error) {
-      console.error("Error during login:", error);
+      console.log("Error during login:", error);
     }
   };
 
@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUserId(null);
       setIsAuthenticated(false);
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.log("Error during logout:", error);
     }
     finally {
       setUserId(null);
@@ -101,7 +101,7 @@ const clearAsyncStorage = async () => {
     await AsyncStorage.clear();
     console.log("AsyncStorage cleared!");
   } catch (error) {
-    console.error("Error clearing AsyncStorage:", error);
+    console.log("Error clearing AsyncStorage:", error);
   }
 };
 

@@ -135,7 +135,7 @@ const FriendsList = ({ userId }) => {
                     const sortedFriends = friendsData.sort((a, b) => (b.points || 0) - (a.points || 0));
                     setFriends(sortedFriends);
                 } catch (error) {
-                    console.error('Error fetching friends:', error);
+                    console.log('Error fetching friends:', error);
                 } finally {
                     setLoading(false);
                 }
@@ -243,7 +243,7 @@ const Leaderboard = ({ route, navigation }) => {
     );
 
     return (updatedUser && !error) ? (
-        <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
+        <SafeAreaView style={tw`flex items-center justify-start bg-white w-full h-full`}>
             <View
             style={[
                 tw`rounded-full m-2 p-2 shadow-lg`,
@@ -266,7 +266,7 @@ const Leaderboard = ({ route, navigation }) => {
                 />
             )}
             </View>
-            <View style={tw`flex w-5/6 h-5/6 justify-center`}>
+            <View style={tw`flex w-5/6 h-3/4 justify-center`}>
 
                 <View style={tw`flex-1 mb-4`}>
                     <View style={tw`flex flex-row items-center justify-between my-2`}>

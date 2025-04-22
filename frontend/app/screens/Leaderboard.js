@@ -135,7 +135,7 @@ const FriendsList = ({ userId }) => {
                     const sortedFriends = friendsData.sort((a, b) => (b.points || 0) - (a.points || 0));
                     setFriends(sortedFriends);
                 } catch (error) {
-                    console.error('Error fetching friends:', error);
+                    console.log('Error fetching friends:', error);
                 } finally {
                     setLoading(false);
                 }

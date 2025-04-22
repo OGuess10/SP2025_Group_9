@@ -169,18 +169,25 @@ const FriendScreen = ({ route, navigation }) => {
 
     return !error ? (
         <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
-            <View style={[tw`rounded-full m-2 p-2 shadow-lg`, {
-                backgroundColor: isDefault(user.icon)
+            <TouchableOpacity
+                onPress={() => navigation.navigate("FriendsProfile", {
+                    userId: user.user_id,
+                    currentUserId: user.user_id
+                })}
+                activeOpacity={0.8}
+                >
+                <View style={[tw`rounded-full m-2 p-2 shadow-lg`, {
+                    backgroundColor: isDefault(user.icon)
                     ? "#FFFFFF"
                     : avatarConfig?.bgColor || "#FFFFFF"
-            }]}
-            >
-                {isDefault(user.icon) ? (
+                }]}>
+                    {isDefault(user.icon) ? (
                     <Image style={tw`w-12 h-12 rounded-full`} source={imageMap[user.icon] || imageMap["default"]} />
-                ) : (
+                    ) : (
                     <Avatar style={tw`w-12 h-12`} {...avatarConfig} />
-                )}
-            </View>
+                    )}
+                </View>
+            </TouchableOpacity>
 
             <View style={tw`flex pt-6 w-5/6 justify-center`}>
                 <TextInput

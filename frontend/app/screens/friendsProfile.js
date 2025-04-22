@@ -11,6 +11,8 @@ import {
 import tw from "../../components/tailwind";
 import Avatar from "@zamplyy/react-native-nice-avatar";
 import { FontAwesome5 } from '@expo/vector-icons';
+import GrowingTree from "../../components/GrowingTree";
+import { ScrollView } from 'react-native';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -144,96 +146,123 @@ export default function FriendsProfile({ route, navigation }) {
 
   return !error ? (
     <View style={tw`flex-1 justify-center items-center bg-white`}>
-      <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-        {/* Back Button */}
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={tw`absolute top-4 left-4 p-2`}
-        >
-          <FontAwesome5 name="chevron-left" size={20} color="#1B5E20" />
-        </TouchableOpacity>
-
-        {/* Unfriend button */}
-        {isFriend && userId !== currentUserId && (
+      <View style={tw`bg-white shadow-lg w-5/6 rounded-lg overflow-hidden`}>
+        <ScrollView contentContainerStyle={tw`items-center px-6 py-8`}>
+  
+          {/* Back Button */}
           <TouchableOpacity
-          style={tw`m-2 px-3 py-1 rounded bg-pink-200 absolute top-4 right-4`}
-          onPress={() => handleUnfriendPress(navigation, userId, currentUserId)}
+            onPress={() => navigation.goBack()}
+            style={tw`absolute top-4 left-4 p-2 z-10`}
           >
-              <Text style={[tw`text-xs text-red-700`, { fontFamily: "Nunito_700Bold" }]}
-              >Unfriend</Text>
+            <FontAwesome5 name="chevron-left" size={20} color="#1B5E20" />
           </TouchableOpacity>
-        )}
-        
-        {/* Icon in background circle */}
-        <View
-  style={[
-    tw`rounded-full mb-4 shadow-lg items-center justify-center`,
-    {
-      width: 80,
-      height: 80,
-      backgroundColor: (() => {
-        const iconKey = userInfo?.icon || "default";
-        const isDefault = ["koala", "kangaroo", "sloth", "default"].includes(iconKey);
-        if (isDefault) return "#FFFFFF";
-        try {
-          const parsed = typeof iconKey === "string" ? JSON.parse(iconKey) : iconKey;
-          return parsed?.bgColor || "#FFFFFF";
-        } catch {
-          return "#FFFFFF";
-        }
-      })(),
-    }
-  ]}
->
-  <UserIcon icon={userInfo?.icon} size={64} />
-</View>
-        {/* Username */}
-        <Text style={tw`text-xl font-bold mb-2`}>{userInfo?.user_name}</Text>
-
-
-        {/* Points */}
-        <Text style={tw`text-gray-600 mb-10`}>Points: {userInfo?.points}</Text>
-
-        {/* Photos (if friends) */}
-            <FlatList
-              data={photos}
-              numColumns={3}
-              keyExtractor={(item) => item.id.toString()}
-              contentContainerStyle={tw`mb-4`}
-              renderItem={({ item }) => (
-                <Image
-                  source={{ uri: `${BACKEND_URL}/action/get_images/${item.id}` }}
-                  style={tw`w-20 h-20 m-1 rounded`}
-                />
-              )}
-            />
-            {!isFriend && (
-             <View style={tw`absolute top-0 left-0 right-0 bottom-0 justify-center items-center rounded-lg`}>
-            <FontAwesome5 name="lock" size={32} color="#888" style={tw`mb-2`} />
-            <Text style={tw`text-gray-600 text-center font-semibold`}>You are not friends yet</Text>
+  
+          {/* Unfriend button */}
+          {isFriend && userId !== currentUserId && (
+            <TouchableOpacity
+              style={tw`m-2 px-3 py-1 rounded bg-pink-200 absolute top-4 right-4 z-10`}
+              onPress={() => handleUnfriendPress(navigation, userId, currentUserId)}
+            >
+              <Text style={[tw`text-xs text-red-700`, { fontFamily: "Nunito_700Bold" }]}>
+                Unfriend
+              </Text>
+            </TouchableOpacity>
+          )}
+  
+          {/* Icon */}
+          <View
+            style={[
+              tw`rounded-full mb-4 shadow-lg items-center justify-center`,
+              {
+                width: 80,
+                height: 80,
+                backgroundColor: (() => {
+                  const iconKey = userInfo?.icon || "default";
+                  const isDefault = ["koala", "kangaroo", "sloth", "default"].includes(iconKey);
+                  if (isDefault) return "#FFFFFF";
+                  try {
+                    const parsed = typeof iconKey === "string" ? JSON.parse(iconKey) : iconKey;
+                    return parsed?.bgColor || "#FFFFFF";
+                  } catch {
+                    return "#FFFFFF";
+                  }
+                })(),
+              },
+            ]}
+          >
+            <UserIcon icon={userInfo?.icon} size={64} />
+          </View>
+  
+          {/* Username */}
+          <Text style={tw`text-xl font-bold mb-2`}>{userInfo?.user_name}</Text>
+  
+          {/* Points */}
+          <Text style={tw`text-gray-600 mb-4`}>Points: {userInfo?.points}</Text>
+  
+          {/* Tree */}
+          {userInfo?.points > 0 && (
+            <View style={[tw`w-full items-center my-6`]}>
+              <View
+                style={[
+                  tw`w-5/6 rounded-xl shadow-lg items-center p-3`,
+                  {
+                    backgroundColor: '#E8F5E9',
+                    overflow: 'hidden',
+                    height: 300,
+                  },
+                ]}
+              >
+                <GrowingTree seed={userId + 12345} points={userInfo?.points || 0} width={260} height={260} />
+              </View>
             </View>
+          )}
+  
+          {/* Photos */}
+          <FlatList
+            data={photos}
+            numColumns={3}
+            scrollEnabled={false}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={tw`mb-4`}
+            renderItem={({ item }) => (
+              <Image
+                source={{ uri: `${BACKEND_URL}/action/get_images/${item.id}` }}
+                style={tw`w-20 h-20 m-1 rounded`}
+              />
+            )}
+          />
+  
+          {/* Lock screen if not friends */}
+          {!isFriend && (
+          <View style={tw`my-6 items-center`}>
+            <FontAwesome5 name="lock" size={32} color="#888" style={tw`mb-2`} />
+            <Text style={tw`text-gray-600 text-center font-semibold`}>
+              You are not friends yet
+            </Text>
+          </View>
         )}
+        </ScrollView>
       </View>
     </View>
-    ) : (
-      <View style={tw`flex-1 justify-center items-center bg-white px-4`}>
-        <View style={tw`rounded-xl shadow-lg bg-green-50 p-6 items-center`}>
-          <Text style={[tw`text-xl mb-2 text-green-900`, { fontFamily: "Nunito_700Bold" }]}>
-            ⚠️ Connection Issue
-          </Text>
-          <Text style={[tw`text-base text-center text-green-900`, { fontFamily: "Nunito_400Regular" }]}>
-            We couldn’t connect to the server. Check your internet or try again shortly.
-          </Text>
-        </View>
-  
-        <TouchableOpacity
-          style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
-          onPress={loadData} // define this function to retry the request
-        >
-          <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>
-            Try Again
-          </Text>
-        </TouchableOpacity>
+  ) : (
+    <View style={tw`flex-1 justify-center items-center bg-white px-4`}>
+      <View style={tw`rounded-xl shadow-lg bg-green-50 p-6 items-center`}>
+        <Text style={[tw`text-xl mb-2 text-green-900`, { fontFamily: "Nunito_700Bold" }]}>
+          ⚠️ Connection Issue
+        </Text>
+        <Text style={[tw`text-base text-center text-green-900`, { fontFamily: "Nunito_400Regular" }]}>
+          We couldn’t connect to the server. Check your internet or try again shortly.
+        </Text>
       </View>
-  );
+  
+      <TouchableOpacity
+        style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
+        onPress={loadData}
+      >
+        <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>
+          Try Again
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );  
 }

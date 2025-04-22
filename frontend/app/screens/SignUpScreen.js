@@ -34,11 +34,11 @@ export default function SignUpScreen({ navigation }) {
         Alert.alert("Success", data.message);
         navigation.navigate("Login"); // Navigate to login screen
       } else {
-        console.error("Signup error:", data.error);
+        console.log("Signup error:", data.error);
         Alert.alert("Error", data.error);
       }
     } catch (error) {
-      console.error("Signup error:", error.message);
+      console.log("Signup error:", error.message);
       Alert.alert("Error", error.message);
     }
     setLoading(false);

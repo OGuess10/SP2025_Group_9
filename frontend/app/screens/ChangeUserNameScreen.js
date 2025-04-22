@@ -53,6 +53,7 @@ export default function ChangeUsernameScreen({ route, navigation }) {
             bgColor: "#FFFFFF",
             mouthStyle: "laugh",
             shirtColor: "#32a852",
+            glassesStyle: "none"
         })
     );
 
@@ -107,9 +108,7 @@ export default function ChangeUsernameScreen({ route, navigation }) {
             if (response.ok) {
                 setStatusMessage("Username and avatar updated successfully!");
                 setStatusColor("text-green-700");
-                setTimeout(() => {
-                    navigation.goBack();
-                }, 1000);
+                navigation.goBack();
             } else {
                 setStatusMessage(data.error || "Something went wrong.");
                 setStatusColor("text-red-600");

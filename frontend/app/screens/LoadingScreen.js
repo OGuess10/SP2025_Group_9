@@ -33,7 +33,7 @@ export default function LoadingScreen({ navigation, route }) {
         const data = await response.json();
         setUser(data);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.log("Error fetching user data:", error);
       }
     };
     fetchData();

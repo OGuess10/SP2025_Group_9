@@ -8,6 +8,7 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import MediaLibrary from 'expo-media-library';
 import { Animated } from 'react-native';
 import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
+import * as Haptics from 'expo-haptics';
 
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -30,6 +31,46 @@ const ecoActions = [
     { id: '15', icon: 'tshirt', label: 'Buy Secondhand Item', points: 25, info: 'Purchase an item used or from a secondhand store.' }
   ];
   
+const ConfirmationPopup = ({ visible, points, onDone }) => {
+    const scaleAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        if (visible) {
+        // Start scale animation
+        Animated.spring(scaleAnim, {
+            toValue: 1,
+            friction: 4,
+            useNativeDriver: true,
+        }).start();
+
+        // Trigger haptic feedback
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+        // Auto-dismiss after 1.5 seconds
+        const timer = setTimeout(() => {
+            scaleAnim.setValue(0);
+            onDone();
+        }, 1500);
+
+        return () => clearTimeout(timer);
+        }
+    }, [visible]);
+
+    if (!visible) return null;
+
+    return (
+        <View style={tw`absolute top-0 left-0 right-0 bottom-0 justify-center items-center bg-black bg-opacity-40 z-50`}>
+        <Animated.View style={[tw`bg-white p-8 rounded-full shadow-lg items-center`, { transform: [{ scale: scaleAnim }] }]}>
+            <FontAwesome5 name="check-circle" size={60} color="green" />
+            <Text style={[tw`mt-4 text-xl text-green-800`, { fontFamily: "Nunito_700Bold" }]}>
+            +{points} points!
+            </Text>
+        </Animated.View>
+        </View>
+    );
+};
+  
+  
 
 const imageMap = {
     "kanagroo": require("../../assets/user_icons/kangaroo.png"),
@@ -44,6 +85,9 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
     const cameraRef = useRef(null);
     const [facing, setFacing] = useState('back');
     const [capturedPhoto, setCapturedPhoto] = useState(null);
+
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [earnedPoints, setEarnedPoints] = useState(0);
 
 
     useEffect(() => {
@@ -104,13 +148,16 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
             const result = await response.json();
             console.log("Upload success:", result);
 
-            Alert.alert(
-                "Photo uploaded!",
-                `You have earned ${result.action_points} points! 🎉`
-            );
+            setEarnedPoints(result.action_points);
+            setShowConfirmation(true);
 
             setCapturedPhoto(null); // Clear the preview
-            onClose(); // Close camera modal
+
+            setTimeout(() => {
+                setCapturedPhoto(null);
+                onClose();
+              }, 1500);
+              
         } catch (error) {
             console.log("Upload failed:", error);
             Alert.alert("Error","Failed to submit photo. Please check your network connection.");
@@ -184,6 +231,11 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
                         </Modal>
                     </View>
                 )}
+                <ConfirmationPopup
+                visible={showConfirmation}
+                points={earnedPoints}
+                onDone={() => setShowConfirmation(false)}
+                />
             </Modal>
         ) : null
     );
@@ -218,6 +270,9 @@ const ActivityList = ({ user, setUserPoints }) => {
     const [showImage, setShowImage] = useState(false);
     const [searchText, setSearchText] = useState("");
 
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [earnedPoints, setEarnedPoints] = useState(0);
+
     const filteredActions = ecoActions.filter(action =>
         action.label.toLowerCase().includes(searchText.toLowerCase())
       );
@@ -249,8 +304,8 @@ const ActivityList = ({ user, setUserPoints }) => {
 
             // Step 3: Update UI
             setUserPoints(updatedUser.points);
-            Alert.alert('Good job!', `You have earned ${action.points} points! 🎉`);
-
+            setEarnedPoints(action.points);
+            setShowConfirmation(true);
         } catch (error) {
             console.log('Error logging action:', error);
             Alert.alert('Error', 'Something went wrong while adding the action. Please check your network connection.');
@@ -260,132 +315,144 @@ const ActivityList = ({ user, setUserPoints }) => {
 
     return (
         <View style={tw`flex-1 px-4`}>
-            <View style={tw`flex pt-6 justify-center`}>
-                <TextInput
-                    style={tw`px-4 py-2 border border-gray-300 rounded-full`}
-                    placeholder="Search activities..."
-                    placeholderTextColor="#909090"
-                    value={searchText}
-                    onChangeText={setSearchText}
-                />
-            </View>
-            <FlatList
-                data={filteredActions}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <View style={tw`border-b border-gray-300 py-4 w-full`}>
-                        <TouchableOpacity
-                            style={tw`flex-row justify-between items-center w-full px-4`}
-                            onPress={() => setSelectedAction(item)}
-                        >
-                            {/*Icon + Label */}
-                            <View style={tw`flex-row items-center ml-0 w-2/3`}>
-                                <FontAwesome5 name={item.icon} size={24} color="black" style={tw`mr-4`} />
-                                <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
-                            </View>
-
-                            {/* Points */}
-                            <Text style={[tw`text-sm text-green-700`, { fontFamily: "Nunito_700Bold" }]}>
-                                +{item.points} pts
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-
-                )}
+          {/* Search bar */}
+          <View style={tw`flex pt-6 justify-center`}>
+            <TextInput
+              style={tw`px-4 py-2 border border-gray-300 rounded-full`}
+              placeholder="Search activities..."
+              placeholderTextColor="#909090"
+              value={searchText}
+              onChangeText={setSearchText}
             />
-
-            <Modal
-                visible={!!selectedAction}
-                transparent
-                animationType="fade"
-                onRequestClose={() => setSelectedAction(null)}
-            >
-                <View style={tw`flex-1 justify-center items-center bg-white`}>
-                    <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-                        <TouchableOpacity
-                            style={tw`absolute top-4 left-4 p-2`}
-                            onPress={() => setSelectedAction(null)}
-                        >
-                            <FontAwesome5 name="times" size={24} color="black" />
-
-                        </TouchableOpacity>
-
-                        <View style={tw`justify-center items-center h-1/2`}>
-                            {selectedAction && (
-                                <>
-                                    <FontAwesome5 name={selectedAction.icon} size={80} color="green" />
-                                    <Text style={[tw`text-2xl mt-6`, { fontFamily: "Nunito_700Bold" }]}>
-                                        {selectedAction.label}
-                                    </Text>
-                                    <Text style={[tw`text-sm text-green-700`, { fontFamily: "Nunito_700Bold" }]}>
-                                        +{selectedAction.points} pts
-                                    </Text>
-                                    <Text style={[tw`text-xl pt-6 text-center`, { fontFamily: "Nunito_500Regular" }]}>
-                                        {selectedAction.info}
-                                    </Text>
-                                </>
-                            )}
-                        </View>
-
-                        <View style={tw`justify-center items-center w-full`}>
-                            <Animated.Text
-                                style={[
-                                    tw`text-sm text-green-700 mt-1`,
-                                    { fontFamily: "Nunito_400Regular", transform: [{ scale: pulseAnim }] },
-                                ]}
-                            >
-                                +5 bonus points!
-                            </Animated.Text>
-
-                            <TouchableOpacity
-                                style={tw`bg-white justify-center items-center w-5/6 py-2 shadow-lg`}
-                                onPress={() => setShowCamera(true)}
-                            >
-                                <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Take Photo</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                onPress={() => {
-                                    handleActionSelect(selectedAction);
-                                    setSelectedAction(null);
-                                }}
-                                style={tw`bg-white justify-center items-center w-5/6 mt-8 py-2 shadow-lg`}>
-                                <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>Add</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-
-                <CameraScreen userId={user.user_id} action={selectedAction} setImage={setImage} visible={showCamera} onClose={() => {
-                    setShowCamera(false);
-                    setSelectedAction(null);
-                }} />
-
-                <Modal
-                    visible={showImage && (image != "")}
-                    transparent
-                    animationType="fade"
-                    onRequestClose={() => setShowImage(false)}
+          </View>
+      
+          {/* List of actions */}
+          <FlatList
+            data={filteredActions}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={tw`border-b border-gray-300 py-4 w-full`}>
+                <TouchableOpacity
+                  style={tw`flex-row justify-between items-center w-full px-4`}
+                  onPress={() => setSelectedAction(item)}
                 >
-                    <View style={tw`flex-1 justify-center items-center bg-white`}>
-                        <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
-                            <TouchableOpacity
-                                style={tw`absolute top-4 left-4 p-2`}
-                                onPress={() => setShowImage(false)}
-                            >
-                                <FontAwesome5 name="times" size={24} color="black" />
-                            </TouchableOpacity>
-                            <Image source={{ uri: 'file://' + image }}
-                                style={{ width: '100%', height: '80%' }}
-                            ></Image>
-                        </View>
-                    </View>
-                </Modal>
+                  <View style={tw`flex-row items-center ml-0 w-2/3`}>
+                    <FontAwesome5 name={item.icon} size={24} color="black" style={tw`mr-4`} />
+                    <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
+                  </View>
+      
+                  <Text style={[tw`text-sm text-green-700`, { fontFamily: "Nunito_700Bold" }]}>
+                    +{item.points} pts
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+      
+          {/* Action Details Modal */}
+          <Modal
+            visible={!!selectedAction}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setSelectedAction(null)}
+          >
+            <View style={tw`flex-1 justify-center items-center bg-white`}>
+              <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
+                <TouchableOpacity
+                  style={tw`absolute top-4 left-4 p-2`}
+                  onPress={() => setSelectedAction(null)}
+                >
+                  <FontAwesome5 name="times" size={24} color="black" />
+                </TouchableOpacity>
+      
+                <View style={tw`justify-center items-center h-1/2`}>
+                  {selectedAction && (
+                    <>
+                      <FontAwesome5 name={selectedAction.icon} size={80} color="green" />
+                      <Text style={[tw`text-2xl mt-6`, { fontFamily: "Nunito_700Bold" }]}>
+                        {selectedAction.label}
+                      </Text>
+                      <Text style={[tw`text-sm text-green-700`, { fontFamily: "Nunito_700Bold" }]}>
+                        +{selectedAction.points} pts
+                      </Text>
+                      <Text style={[tw`text-xl pt-6 text-center`, { fontFamily: "Nunito_500Regular" }]}>
+                        {selectedAction.info}
+                      </Text>
+                    </>
+                  )}
+                </View>
+      
+                <View style={tw`justify-center items-center w-full`}>
+                  <Animated.Text
+                    style={[
+                      tw`text-sm text-green-700 mt-1`,
+                      { fontFamily: "Nunito_400Regular", transform: [{ scale: pulseAnim }] },
+                    ]}
+                  >
+                    +5 bonus points!
+                  </Animated.Text>
+      
+                  <TouchableOpacity
+                    style={tw`bg-white justify-center items-center w-5/6 py-2 shadow-lg`}
+                    onPress={() => setShowCamera(true)}
+                  >
+                    <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>
+                      Take Photo
+                    </Text>
+                  </TouchableOpacity>
+      
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleActionSelect(selectedAction);
+                      setSelectedAction(null);
+                    }}
+                    style={tw`bg-white justify-center items-center w-5/6 mt-8 py-2 shadow-lg`}
+                  >
+                    <Text style={[tw`text-lg font-bold`, { fontFamily: "Nunito_400Regular" }]}>
+                      Add
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+      
+            <CameraScreen
+              userId={user.user_id}
+              action={selectedAction}
+              setImage={setImage}
+              visible={showCamera}
+              onClose={() => {
+                setShowCamera(false);
+                setSelectedAction(null);
+              }}
+            />
+      
+            <Modal
+              visible={showImage && image !== ""}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setShowImage(false)}
+            >
+              <View style={tw`flex-1 justify-center items-center bg-white`}>
+                <View style={tw`bg-white justify-center items-center p-6 shadow-lg w-5/6 h-5/6 rounded-lg`}>
+                  <TouchableOpacity
+                    style={tw`absolute top-4 left-4 p-2`}
+                    onPress={() => setShowImage(false)}
+                  >
+                    <FontAwesome5 name="times" size={24} color="black" />
+                  </TouchableOpacity>
+                  <Image source={{ uri: 'file://' + image }} style={{ width: '100%', height: '80%' }} />
+                </View>
+              </View>
             </Modal>
-
+          </Modal>
+          <ConfirmationPopup
+            visible={showConfirmation}
+            points={earnedPoints}
+            onDone={() => setShowConfirmation(false)}
+          />
         </View>
-    );
+      );      
 };
 
 const Activity = ({ route, navigation }) => {

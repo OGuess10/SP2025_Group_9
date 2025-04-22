@@ -266,7 +266,7 @@ const Leaderboard = ({ route, navigation }) => {
                 />
             )}
             </View>
-            <View style={tw`flex w-5/6 h-3/4 justify-center`}>
+            <View style={tw`flex w-5/6 h-5/6 justify-center`}>
 
                 <View style={tw`flex-1 mb-4`}>
                     <View style={tw`flex flex-row items-center justify-between my-2`}>

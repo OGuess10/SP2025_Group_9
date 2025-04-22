@@ -14,10 +14,6 @@ import * as Sharing from "expo-sharing";
 import { FontAwesome5 } from '@expo/vector-icons';
 import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
 
-
-
-
-
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const pastelGreen = "#A5D6A7";
@@ -201,13 +197,19 @@ const HomeScreen = ({ route, navigation }) => {
 
       {/* Tree Display */}
       <View style={[tw`w-5/6 rounded-xl shadow-lg items-start p-3 mt-6`, { backgroundColor: pastelGreenLight }]}>
-        <View style={tw`flex-row justify-between items-center w-full mb-4`}>
-          <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular", color: "#1B5E20" }]}>Points: {points}</Text>
-          <TouchableOpacity onPress={() => setShowShareModal(true)} style={tw`px-2 py-2 rounded-lg `}>
-            <FontAwesome5 name="download" size={16} color="#1B5E20" />
-          </TouchableOpacity>
+          <View style={tw`flex-row justify-between items-center w-full mb-4`} 
+            pointerEvents="box-none">
+            <Text style={[
+              tw`text-lg`, 
+              { fontFamily: "Nunito_400Regular", color: "#1B5E20", zIndex: 10 }
+            ]}>
+              Points: {points}
+            </Text>
+            <TouchableOpacity onPress={() => setShowShareModal(true)} style={tw`px-2 py-2 rounded-lg`}>
+              <FontAwesome5 name="download" size={16} color="#1B5E20" />
+            </TouchableOpacity>
         </View>
-        <GrowingTree seed={12345} points={points} />
+        <GrowingTree seed={user.user_id + 12345} points={points} />
       </View>
 
       <NavBar user={user} />

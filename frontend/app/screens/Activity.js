@@ -245,6 +245,7 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
 const ActivityList = ({ user, setUserPoints }) => {
 
     const pulseAnim = useRef(new Animated.Value(1)).current;
+    const [selectedAction, setSelectedAction] = useState(null);
 
     useEffect(() => {
         Animated.loop(
@@ -261,10 +262,9 @@ const ActivityList = ({ user, setUserPoints }) => {
                 }),
             ])
         ).start();
-    }, []);
+    }, [selectedAction]);
 
 
-    const [selectedAction, setSelectedAction] = useState(null);
     const [showCamera, setShowCamera] = useState(false);
     const [image, setImage] = useState("");
     const [showImage, setShowImage] = useState(false);

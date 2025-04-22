@@ -2,41 +2,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: group9-backend
+  name: flask-backend
   labels:
-    app: group9-backend
+    app: flask-backend
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: group9-backend
-  replicas: 1
+      app: flask-backend
   template:
     metadata:
       labels:
-        app: group9-backend
+        app: flask-backend
     spec:
       containers:
-        - image: group9-backend:v1.0
-          imagePullPolicy: Never
-          name: group9-backend
-          command: ["./script/run"]
-          ports:
-            - containerPort: 3000
-          env:
-            - name: APP_DATABASE__HOST
-              value: group9-backend
-            - name: APP_DATABASE__PORT
-              value: "5432"
+      - name: flask-backend
+        image: group9-backend:v1.6
+        imagePullPolicy: Never
+        command: [ "flask", "run", "--host=0.0.0.0", "--port=8000", "--debug" ]
+        env:
+        - name: FLASK_APP
+          value: "app:create_app()"
+        - name: FLASK_ENV
+          value: development
+        ports:
+        - containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: group9-backend
+  name: flask-backend
 spec:
   type: LoadBalancer
   selector:
-    app: group9-backend
+    app: flask-backend
   ports:
-    - port: 3000
----
-
+  - port: 80
+    targetPort: 8000

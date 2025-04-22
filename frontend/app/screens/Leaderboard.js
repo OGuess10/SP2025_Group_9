@@ -39,13 +39,19 @@ const Chart = ({ userId, navigation }) => {
                 try {
                     const response = await fetch(`${BACKEND_URL}/action/get_activity?user_id=${userId}`);
                     const data = await response.json();
-                    const formattedData = Object.keys(data.data).map((date) => ({
+                    const sortedDates = Object.keys(data.data).sort();
+                    let total = 0;
+                    const accumulatedData = sortedDates.map((date) => {
+                    total += data.data[date];
+                    return {
                         date,
-                        value: data.data[date],
-                    }));
-                    setActivity(formattedData);
+                        value: total,
+                    };
+                    });
+                    setActivity(accumulatedData);
+
                 } catch (error) {
-                    console.error('Error fetching activity data:', error);
+                    console.log('Error fetching activity data:', error);
                 } finally {
                     setActivityLoading(false);
                 }
@@ -77,26 +83,16 @@ const Chart = ({ userId, navigation }) => {
         );
     }
 
-    const monthlyData = {};
-    activity.forEach(({ date, value }) => {
-        const monthKey = format(parseISO(date), "yyyy-MM"); // Group by "YYYY-MM"
-        if (!monthlyData[monthKey]) {
-            monthlyData[monthKey] = { total: 0, count: 0 };
-        }
-        monthlyData[monthKey].total += value;
-        monthlyData[monthKey].count += 1;
-    });
-    const formattedLabels = Object.keys(monthlyData).map((monthKey) => ({
-        date: format(parseISO(monthKey + "-01"), "MMM yyyy"), // Convert to "Jan 2025" format
-        value: Math.round(monthlyData[monthKey].total / monthlyData[monthKey].count), // Average value
-    }));
+    const labels = activity.map(item => format(parseISO(item.date), "MMM d"));
+    const values = activity.map(item => item.value);
+
 
     return (
         <View style={tw`flex-1 p-4 items-center bg-white w-full h-full`}>
             <LineChart
                 data={{
-                    labels: formattedLabels.map(item => item.date),  // Dates as labels
-                    datasets: [{ data: activity.map(item => item.value) }] // Values as data
+                    labels: labels,
+                    datasets: [{ data: values }]
                 }}
                 width={screenWidth * 5 / 6}
                 height={screenHeight * 0.25}
@@ -106,13 +102,14 @@ const Chart = ({ userId, navigation }) => {
                     backgroundGradientFrom: "#ffffff",
                     backgroundGradientTo: "#ffffff",
                     decimalPlaces: 0,
-                    color: (opacity = 1) => `rgba(50, 168, 82, ${opacity})`, // Light Green Line
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Black text
-                    propsForDots: { r: "4", strokeWidth: "2", stroke: "#32a852" } // Green dots
+                    color: (opacity = 1) => `rgba(50, 168, 82, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    propsForDots: { r: "4", strokeWidth: "2", stroke: "#32a852" }
                 }}
-                bezier // Smooth curved line
+                bezier
                 style={{ borderRadius: 10 }}
-            />
+                />
+
         </View>
     );
 };
@@ -179,6 +176,7 @@ const Leaderboard = ({ route, navigation }) => {
     const [leaderboardData, setLeaderboardData] = useState([]);
     const [userRank, setUserRank] = useState(null);
     const [updatedUser, setUpdatedUser] = useState(user);
+    const [error, setError] = useState(false);
 
     const imageMap = {
         "kangaroo": require("../../assets/user_icons/kangaroo.png"),
@@ -226,10 +224,13 @@ const Leaderboard = ({ route, navigation }) => {
 
                 const rank = filteredUsers.findIndex((u) => u.user_id === user.user_id) + 1;
                 setUserRank(rank || null);
+
+                setError(false);
             }
 
         } catch (error) {
-            console.error('Leaderboard fetch error:', error);
+            console.log('Leaderboard fetch error:', error);
+            setError(true);
         } finally {
             setLoading(false);
         }
@@ -241,127 +242,144 @@ const Leaderboard = ({ route, navigation }) => {
         }, [filter])
     );
 
-    return (
-        updatedUser ?
-            <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
-                <View
-                style={[
-                    tw`rounded-full m-2 p-2 shadow-lg`,
-                    {
-                    backgroundColor:
-                        user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default"
-                        ? "#FFFFFF"
-                        : (typeof user.icon === "string"
-                            ? JSON.parse(user.icon).bgColor
-                            : user.icon?.bgColor || "#FFFFFF")
-                    }
-                ]}
-                >
-                {user.icon && (user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default") ? (
-                    <Image style={tw`w-12 h-12 rounded-full`} source={imageMap[user.icon] || imageMap["default"]} />
-                ) : (
-                    <Avatar
-                    style={tw`w-12 h-12`} // No rounded-full here to preserve full bgColor
-                    {...(typeof user.icon === "string" ? JSON.parse(user.icon) : user.icon)}
-                    />
-                )}
-                </View>
-                <View style={tw`flex w-5/6 h-3/4 justify-center`}>
+    return (updatedUser && !error) ? (
+        <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
+            <View
+            style={[
+                tw`rounded-full m-2 p-2 shadow-lg`,
+                {
+                backgroundColor:
+                    user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default"
+                    ? "#FFFFFF"
+                    : (typeof user.icon === "string"
+                        ? JSON.parse(user.icon).bgColor
+                        : user.icon?.bgColor || "#FFFFFF")
+                }
+            ]}
+            >
+            {user.icon && (user.icon === "koala" || user.icon === "kangaroo" || user.icon === "sloth" || user.icon === "default") ? (
+                <Image style={tw`w-12 h-12 rounded-full`} source={imageMap[user.icon] || imageMap["default"]} />
+            ) : (
+                <Avatar
+                style={tw`w-12 h-12`} // No rounded-full here to preserve full bgColor
+                {...(typeof user.icon === "string" ? JSON.parse(user.icon) : user.icon)}
+                />
+            )}
+            </View>
+            <View style={tw`flex w-5/6 h-3/4 justify-center`}>
 
-                    <View style={tw`flex-1 mb-4`}>
-                        <View style={tw`flex flex-row items-center justify-between my-2`}>
-                            <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>My Activity</Text>
-                            <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Points: {updatedUser.points}</Text>
+                <View style={tw`flex-1 mb-4`}>
+                    <View style={tw`flex flex-row items-center justify-between my-2`}>
+                        <Text style={[tw`text-2xl`, { fontFamily: "Nunito_700Bold" }]}>My Activity</Text>
+                        <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>Points: {updatedUser.points}</Text>
 
-                        </View>
-                        <View style={tw`flex-1 rounded-lg bg-white shadow-lg items-center`}>
-                            <Chart userId={user.user_id} navigation={navigation} />
-                        </View>
                     </View>
+                    <View style={tw`flex-1 rounded-lg bg-white shadow-lg items-center`}>
+                        <Chart userId={user.user_id} navigation={navigation} />
+                    </View>
+                </View>
 
-                    {/* Leaderboard */}
-                    <View style={tw`flex-1`}>
-                        <Text style={[tw`text-2xl my-2`, { fontFamily: "Nunito_700Bold" }]}>Leaderboard</Text>
+                {/* Leaderboard */}
+                <View style={tw`flex-1`}>
+                    <Text style={[tw`text-2xl my-2`, { fontFamily: "Nunito_700Bold" }]}>Leaderboard</Text>
 
-                        <View style={tw`flex-1 bg-white shadow-lg px-4 py-2`}>
+                    <View style={tw`flex-1 bg-white shadow-lg px-4 py-2`}>
 
-                            {/* Filter + User Rank Row (now inside box) */}
-                            <View style={tw`flex-row justify-between items-center mb-2`}>
-                                <TouchableOpacity onPress={() => setFilter(prev => prev === "All Members" ? "Friends" : "All Members")}>
+                        {/* Filter + User Rank Row (now inside box) */}
+                        <View style={tw`flex-row justify-between items-center mb-2`}>
+                            <TouchableOpacity onPress={() => setFilter(prev => prev === "All Members" ? "Friends" : "All Members")}>
+                                <View style={tw`flex-row items-center`}>
+                                    <Text style={[tw`text-base mr-1`, { fontFamily: "Nunito_700Bold" }]}>{filter}</Text>
+                                    <FontAwesome5 name="chevron-down" size={14} color="black" />
+                                </View>
+                            </TouchableOpacity>
+
+                            {userRank && (
+                                <View style={tw`flex-row items-center`}>
+                                    <FontAwesome5 name="trophy" size={16} color="#FFC107" style={tw`mr-1`} />
+                                    <Text style={[tw`text-sm`, { fontFamily: "Nunito_600SemiBold" }]}>#{userRank}</Text>
+                                </View>
+                            )}
+                        </View>
+
+                        {/* Leaderboard list */}
+                        <FlatList
+                        data={leaderboardData}
+                        keyExtractor={(item) => item.user_id.toString()}
+                        renderItem={({ item, index }) => {
+                            const iconKey = item.icon || "default";
+                            const isDefaultIcon = ["koala", "kangaroo", "sloth", "default"].includes(iconKey);
+                                                            let avatarConfig = null;
+                            if (!isDefaultIcon && typeof item.icon === "string" && item.icon.trim().startsWith("{")) {
+                                try {
+                                    avatarConfig = JSON.parse(item.icon);
+                                } catch (e) {
+                                    console.warn("Invalid avatar JSON for user:", item.user_name, item.icon);
+                                }
+                            }
+
+                            return (
+                                <TouchableOpacity
+                                onPress={() =>
+                                navigation.navigate("FriendsProfile", {
+                                    userId: item.user_id,
+                                    currentUserId: user.user_id,
+                                })
+                                }
+                                >
+                                <View style={tw`flex-row justify-between items-center py-3 border-b border-gray-200`}>
                                     <View style={tw`flex-row items-center`}>
-                                        <Text style={[tw`text-base mr-1`, { fontFamily: "Nunito_700Bold" }]}>{filter}</Text>
-                                        <FontAwesome5 name="chevron-down" size={14} color="black" />
+                                        <Text style={[tw`mr-2 w-6 text-right`, { fontFamily: "Nunito_700Bold" }]}>{index + 1}</Text>
+                                        <View style={[
+                                            tw`rounded-full p-1 mr-3`,
+                                            { backgroundColor: isDefaultIcon ? "#FFFFFF" : avatarConfig?.bgColor || "#FFFFFF" }
+                                        ]}>
+                                            {isDefaultIcon ? (
+                                                <Image
+                                                    source={imageMap[item.icon] || imageMap["default"]}
+                                                    style={tw`w-8 h-8 rounded-full`}
+                                                />
+                                            ) : (
+                                                avatarConfig && <Avatar style={tw`w-8 h-8`} {...avatarConfig} />
+                                            )}
+                                        </View>
+                                        <Text style={[tw`text-base`, { fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
                                     </View>
+                                    <Text style={[tw`text-base`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>{item.points}</Text>
+                                </View>
                                 </TouchableOpacity>
 
-                                {userRank && (
-                                    <View style={tw`flex-row items-center`}>
-                                        <FontAwesome5 name="trophy" size={16} color="#FFC107" style={tw`mr-1`} />
-                                        <Text style={[tw`text-sm`, { fontFamily: "Nunito_600SemiBold" }]}>#{userRank}</Text>
-                                    </View>
-                                )}
-                            </View>
+                            );
+                        }}
+                    />
 
-                            {/* Leaderboard list */}
-                            <FlatList
-                            data={leaderboardData}
-                            keyExtractor={(item) => item.user_id.toString()}
-                            renderItem={({ item, index }) => {
-                                const iconKey = item.icon || "default";
-                                const isDefaultIcon = ["koala", "kangaroo", "sloth", "default"].includes(iconKey);
-                                                                let avatarConfig = null;
-                                if (!isDefaultIcon && typeof item.icon === "string" && item.icon.trim().startsWith("{")) {
-                                    try {
-                                        avatarConfig = JSON.parse(item.icon);
-                                    } catch (e) {
-                                        console.warn("Invalid avatar JSON for user:", item.user_name, item.icon);
-                                    }
-                                }
-
-                                return (
-                                    <TouchableOpacity
-                                    onPress={() =>
-                                    navigation.navigate("FriendsProfile", {
-                                        userId: item.user_id,
-                                        currentUserId: user.user_id,
-                                    })
-                                    }
-                                    >
-                                    <View style={tw`flex-row justify-between items-center py-3 border-b border-gray-200`}>
-                                        <View style={tw`flex-row items-center`}>
-                                            <Text style={[tw`mr-2 w-6 text-right`, { fontFamily: "Nunito_700Bold" }]}>{index + 1}</Text>
-                                            <View style={[
-                                                tw`rounded-full p-1 mr-3`,
-                                                { backgroundColor: isDefaultIcon ? "#FFFFFF" : avatarConfig?.bgColor || "#FFFFFF" }
-                                            ]}>
-                                                {isDefaultIcon ? (
-                                                    <Image
-                                                        source={imageMap[item.icon] || imageMap["default"]}
-                                                        style={tw`w-8 h-8 rounded-full`}
-                                                    />
-                                                ) : (
-                                                    avatarConfig && <Avatar style={tw`w-8 h-8`} {...avatarConfig} />
-                                                )}
-                                            </View>
-                                            <Text style={[tw`text-base`, { fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
-                                        </View>
-                                        <Text style={[tw`text-base`, { fontFamily: "Nunito_700Bold", color: "#1B5E20" }]}>{item.points}</Text>
-                                    </View>
-                                    </TouchableOpacity>
-
-                                );
-                            }}
-                        />
-
-                        </View>
                     </View>
-
                 </View>
 
-                <NavBar user={user} />
-            </SafeAreaView>
-            :
-            <View></View>
+            </View>
+
+            <NavBar user={user} />
+        </SafeAreaView>
+        ) : (
+            <View style={tw`flex-1 justify-center items-center bg-white px-4`}>
+                <View style={tw`rounded-xl shadow-lg bg-green-50 p-6 items-center`}>
+                <Text style={[tw`text-xl mb-2 text-green-900`, { fontFamily: "Nunito_700Bold" }]}>
+                    ⚠️ Connection Issue
+                </Text>
+                <Text style={[tw`text-base text-center text-green-900`, { fontFamily: "Nunito_400Regular" }]}>
+                    We couldn’t connect to the server. Check your internet or try again shortly.
+                </Text>
+                </View>
+        
+                <TouchableOpacity
+                style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
+                onPress={fetchLeaderboard} // define this function to retry the request
+                >
+                <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>
+                    Try Again
+                </Text>
+                </TouchableOpacity>
+            </View>
     );
 };
 

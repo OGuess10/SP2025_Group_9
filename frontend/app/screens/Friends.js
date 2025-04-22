@@ -91,7 +91,7 @@ const FriendScreen = ({ route, navigation }) => {
     const [allUsers, setAllUsers] = useState([]);
     const [friendships, setFriendships] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-
+    const [error, setError] = useState(false);
     
 
     const fetchUsersAndFriendships = async () => {
@@ -107,8 +107,10 @@ const FriendScreen = ({ route, navigation }) => {
 
             setAllUsers(usersData);
             setFriendships(friendshipsData.friendships);
+            setError(false);
         } catch (err) {
-            console.error(err);
+            console.log(err);
+            setError(true);
         } finally {
             setRefreshing(false);
         }
@@ -165,7 +167,7 @@ const FriendScreen = ({ route, navigation }) => {
     const isDefault = icon => ["koala", "kangaroo", "sloth", "default"].includes(icon);
     const avatarConfig = typeof user.icon === "string" && !isDefault(user.icon) ? JSON.parse(user.icon) : null;
 
-    return (
+    return !error ? (
         <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
             <View style={[tw`rounded-full m-2 p-2 shadow-lg`, {
                 backgroundColor: isDefault(user.icon)
@@ -184,6 +186,7 @@ const FriendScreen = ({ route, navigation }) => {
                 <TextInput
                     style={tw`px-4 py-2 border border-gray-300 rounded-full`}
                     placeholder="Search users..."
+                    placeholderTextColor="#909090"
                     value={searchText}
                     onChangeText={setSearchText}
                 />
@@ -234,7 +237,7 @@ const FriendScreen = ({ route, navigation }) => {
                                 currentUserId={user.user_id}
                                 actions={[
                                     { label: "Request", onPress: () => sendRequest(friend.user_id) },
-                                    { label: "✕", onPress: () => { } }
+                                    // { label: "✕", onPress: () => { } }
                                 ]}
                             />
                         ))}
@@ -244,6 +247,26 @@ const FriendScreen = ({ route, navigation }) => {
             <View />
             <NavBar user={user} />
         </SafeAreaView>
+        ) : (
+            <View style={tw`flex-1 justify-center items-center bg-white px-4`}>
+                <View style={tw`rounded-xl shadow-lg bg-green-50 p-6 items-center`}>
+                <Text style={[tw`text-xl mb-2 text-green-900`, { fontFamily: "Nunito_700Bold" }]}>
+                    ⚠️ Connection Issue
+                </Text>
+                <Text style={[tw`text-base text-center text-green-900`, { fontFamily: "Nunito_400Regular" }]}>
+                    We couldn’t connect to the server. Check your internet or try again shortly.
+                </Text>
+                </View>
+        
+                <TouchableOpacity
+                style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
+                onPress={fetchUsersAndFriendships} // define this function to retry the request
+                >
+                <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>
+                    Try Again
+                </Text>
+                </TouchableOpacity>
+            </View>
     );
 };
 

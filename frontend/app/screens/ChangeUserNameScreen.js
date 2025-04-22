@@ -79,6 +79,8 @@ export default function ChangeUsernameScreen({ route, navigation }) {
     };
 
     //const config = genConfig(avatarConfig);
+    const hairColorEditable = ["normal", "womanLong", "womanShort"].includes(avatarConfig.hairStyle);
+
 
     const handleChangeUsername = async () => {
         if (!newUsername.trim()) {
@@ -114,7 +116,7 @@ export default function ChangeUsernameScreen({ route, navigation }) {
             }
             } 
             catch (error) {
-                console.error("Error updating profile:", error);
+                console.log("Error updating profile:", error);
                 setStatusMessage("Failed to update profile.");
                 setStatusColor("text-red-600");
             }
@@ -250,20 +252,27 @@ export default function ChangeUsernameScreen({ route, navigation }) {
                             </View>
 
 
-                            {/* Hair Color */}
+                            {["normal", "womanLong", "womanShort"].includes(avatarConfig.hairStyle) ? (
+                        <>
                             <Text style={tw`mb-2 font-bold`}>Hair Color</Text>
                             <View style={tw`flex-row mb-4`}>
-                                {avatarOptions.hairColor.map((color) => (
-                                    <TouchableOpacity
-                                        key={color}
-                                        onPress={() => setAvatarConfig({ ...avatarConfig, hairColor: color })}
-                                        style={[
-                                            tw`w-10 h-10 rounded-full mr-2`,
-                                            { backgroundColor: color, borderWidth: avatarConfig.hairColor === color ? 2 : 0 },
-                                        ]}
-                                    />
-                                ))}
+                            {avatarOptions.hairColor.map((color) => (
+                                <TouchableOpacity
+                                key={color}
+                                onPress={() => setAvatarConfig({ ...avatarConfig, hairColor: color })}
+                                style={[
+                                    tw`w-10 h-10 rounded-full mr-2`,
+                                    { backgroundColor: color, borderWidth: avatarConfig.hairColor === color ? 2 : 0 },
+                                ]}
+                                />
+                            ))}
                             </View>
+                        </>
+                        ) : (
+                        <Text style={tw`mb-4 text-gray-500 italic`}>Hair color cannot be changed for this style</Text>
+                        )}
+
+
                             <Text style={tw`mb-2 font-bold`}>Mouth Style</Text>
                             <View style={tw`flex-row flex-wrap mb-4`}>
                                 {mouthStyleOptions.map((style) => (

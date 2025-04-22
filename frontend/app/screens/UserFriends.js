@@ -14,6 +14,7 @@ import {
 import tw from "../../components/tailwind";
 import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -28,35 +29,40 @@ const UserFriends = ({ route , navigation}) => {
     const { userId } = route.params;
     const [friends, setFriends] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
-    useEffect(() => {
-        const loadFriends = async () => {
-            try {
-                const res = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${userId}`);
-                const data = await res.json();
-                const ids = data.friend_ids || [];
+    useFocusEffect(
+        React.useCallback(() => {
+            const loadFriends = async () => {
+                try {
+                    const res = await fetch(`${BACKEND_URL}/user/get_accepted_friends?user_id=${userId}`);
+                    const data = await res.json();
+                    const ids = data.friend_ids || [];
 
-                const userData = await Promise.all(
-                    ids.map(async (id) => {
-                        const uRes = await fetch(`${BACKEND_URL}/user/get_user?user_id=${id}`);
-                        return await uRes.json();
-                    })
-                );
+                    const userData = await Promise.all(
+                        ids.map(async (id) => {
+                            const uRes = await fetch(`${BACKEND_URL}/user/get_user?user_id=${id}`);
+                            return await uRes.json();
+                        })
+                    );
 
-                setFriends(userData);
-            } catch (err) {
-                console.error("Failed to load friends:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
+                    setFriends(userData);
+                    setError(false);
+                } catch (err) {
+                    console.log("Failed to load friends:", err);
+                    setError(true);
+                } finally {
+                    setLoading(false);
+                }
+            };
 
-        loadFriends();
-    }, [userId]);
+            loadFriends();
+        }, [userId])
+    );
 
     if (loading) return <ActivityIndicator size="large" color="#32a852" style={tw`mt-10`} />;
 
-    return (
+    return !error ? (
         <View style={tw`p-4 bg-white h-full`}>
             <View style={tw`flex-row items-center mb-4`}>
                 <TouchableOpacity
@@ -81,16 +87,44 @@ const UserFriends = ({ route , navigation}) => {
             }
         >
             <View style={tw`flex-row items-center py-2 border-b border-gray-200`}>
-                <Image
-                    source={imageMap[item.icon] || imageMap["default"]}
-                    style={tw`w-8 h-8 rounded-full mr-4`}
-                />
+            {item.icon && typeof item.icon === "string" && item.icon.trim().startsWith("{") ? (
+            <Avatar
+                style={tw`w-8 h-8 mr-4`}
+                {...JSON.parse(item.icon)}
+            />
+            ) : (
+            <Image
+                source={imageMap[item.icon] || imageMap["default"]}
+                style={tw`w-8 h-8 rounded-full mr-4`}
+            />
+            )}
+
                 <Text style={[tw`text-base`, { fontFamily: "Nunito_400Regular" }]}>{item.user_name}</Text>
             </View>
         </TouchableOpacity>
     </View>
                 )}
             />
+        </View>
+    ) : (
+        <View style={tw`flex-1 justify-center items-center bg-white px-4`}>
+          <View style={tw`rounded-xl shadow-lg bg-green-50 p-6 items-center`}>
+            <Text style={[tw`text-xl mb-2 text-green-900`, { fontFamily: "Nunito_700Bold" }]}>
+              ⚠️ Connection Issue
+            </Text>
+            <Text style={[tw`text-base text-center text-green-900`, { fontFamily: "Nunito_400Regular" }]}>
+              We couldn’t connect to the server. Check your internet or try again shortly.
+            </Text>
+          </View>
+    
+          <TouchableOpacity
+            style={tw`mt-6 w-5/6 py-3 bg-green-100 rounded-lg shadow-lg items-center`}
+            onPress={loadFriends} // define this function to retry the request
+          >
+            <Text style={[tw`text-base`, { fontFamily: "Nunito_600SemiBold" }]}>
+              Try Again
+            </Text>
+          </TouchableOpacity>
         </View>
     );
 };

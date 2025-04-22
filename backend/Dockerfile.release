@@ -6,15 +6,18 @@ WORKDIR /app
 
 # Copy the requirements file into the container
 COPY requirements.txt .
-
-# Pre-install dependencies to ensure fast startup
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire backend code into the container
 COPY . .
+
+
+# Set environment variables for Flask
+ENV FLASK_APP=app:create_app()
+ENV FLASK_ENV=development
 
 # Expose the port the app runs on
 EXPOSE 8000
 
 # Set the default command to run the application
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8000", "--debug"]

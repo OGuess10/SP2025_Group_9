@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, FlatList, Modal, Alert, Image } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, FlatList, Modal, Alert, Image, TextInput } from 'react-native';
 import tw from "../../components/tailwind";
 // import { Image } from 'expo-image';
 import NavBar from '../../components/NavBar';
@@ -13,12 +13,23 @@ import Avatar, { genConfig } from "@zamplyy/react-native-nice-avatar";
 const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const ecoActions = [
-    { id: '1', icon: 'recycle', label: 'Recycling', points: 20 },
-    { id: '2', icon: 'tree', label: 'Plant a Tree', points: 30 },
-    { id: '3', icon: 'trash', label: 'Litter Cleanup', points: 15 },
-    { id: '4', icon: 'solar-panel', label: 'Use Solar Energy', points: 15 },
-    { id: '5', icon: 'bicycle', label: 'Bike ', points: 25 }
-];
+    { id: '1', icon: 'recycle', label: 'Recycle', points: 5, info: 'Recycle paper, plastic, glass, or metal responsibly.' },
+    { id: '2', icon: 'tree', label: 'Plant a Tree', points: 30, info: 'Plant a tree to absorb CO₂ and support biodiversity.' },
+    { id: '3', icon: 'trash', label: 'Litter Cleanup', points: 15, info: 'Pick up trash from a park, street, or outdoor area.' },
+    { id: '4', icon: 'solar-panel', label: 'Use Solar Energy', points: 15, info: 'Use solar-powered devices or energy at home.' },
+    { id: '5', icon: 'bicycle', label: 'Bike', points: 25, info: 'Ride a bike instead of driving to reduce emissions.' },
+    { id: '6', icon: 'shopping-bag', label: 'Bring a Reusable Bag', points: 10, info: 'Use a reusable bag while shopping to avoid plastic waste.' },
+    { id: '7', icon: 'tint', label: 'Use a Reusable Water Bottle', points: 10, info: 'Avoid single-use plastic bottles by refilling your own.' },
+    { id: '8', icon: 'shower', label: 'Shorten Your Shower', points: 10, info: 'Take a quick shower to conserve water and energy.' },
+    { id: '9', icon: 'subway', label: 'Use Public Transport', points: 15, info: 'Take a bus, train, or subway instead of driving alone.' },
+    { id: '10', icon: 'recycle', label: 'Compost Food Waste', points: 20, info: 'Compost leftover food to reduce landfill waste and enrich soil.' },
+    { id: '11', icon: 'tshirt', label: 'Upcycle an Item', points: 30, info: 'Give new life to old clothing or items instead of throwing them away.' },
+    { id: '12', icon: 'seedling', label: 'Plant in a Garden', points: 25, info: 'Plant herbs, veggies, or flowers to support local pollinators.' },
+    { id: '13', icon: 'clock', label: 'Use Appliances at Off-Peak Times', points: 25, info: 'Run appliances during off-peak hours to reduce grid strain.' },
+    { id: '14', icon: 'carrot', label: 'Buy Local Produce', points: 25, info: 'Purchase fruits or vegetables from local farmers or markets.' },
+    { id: '15', icon: 'tshirt', label: 'Buy Secondhand Item', points: 25, info: 'Purchase an item used or from a secondhand store.' }
+  ];
+  
 
 const imageMap = {
     "kanagroo": require("../../assets/user_icons/kangaroo.png"),
@@ -140,7 +151,11 @@ const CameraScreen = ({ userId, action, visible, onClose, onImageUploaded }) => 
                             ) : (
                                 <>
                                     <CameraView ref={cameraRef} style={tw`w-full h-2/3`} facing={facing}>
-                                        {/* You can add a toggle button inside here if needed */}
+                                    <View>
+                                        <TouchableOpacity style={tw`p-2 self-end`} onPress={toggleCameraFacing}>
+                                            <FontAwesome5 name="sync-alt" size={24} color="black" />
+                                        </TouchableOpacity>
+                                    </View>
                                     </CameraView>
                                     <TouchableOpacity
                                         style={tw`py-3 px-10 mt-10 shadow-lg bg-white rounded-lg`}
@@ -201,6 +216,12 @@ const ActivityList = ({ user, setUserPoints }) => {
     const [showCamera, setShowCamera] = useState(false);
     const [image, setImage] = useState("");
     const [showImage, setShowImage] = useState(false);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredActions = ecoActions.filter(action =>
+        action.label.toLowerCase().includes(searchText.toLowerCase())
+      );
+      
 
 
     useEffect(() => {
@@ -239,8 +260,17 @@ const ActivityList = ({ user, setUserPoints }) => {
 
     return (
         <View style={tw`flex-1 px-4`}>
+            <View style={tw`flex pt-6 justify-center`}>
+                <TextInput
+                    style={tw`px-4 py-2 border border-gray-300 rounded-full`}
+                    placeholder="Search activities..."
+                    placeholderTextColor="#909090"
+                    value={searchText}
+                    onChangeText={setSearchText}
+                />
+            </View>
             <FlatList
-                data={ecoActions}
+                data={filteredActions}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <View style={tw`border-b border-gray-300 py-4 w-full`}>
@@ -249,7 +279,7 @@ const ActivityList = ({ user, setUserPoints }) => {
                             onPress={() => setSelectedAction(item)}
                         >
                             {/*Icon + Label */}
-                            <View style={tw`flex-row items-center ml-0`}>
+                            <View style={tw`flex-row items-center ml-0 w-2/3`}>
                                 <FontAwesome5 name={item.icon} size={24} color="black" style={tw`mr-4`} />
                                 <Text style={[tw`text-lg`, { fontFamily: "Nunito_400Regular" }]}>{item.label}</Text>
                             </View>
@@ -281,7 +311,7 @@ const ActivityList = ({ user, setUserPoints }) => {
 
                         </TouchableOpacity>
 
-                        <View style={tw`justify-center items-center`}>
+                        <View style={tw`justify-center items-center h-1/2`}>
                             {selectedAction && (
                                 <>
                                     <FontAwesome5 name={selectedAction.icon} size={80} color="green" />
@@ -291,11 +321,14 @@ const ActivityList = ({ user, setUserPoints }) => {
                                     <Text style={[tw`text-sm text-green-700`, { fontFamily: "Nunito_700Bold" }]}>
                                         +{selectedAction.points} pts
                                     </Text>
+                                    <Text style={[tw`text-xl pt-6 text-center`, { fontFamily: "Nunito_500Regular" }]}>
+                                        {selectedAction.info}
+                                    </Text>
                                 </>
                             )}
                         </View>
 
-                        <View style={tw`justify-center items-center w-full mt-32`}>
+                        <View style={tw`justify-center items-center w-full`}>
                             <Animated.Text
                                 style={[
                                     tw`text-sm text-green-700 mt-1`,

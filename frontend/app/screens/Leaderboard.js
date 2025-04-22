@@ -243,7 +243,7 @@ const Leaderboard = ({ route, navigation }) => {
     );
 
     return (updatedUser && !error) ? (
-        <SafeAreaView style={tw`flex items-center justify-between bg-white w-full h-full`}>
+        <SafeAreaView style={tw`flex items-center justify-start bg-white w-full h-full`}>
             <TouchableOpacity
                 onPress={() =>
                     navigation.navigate("FriendsProfile", {

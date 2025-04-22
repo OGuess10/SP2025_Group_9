@@ -18,7 +18,7 @@ import { BlurView } from "expo-blur";
 
 const { width, height } = Dimensions.get("window");
 const SIDEBAR_WIDTH = width * 0.75;
-const SIDEBAR_HEIGHT = height * 0.8;
+const SIDEBAR_HEIGHT = height * 0.2;
 
 const pastelGreen = "#A5D6A7";
 const pastelGreenLight = "#E8F5E9";
@@ -211,7 +211,8 @@ const styles = StyleSheet.create({
   },
   sidebarWrapper: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
+    height: height * 0.8,
+    justifyContent: "flex-end",
     alignItems: "flex-end",
     zIndex: 3,
   },

@@ -28,6 +28,39 @@
 
    ````
 
+6. Run Kubernetes
+   
+
+Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) installed and running
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) installed
+- [kind](https://kind.sigs.k8s.io/) installed (Kubernetes in Docker)
+
+
+   Then run
+   ````kind create cluster --config k8s/kind-cluster.yaml
+      kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
+
+      cd backend           #Make sure you are in backend
+      docker build -t group9-backend:v1.6 .
+      kind load docker-image group9-backend:v1.6
+      cd ..             #MAke sure you are in root project
+   ````
+
+   Make sure that k8s/deployment.yaml has  (or the image you built in docker)
+   image: group9-backend:v1.6
+   imagePullPolicy: Never
+
+   Then run
+   ````
+         kubectl apply -f k8s/deployment.yaml
+         kubectl apply -f k8s/ingress.yaml
+         kubectl delete pod -l app=flask-backend
+         kubectl get pods -w
+   ````
+   Open http://localhost:8080 
+
+
    Go to endpoints on the ngrok website and copy the url
    Paste the url in frontend/.env as EXPO_PUBLIC_API_URL
    Do not include quotations or semicolons

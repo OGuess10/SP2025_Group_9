@@ -24,6 +24,11 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix="/user")
     app.register_blueprint(action_bp, url_prefix="/action")
 
+    @app.route("/")
+    def index():
+        return "Hello from Flask on Kubernetes!"
+
+
     with app.app_context():
         db.create_all()
 
